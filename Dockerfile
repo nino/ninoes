@@ -9,9 +9,12 @@ WORKDIR /app
 RUN npm ci --omit=dev
 
 FROM node:20-alpine AS build-env
-# Add env vars to build stage
-ENV VITE_SUPABASE_URL=
-ENV VITE_SUPABASE_ANON_KEY=
+# Define build arguments
+ARG VITE_SUPABASE_URL
+ARG VITE_SUPABASE_ANON_KEY
+# Set them as environment variables
+ENV VITE_SUPABASE_URL=$VITE_SUPABASE_URL
+ENV VITE_SUPABASE_ANON_KEY=$VITE_SUPABASE_ANON_KEY
 COPY . /app/
 COPY --from=development-dependencies-env /app/node_modules /app/node_modules
 WORKDIR /app
@@ -19,9 +22,12 @@ RUN npm run build
 
 FROM node:20-alpine
 ENV NODE_ENV=production
-# Add env vars to runtime stage
-ENV VITE_SUPABASE_URL=
-ENV VITE_SUPABASE_ANON_KEY=
+# Define build arguments again for the final stage
+ARG VITE_SUPABASE_URL
+ARG VITE_SUPABASE_ANON_KEY
+# Set them as environment variables
+ENV VITE_SUPABASE_URL=$VITE_SUPABASE_URL
+ENV VITE_SUPABASE_ANON_KEY=$VITE_SUPABASE_ANON_KEY
 COPY ./package.json package-lock.json /app/
 COPY --from=production-dependencies-env /app/node_modules /app/node_modules
 COPY --from=build-env /app/build /app/build

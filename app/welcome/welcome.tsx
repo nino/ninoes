@@ -3,7 +3,8 @@ import { supabase } from "../supabaseClient";
 import Auth from "../Auth";
 import Account from "../Account";
 import type { Session } from "@supabase/supabase-js";
-function App() {
+
+export function Welcome() {
   const [session, setSession] = useState<Session | null>(null);
 
   useEffect(() => {
@@ -26,5 +27,3 @@ function App() {
     </div>
   );
 }
-
-export default App;

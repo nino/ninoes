@@ -1,26 +1,41 @@
 import { useState } from "react";
 import { supabase } from "./supabaseClient";
+import { Input } from "./components/Input";
+import { useForm } from "react-hook-form";
+import { Button } from "./components/Button";
+
+type LoginForm = {
+  email: string;
+  password: string;
+};
 
 export default function Auth() {
   const [loading, setLoading] = useState(false);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const loginForm = useForm<LoginForm>({
+    defaultValues: { email: "", password: "" },
+    mode: "onChange",
+  });
 
-  const handleLogin = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  const handleLogin = async (data: LoginForm) => {
+    try {
+      console.log({ data });
+      setLoading(true);
+      const { error } = await supabase.auth.signInWithPassword({
+        email: data.email,
+        password: data.password,
+      });
 
-    setLoading(true);
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-
-    if (error) {
-      alert(error.message);
-    } else {
-      alert("Logged in successfully!");
+      if (error) {
+        alert(error.message);
+      } else {
+        alert("Logged in successfully!");
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      alert("An error occurred during login");
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   return (
@@ -30,31 +45,28 @@ export default function Auth() {
         <p className="description">
           Sign in using your email and password below
         </p>
-        <form className="form-widget" onSubmit={handleLogin}>
+        <form
+          className="flex flex-col gap-2 m-4"
+          onSubmit={loginForm.handleSubmit(handleLogin)}
+        >
           <div>
-            <input
-              className="inputField"
+            <Input
+              {...loginForm.register("email", { required: true })}
+              label="Email"
               type="email"
-              placeholder="Your email"
-              value={email}
-              required={true}
-              onChange={(e) => setEmail(e.target.value)}
             />
           </div>
           <div>
-            <input
-              className="inputField"
+            <Input
+              {...loginForm.register("password", { required: true })}
+              label="Password"
               type="password"
-              placeholder="Your password"
-              value={password}
-              required={true}
-              onChange={(e) => setPassword(e.target.value)}
             />
           </div>
-          <div>
-            <button className="button block" disabled={loading}>
+          <div className="flex justify-center mt-4">
+            <Button type="submit" disabled={loading} loading={loading}>
               {loading ? <span>Loading</span> : <span>Sign in</span>}
-            </button>
+            </Button>
           </div>
         </form>
       </div>

@@ -15,6 +15,10 @@ WORKDIR /app
 RUN npm run build
 
 FROM node:20-alpine
+ENV NODE_ENV=production
+# Add these two lines to declare that these env vars are expected
+ENV VITE_SUPABASE_URL=
+ENV VITE_SUPABASE_ANON_KEY=
 COPY ./package.json package-lock.json /app/
 COPY --from=production-dependencies-env /app/node_modules /app/node_modules
 COPY --from=build-env /app/build /app/build

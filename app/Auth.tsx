@@ -1,8 +1,6 @@
 import { useState } from "react";
 import { supabase } from "./supabaseClient";
-import { Input } from "./components/Input";
-import { useForm } from "react-hook-form";
-import { Button } from "./components/Button";
+import { Button, Form, Input, message } from "antd";
 
 type LoginForm = {
   email: string;
@@ -11,14 +9,10 @@ type LoginForm = {
 
 export default function Auth() {
   const [loading, setLoading] = useState(false);
-  const loginForm = useForm<LoginForm>({
-    defaultValues: { email: "", password: "" },
-    mode: "onChange",
-  });
+  const [form] = Form.useForm<LoginForm>();
 
   const handleLogin = async (data: LoginForm) => {
     try {
-      console.log({ data });
       setLoading(true);
       const { error } = await supabase.auth.signInWithPassword({
         email: data.email,
@@ -26,13 +20,13 @@ export default function Auth() {
       });
 
       if (error) {
-        alert(error.message);
+        message.error(error.message);
       } else {
-        alert("Logged in successfully!");
+        message.success("Logged in successfully!");
       }
     } catch (error) {
       console.error("Login error:", error);
-      alert("An error occurred during login");
+      message.error("An error occurred during login");
     } finally {
       setLoading(false);
     }
@@ -45,30 +39,37 @@ export default function Auth() {
         <p className="description">
           Sign in using your email and password below
         </p>
-        <form
+        <Form
+          form={form}
+          onFinish={handleLogin}
+          layout="vertical"
           className="flex flex-col gap-2 m-4"
-          onSubmit={loginForm.handleSubmit(handleLogin)}
         >
-          <div>
-            <Input
-              {...loginForm.register("email", { required: true })}
-              label="Email"
-              type="email"
-            />
-          </div>
-          <div>
-            <Input
-              {...loginForm.register("password", { required: true })}
-              label="Password"
-              type="password"
-            />
-          </div>
-          <div className="flex justify-center mt-4">
-            <Button type="submit" disabled={loading} loading={loading}>
-              {loading ? <span>Loading</span> : <span>Sign in</span>}
+          <Form.Item
+            label="Email"
+            name="email"
+            rules={[
+              { required: true, message: "Please input your email!" },
+              { type: "email", message: "Please enter a valid email!" },
+            ]}
+          >
+            <Input type="email" />
+          </Form.Item>
+
+          <Form.Item
+            label="Password"
+            name="password"
+            rules={[{ required: true, message: "Please input your password!" }]}
+          >
+            <Input.Password />
+          </Form.Item>
+
+          <Form.Item className="flex justify-center mt-4">
+            <Button type="primary" htmlType="submit" loading={loading}>
+              Sign in
             </Button>
-          </div>
-        </form>
+          </Form.Item>
+        </Form>
       </div>
     </div>
   );

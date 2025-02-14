@@ -7,6 +7,8 @@ import {
   ScrollRestoration,
 } from "react-router";
 import * as Sentry from "@sentry/react";
+import { useSyncExternalStore } from "react";
+import { ConfigProvider, theme } from "antd";
 
 Sentry.init({
   dsn: "https://6dedc280f764a89de4caa4d2af92ff01@o4508201817407488.ingest.de.sentry.io/4508789873180752",
@@ -57,8 +59,36 @@ export function Layout({ children }: { children: React.ReactNode }) {
   );
 }
 
+function useSystemDarkMode() {
+  const mediaQuery = "(prefers-color-scheme: dark)";
+
+  const subscribe = (callback: () => void) => {
+    const matchMedia = window.matchMedia(mediaQuery);
+    matchMedia.addEventListener("change", callback);
+    return () => matchMedia.removeEventListener("change", callback);
+  };
+
+  const getSnapshot = () => {
+    return window.matchMedia(mediaQuery).matches;
+  };
+
+  const getServerSnapshot = () => false;
+
+  return useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+}
+
 export default function App() {
-  return <Outlet />;
+  const isDarkMode = useSystemDarkMode();
+
+  return (
+    <ConfigProvider
+      theme={{
+        algorithm: isDarkMode ? theme.darkAlgorithm : theme.defaultAlgorithm,
+      }}
+    >
+      <Outlet />
+    </ConfigProvider>
+  );
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {

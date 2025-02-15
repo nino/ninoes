@@ -1,6 +1,10 @@
-import { useQuery, type UseQueryResult } from "@tanstack/react-query";
+import {
+  useQuery,
+  useMutation,
+  type UseQueryResult,
+} from "@tanstack/react-query";
 import { supabase } from "../supabaseClient";
-import type { Name, User, VoteWithExtras } from "~/model/types";
+import type { Name, User, VoteWithExtras, VoteType } from "~/model/types";
 import { NameSchema, UserSchema, VoteWithExtrasSchema } from "../model/types";
 
 export function useNames(): UseQueryResult<Name[]> {
@@ -50,6 +54,43 @@ export function useUser(userId: string): UseQueryResult<User> {
       }
 
       return UserSchema.parse(data[0]);
+    },
+  });
+}
+
+export function useRandomNames(): UseQueryResult<Name[]> {
+  return useQuery({
+    queryKey: ["randomNames"],
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("get_two_names");
+
+      if (error) {
+        throw error;
+      }
+
+      return data.map((name: unknown) => NameSchema.parse(name));
+    },
+  });
+}
+
+type CreateVoteParams = {
+  nameId: string;
+  userId: string;
+  voteType: VoteType;
+};
+
+export function useCreateVote() {
+  return useMutation({
+    mutationFn: async ({ nameId, userId, voteType }: CreateVoteParams) => {
+      const { error } = await supabase.from("Votes").insert({
+        name_id: nameId,
+        user_id: userId,
+        vote_type: voteType,
+      });
+
+      if (error) {
+        throw error;
+      }
     },
   });
 }

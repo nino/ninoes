@@ -33,6 +33,11 @@ export function NamesRanking() {
       key: "user_id",
     },
     {
+      title: "Vote Type",
+      dataIndex: "vote_type",
+      key: "vote_type",
+    },
+    {
       title: "Created At",
       dataIndex: "created_at",
       key: "created_at",

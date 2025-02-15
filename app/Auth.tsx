@@ -7,7 +7,7 @@ type LoginForm = {
   password: string;
 };
 
-export default function Auth() {
+export function Auth() {
   const [loading, setLoading] = useState(false);
   const [form] = Form.useForm<LoginForm>();
 

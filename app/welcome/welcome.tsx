@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../supabaseClient";
 import type { Session } from "@supabase/supabase-js";
-import Auth from "~/Auth";
-import Account from "~/Account";
+import { Auth } from "~/Auth";
+import { NamesRanking } from "~/NamesRanking";
 
 export function Welcome() {
   const [session, setSession] = useState<Session | null>(null);
@@ -17,5 +17,5 @@ export function Welcome() {
     });
   }, []);
 
-  return !session ? <Auth /> : <Account key={session.user.id} />;
+  return !session ? <Auth /> : <NamesRanking key={session.user.id} />;
 }

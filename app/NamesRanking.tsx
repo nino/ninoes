@@ -2,7 +2,7 @@ import { supabase } from "./supabaseClient";
 import { Layout, Table, Button } from "antd";
 import { useNames, useVotes } from "./hooks/useSupabase";
 
-export default function Account() {
+export function NamesRanking() {
   const { data: names = [], isLoading: isLoadingNames } = useNames();
 
   const { data: votes = [], isLoading: isLoadingVotes } = useVotes();

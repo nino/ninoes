@@ -3,9 +3,9 @@ import { useRandomNames, useCreateVote } from "~/hooks/useSupabase";
 import { useSession } from "~/hooks/useSession";
 import { VOTE_TYPE } from "~/model/types";
 
-const laserSound = new Audio(
-  "https://f001.backblazeb2.com/file/NinoPublic/Laser_01.mp3"
-);
+// const laserSound = new Audio(
+//   "https://f001.backblazeb2.com/file/NinoPublic/Laser_01.mp3"
+// );
 
 export default function Vote() {
   const session = useSession();
@@ -24,7 +24,7 @@ export default function Vote() {
     if (!names || names.length !== 2) return;
 
     try {
-      laserSound.play().catch(console.error);
+      // laserSound.play().catch(console.error);
       createVote.mutate({
         nameId: names[selectedNameIndex].id,
         userId: session.user.id,

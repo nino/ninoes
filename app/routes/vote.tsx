@@ -76,7 +76,7 @@ export default function Vote() {
           </Button>
         ))}
       </Space>
-      <Space size="large">
+      <Space size="large" wrap className="justify-center">
         <Button
           danger
           onClick={() => handleBan([0])}

@@ -72,9 +72,7 @@ export default function Leaderboard() {
         columns={columns}
         loading={isLoadingNames || isLoadingVotes}
         rowKey="id"
-        pagination={false}
-        virtual={true}
-        scroll={{ x: "max-content", y: 800 }}
+        pagination={true}
       />
     </div>
   );

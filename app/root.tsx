@@ -17,20 +17,22 @@ import { Auth } from "./Auth";
 import { Button, Layout as AntdLayout } from "antd";
 import type { Session } from "@supabase/supabase-js";
 
-Sentry.init({
-  dsn: "https://6dedc280f764a89de4caa4d2af92ff01@o4508201817407488.ingest.de.sentry.io/4508789873180752",
-  integrations: [
-    Sentry.browserTracingIntegration(),
-    Sentry.replayIntegration(),
-  ],
-  // Tracing
-  tracesSampleRate: 1.0, //  Capture 100% of the transactions
-  // Set 'tracePropagationTargets' to control for which URLs distributed tracing should be enabled
-  tracePropagationTargets: ["localhost", /^https:\/\/yourserver\.io\/api/],
-  // Session Replay
-  replaysSessionSampleRate: 0.1, // This sets the sample rate at 10%. You may want to change it to 100% while in development and then sample at a lower rate in production.
-  replaysOnErrorSampleRate: 1.0, // If you're not already sampling the entire session, change the sample rate to 100% when sampling sessions where errors occur.
-});
+if (!import.meta.env.DEV) {
+  Sentry.init({
+    dsn: "https://6dedc280f764a89de4caa4d2af92ff01@o4508201817407488.ingest.de.sentry.io/4508789873180752",
+    integrations: [
+      Sentry.browserTracingIntegration(),
+      Sentry.replayIntegration(),
+    ],
+    // Tracing
+    tracesSampleRate: 1.0, //  Capture 100% of the transactions
+    // Set 'tracePropagationTargets' to control for which URLs distributed tracing should be enabled
+    tracePropagationTargets: ["localhost", /^https:\/\/yourserver\.io\/api/],
+    // Session Replay
+    replaysSessionSampleRate: 0.1, // This sets the sample rate at 10%. You may want to change it to 100% while in development and then sample at a lower rate in production.
+    replaysOnErrorSampleRate: 1.0, // If you're not already sampling the entire session, change the sample rate to 100% when sampling sessions where errors occur.
+  });
+}
 
 import type { Route } from "./+types/root";
 import "./app.css";

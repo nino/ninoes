@@ -48,34 +48,27 @@ export function NamesRanking() {
   ];
 
   return (
-    <Layout>
-      <Layout.Content className="p-8">
-        <div className="space-y-8">
-          <div>
-            <h2 className="text-xl font-bold mb-4">Names</h2>
-            <Table
-              scroll={{ x: "max-content" }}
-              dataSource={names}
-              columns={nameColumns}
-              loading={isLoadingNames}
-              rowKey="id"
-            />
-          </div>
-          <div>
-            <h2 className="text-xl font-bold mb-4">Votes</h2>
-            <Table
-              scroll={{ x: "max-content" }}
-              dataSource={votes}
-              columns={voteColumns}
-              loading={isLoadingVotes}
-              rowKey="id"
-            />
-          </div>
-        </div>
-      </Layout.Content>
-      <Layout.Footer>
-        <Button onClick={() => supabase.auth.signOut()}>Sign Out</Button>
-      </Layout.Footer>
-    </Layout>
+    <div className="p-8 space-y-8">
+      <div>
+        <h2 className="text-xl font-bold mb-4">Names</h2>
+        <Table
+          scroll={{ x: "max-content" }}
+          dataSource={names}
+          columns={nameColumns}
+          loading={isLoadingNames}
+          rowKey="id"
+        />
+      </div>
+      <div>
+        <h2 className="text-xl font-bold mb-4">Votes</h2>
+        <Table
+          scroll={{ x: "max-content" }}
+          dataSource={votes}
+          columns={voteColumns}
+          loading={isLoadingVotes}
+          rowKey="id"
+        />
+      </div>
+    </div>
   );
 }

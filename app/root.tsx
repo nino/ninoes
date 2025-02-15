@@ -11,6 +11,11 @@ import * as Sentry from "@sentry/react";
 import { useSyncExternalStore } from "react";
 import { ConfigProvider, theme } from "antd";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { useState, useEffect } from "react";
+import { supabase } from "./supabaseClient";
+import { Auth } from "./Auth";
+import { Button, Layout as AntdLayout } from "antd";
+import type { Session } from "@supabase/supabase-js";
 
 Sentry.init({
   dsn: "https://6dedc280f764a89de4caa4d2af92ff01@o4508201817407488.ingest.de.sentry.io/4508789873180752",
@@ -88,8 +93,37 @@ const queryClient = new QueryClient({
   },
 });
 
+function useSession() {
+  const [session, setSession] = useState<Session | null>(null);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+    });
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+    });
+    return () => subscription.unsubscribe();
+  }, []);
+  return session;
+}
+
+function AuthenticatedLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <AntdLayout>
+      <AntdLayout.Content className="p-8">{children}</AntdLayout.Content>
+      <AntdLayout.Footer>
+        <Button onClick={() => supabase.auth.signOut()}>Sign Out</Button>
+      </AntdLayout.Footer>
+    </AntdLayout>
+  );
+}
+
 export default function App() {
   const isDarkMode = useSystemDarkMode();
+  const session = useSession();
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -99,7 +133,13 @@ export default function App() {
         }}
       >
         <AntApp>
-          <Outlet />
+          {session ? (
+            <AuthenticatedLayout>
+              <Outlet />
+            </AuthenticatedLayout>
+          ) : (
+            <Auth />
+          )}
         </AntApp>
       </ConfigProvider>
     </QueryClientProvider>

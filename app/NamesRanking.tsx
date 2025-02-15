@@ -55,7 +55,7 @@ export function NamesRanking() {
   ];
 
   return (
-    <div className="p-8 space-y-8">
+    <div className="p-2 md:p-8 space-y-8">
       <div>
         <h2 className="text-xl font-bold mb-4">Names</h2>
         <Table

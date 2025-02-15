@@ -72,7 +72,10 @@ export default function Leaderboard() {
         columns={columns}
         loading={isLoadingNames || isLoadingVotes}
         rowKey="id"
-        pagination={true}
+        pagination={{
+          pageSize: 10,
+        }}
+        size="small"
       />
     </div>
   );

@@ -59,6 +59,7 @@ export function NamesRanking() {
       <div>
         <h2 className="text-xl font-bold mb-4">Names</h2>
         <Table
+          size="small"
           scroll={{ x: "max-content" }}
           dataSource={names}
           columns={nameColumns}
@@ -69,6 +70,7 @@ export function NamesRanking() {
       <div>
         <h2 className="text-xl font-bold mb-4">Votes</h2>
         <Table
+          size="small"
           scroll={{ x: "max-content" }}
           dataSource={votes}
           columns={voteColumns}

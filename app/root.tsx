@@ -1,6 +1,7 @@
 import { App as AntApp } from "antd";
 import {
   isRouteErrorResponse,
+  Link,
   Links,
   Meta,
   Outlet,
@@ -14,7 +15,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useState, useEffect } from "react";
 import { supabase } from "./supabaseClient";
 import { Auth } from "./Auth";
-import { Button, Layout as AntdLayout } from "antd";
+import { Button, Layout as AntdLayout, Menu } from "antd";
 import type { Session } from "@supabase/supabase-js";
 
 if (import.meta.env.PROD) {
@@ -104,6 +105,22 @@ function useSession() {
 function AuthenticatedLayout({ children }: { children: React.ReactNode }) {
   return (
     <AntdLayout>
+      <AntdLayout.Header>
+        <Menu
+          items={[
+            { key: "1", title: "Home", label: <Link to="/">Home 🏠</Link> },
+            { key: "2", title: "Vote", label: <Link to="/vote">Vote 🏩</Link> },
+            {
+              key: "3",
+              title: "Liederbort",
+              label: <Link to="#">Top leader names for Chads ᴖ</Link>,
+            },
+          ]}
+          mode="horizontal"
+          theme="dark"
+        />
+      </AntdLayout.Header>
+
       <AntdLayout.Content className="p-8">{children}</AntdLayout.Content>
       <AntdLayout.Footer>
         <Button onClick={() => supabase.auth.signOut()}>Sign Out</Button>

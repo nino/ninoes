@@ -34,16 +34,6 @@ export function Auth() {
 
   return (
     <Layout>
-      <Layout.Header>
-        <Menu
-          items={[
-            { key: "1", title: "Yo", label: "Dunno" },
-            { key: "2", title: "Yo2", label: "Dunno again" },
-          ]}
-          mode="horizontal"
-          theme="dark"
-        />
-      </Layout.Header>
       <Layout.Content className="p-8">
         <div>
           <h1 className="header">Supabase + React</h1>

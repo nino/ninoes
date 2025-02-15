@@ -137,6 +137,10 @@ export default function App() {
     <QueryClientProvider client={queryClient}>
       <ConfigProvider
         theme={{
+          token: {
+            colorPrimary: "#3bf",
+            borderRadius: 6,
+          },
           algorithm: isDarkMode ? theme.darkAlgorithm : theme.defaultAlgorithm,
         }}
       >

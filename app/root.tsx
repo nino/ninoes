@@ -17,7 +17,7 @@ import { Auth } from "./Auth";
 import { Button, Layout as AntdLayout } from "antd";
 import type { Session } from "@supabase/supabase-js";
 
-if (!import.meta.env.DEV) {
+if (import.meta.env.PROD) {
   Sentry.init({
     dsn: "https://6dedc280f764a89de4caa4d2af92ff01@o4508201817407488.ingest.de.sentry.io/4508789873180752",
     integrations: [

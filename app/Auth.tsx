@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { supabase } from "./supabaseClient";
-import { Button, Form, Input, Layout, message } from "antd";
+import { Button, Form, Input, Layout, Menu, message } from "antd";
 
 type LoginForm = {
   email: string;
@@ -34,9 +34,18 @@ export default function Auth() {
 
   return (
     <Layout>
-      <Layout.Header>Hello</Layout.Header>
-      <Layout.Content>
-        <div className="col-6 form-widget">
+      <Layout.Header>
+        <Menu
+          items={[
+            { key: "1", title: "Yo", label: "Dunno" },
+            { key: "2", title: "Yo2", label: "Dunno again" },
+          ]}
+          mode="horizontal"
+          theme="dark"
+        />
+      </Layout.Header>
+      <Layout.Content className="p-8">
+        <div>
           <h1 className="header">Supabase + React</h1>
           <p className="description">
             Sign in using your email and password below

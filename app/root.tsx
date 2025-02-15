@@ -9,6 +9,7 @@ import {
 import * as Sentry from "@sentry/react";
 import { useSyncExternalStore } from "react";
 import { ConfigProvider, theme } from "antd";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 Sentry.init({
   dsn: "https://6dedc280f764a89de4caa4d2af92ff01@o4508201817407488.ingest.de.sentry.io/4508789873180752",
@@ -77,17 +78,28 @@ function useSystemDarkMode() {
   return useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 }
 
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 1000 * 60, // 1 minute
+      refetchOnWindowFocus: false,
+    },
+  },
+});
+
 export default function App() {
   const isDarkMode = useSystemDarkMode();
 
   return (
-    <ConfigProvider
-      theme={{
-        algorithm: isDarkMode ? theme.darkAlgorithm : theme.defaultAlgorithm,
-      }}
-    >
-      <Outlet />
-    </ConfigProvider>
+    <QueryClientProvider client={queryClient}>
+      <ConfigProvider
+        theme={{
+          algorithm: isDarkMode ? theme.darkAlgorithm : theme.defaultAlgorithm,
+        }}
+      >
+        <Outlet />
+      </ConfigProvider>
+    </QueryClientProvider>
   );
 }
 

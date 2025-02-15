@@ -1,7 +1,7 @@
-import { supabase } from "./supabaseClient";
-import { Layout, Table, Button } from "antd";
+import { Table } from "antd";
 import { useNames, useVotes } from "./hooks/useSupabase";
 import type { VoteWithExtras } from "./model/types";
+
 export function NamesRanking() {
   const { data: names = [], isLoading: isLoadingNames } = useNames();
 

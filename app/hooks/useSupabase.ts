@@ -1,12 +1,7 @@
 import { useQuery, type UseQueryResult } from "@tanstack/react-query";
 import { supabase } from "../supabaseClient";
-import type { Name, Vote, User, VoteWithExtras } from "~/model/types";
-import {
-  NameSchema,
-  VoteSchema,
-  UserSchema,
-  VoteWithExtrasSchema,
-} from "../model/types";
+import type { Name, User, VoteWithExtras } from "~/model/types";
+import { NameSchema, UserSchema, VoteWithExtrasSchema } from "../model/types";
 
 export function useNames(): UseQueryResult<Name[]> {
   return useQuery({

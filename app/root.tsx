@@ -112,8 +112,8 @@ function AuthenticatedLayout({ children }: { children: React.ReactNode }) {
             { key: "2", title: "Vote", label: <Link to="/vote">Vote 🏩</Link> },
             {
               key: "3",
-              title: "Liederbort",
-              label: <Link to="#">Top leader names for Chads ᴖ</Link>,
+              title: "Leaderboard",
+              label: <Link to="/leaderboard">Leaderboard 🥇</Link>,
             },
           ]}
           mode="horizontal"

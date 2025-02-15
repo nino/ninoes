@@ -1,3 +1,4 @@
+import { App as AntApp } from "antd";
 import {
   isRouteErrorResponse,
   Links,
@@ -97,7 +98,9 @@ export default function App() {
           algorithm: isDarkMode ? theme.darkAlgorithm : theme.defaultAlgorithm,
         }}
       >
-        <Outlet />
+        <AntApp>
+          <Outlet />
+        </AntApp>
       </ConfigProvider>
     </QueryClientProvider>
   );

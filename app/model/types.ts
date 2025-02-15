@@ -25,10 +25,19 @@ export const VoteSchema = z.object({
 });
 export type Vote = z.infer<typeof VoteSchema>;
 
+export const VoteWithExtrasSchema = VoteSchema.extend({
+  name: z.object({
+    name: z.string().min(1),
+  }),
+  user: z.object({
+    name: z.string().min(1),
+  }),
+});
+export type VoteWithExtras = z.infer<typeof VoteWithExtrasSchema>;
+
 export const UserSchema = z.object({
   id: z.string().uuid(),
   name: z.string().min(1),
-  user_id: z.string().uuid(),
   created_at: z.coerce.date(),
 });
 export type User = z.infer<typeof UserSchema>;

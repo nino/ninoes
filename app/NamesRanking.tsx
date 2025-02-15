@@ -1,7 +1,7 @@
 import { supabase } from "./supabaseClient";
 import { Layout, Table, Button } from "antd";
 import { useNames, useVotes } from "./hooks/useSupabase";
-import { UserName } from "./components/UserName";
+import type { VoteWithExtras } from "./model/types";
 export function NamesRanking() {
   const { data: names = [], isLoading: isLoadingNames } = useNames();
 
@@ -23,15 +23,16 @@ export function NamesRanking() {
 
   const voteColumns = [
     {
-      title: "Name ID",
+      title: "Name",
       dataIndex: "name_id",
       key: "name_id",
+      render: (_: unknown, record: VoteWithExtras) => record.name.name,
     },
     {
       title: "User ID",
       dataIndex: "user_id",
       key: "user_id",
-      render: (userId: string) => <UserName userId={userId} />,
+      render: (_: unknown, record: VoteWithExtras) => record.user.name,
     },
     {
       title: "Vote Type",
@@ -53,6 +54,7 @@ export function NamesRanking() {
           <div>
             <h2 className="text-xl font-bold mb-4">Names</h2>
             <Table
+              scroll={{ x: "max-content" }}
               dataSource={names}
               columns={nameColumns}
               loading={isLoadingNames}
@@ -62,6 +64,7 @@ export function NamesRanking() {
           <div>
             <h2 className="text-xl font-bold mb-4">Votes</h2>
             <Table
+              scroll={{ x: "max-content" }}
               dataSource={votes}
               columns={voteColumns}
               loading={isLoadingVotes}

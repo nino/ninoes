@@ -1,7 +1,7 @@
 import { supabase } from "./supabaseClient";
 import { Layout, Table, Button } from "antd";
 import { useNames, useVotes } from "./hooks/useSupabase";
-
+import { UserName } from "./components/UserName";
 export function NamesRanking() {
   const { data: names = [], isLoading: isLoadingNames } = useNames();
 
@@ -31,6 +31,7 @@ export function NamesRanking() {
       title: "User ID",
       dataIndex: "user_id",
       key: "user_id",
+      render: (userId: string) => <UserName userId={userId} />,
     },
     {
       title: "Vote Type",

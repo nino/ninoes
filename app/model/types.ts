@@ -24,3 +24,11 @@ export const VoteSchema = z.object({
   vote_type: z.nativeEnum(VOTE_TYPE),
 });
 export type Vote = z.infer<typeof VoteSchema>;
+
+export const UserSchema = z.object({
+  id: z.string().uuid(),
+  name: z.string().min(1),
+  user_id: z.string().uuid(),
+  created_at: z.coerce.date(),
+});
+export type User = z.infer<typeof UserSchema>;

@@ -1,7 +1,7 @@
 import { useQuery, type UseQueryResult } from "@tanstack/react-query";
 import { supabase } from "../supabaseClient";
-import type { Name, Vote } from "~/model/types";
-import { NameSchema, VoteSchema } from "../model/types";
+import type { Name, Vote, User } from "~/model/types";
+import { NameSchema, VoteSchema, UserSchema } from "../model/types";
 
 export function useNames(): UseQueryResult<Name[]> {
   return useQuery({
@@ -29,6 +29,24 @@ export function useVotes(): UseQueryResult<Vote[]> {
       }
 
       return data.map((vote) => VoteSchema.parse(vote));
+    },
+  });
+}
+
+export function useUser(userId: string): UseQueryResult<User> {
+  return useQuery({
+    queryKey: ["user", userId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("Users")
+        .select("*")
+        .eq("user_id", userId);
+
+      if (error) {
+        throw error;
+      }
+
+      return UserSchema.parse(data[0]);
     },
   });
 }

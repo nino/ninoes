@@ -11,7 +11,10 @@ export function useNames(): UseQueryResult<Name[]> {
   return useQuery({
     queryKey: ["names"],
     queryFn: async () => {
-      const { data, error } = await supabase.from("Names").select("*");
+      const { data, error } = await supabase
+        .from("Names")
+        .select("*")
+        .limit(2000);
 
       if (error) {
         throw error;
@@ -29,6 +32,7 @@ export function useVotes(): UseQueryResult<VoteWithExtras[]> {
       const { data, error } = await supabase
         .from("Votes")
         .select(`*, name:Names!name_id(name), user:Users!user_id(name)`)
+        .limit(2000)
         .returns<VoteWithExtras[]>();
 
       if (error) {
@@ -91,6 +95,44 @@ export function useCreateVote() {
       if (error) {
         throw error;
       }
+    },
+  });
+}
+
+type NameScoreRPCResponse = {
+  id: string;
+  name: string;
+  created_at: string;
+  score: number;
+  upvotes: number;
+  downvotes: number;
+};
+
+export type NameScore = {
+  id: string;
+  name: string;
+  created_at: Date;
+  score: number;
+  upvotes: number;
+  downvotes: number;
+};
+
+export function useNameScores(): UseQueryResult<NameScore[]> {
+  return useQuery({
+    queryKey: ["nameScores"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .rpc("get_leaderboard")
+        .returns<NameScoreRPCResponse[]>();
+
+      if (error) {
+        throw error;
+      }
+
+      return data.map((score) => ({
+        ...score,
+        created_at: new Date(score.created_at),
+      }));
     },
   });
 }

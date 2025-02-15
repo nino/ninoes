@@ -1,36 +1,11 @@
 import { Table, type TableProps } from "antd";
-import { useNames, useVotes } from "~/hooks/useSupabase";
-import type { Name } from "~/model/types";
-import { VOTE_TYPE } from "~/model/types";
-
-type NameWithScore = Name & {
-  score: number;
-  upvotes: number;
-  downvotes: number;
-};
+import { useNameScores } from "~/hooks/useSupabase";
+import type { NameScore } from "~/hooks/useSupabase";
 
 export default function Leaderboard() {
-  const { data: names = [], isLoading: isLoadingNames } = useNames();
-  const { data: votes = [], isLoading: isLoadingVotes } = useVotes();
+  const { data: scores = [], isLoading } = useNameScores();
 
-  const namesWithScores: NameWithScore[] = names.map((name) => {
-    const nameVotes = votes.filter((vote) => vote.name_id === name.id);
-    const upvotes = nameVotes.filter(
-      (vote) => vote.vote_type === VOTE_TYPE.UP
-    ).length;
-    const downvotes = nameVotes.filter(
-      (vote) => vote.vote_type === VOTE_TYPE.DOWN
-    ).length;
-
-    return {
-      ...name,
-      score: upvotes - downvotes,
-      upvotes,
-      downvotes,
-    };
-  });
-
-  const columns: TableProps<NameWithScore>["columns"] = [
+  const columns: TableProps<NameScore>["columns"] = [
     {
       title: "Rank",
       key: "rank",
@@ -68,9 +43,9 @@ export default function Leaderboard() {
     <div className="space-y-8">
       <h1 className="text-2xl font-bold">Name Leaderboard</h1>
       <Table
-        dataSource={namesWithScores.sort((a, b) => b.score - a.score)}
+        dataSource={scores}
         columns={columns}
-        loading={isLoadingNames || isLoadingVotes}
+        loading={isLoading}
         rowKey="id"
         pagination={{
           pageSize: 10,

@@ -7,14 +7,25 @@ import { supabase } from "../supabaseClient";
 import type { Name, User, VoteWithExtras, VoteType } from "~/model/types";
 import { NameSchema, UserSchema, VoteWithExtrasSchema } from "../model/types";
 
-export function useNames(): UseQueryResult<Name[]> {
+export function useNames({
+  page,
+  pageSize,
+  orderBy,
+  orderDirection,
+}: {
+  page: number;
+  pageSize: number;
+  orderBy: string;
+  orderDirection: "asc" | "desc";
+}): UseQueryResult<Name[]> {
   return useQuery({
-    queryKey: ["names"],
+    queryKey: ["names", page, pageSize, orderBy],
     queryFn: async () => {
       const { data, error } = await supabase
         .from("Names")
         .select("*")
-        .limit(2000);
+        .range(page * pageSize, (page + 1) * pageSize - 1)
+        .order(orderBy, { ascending: orderDirection === "asc" });
 
       if (error) {
         throw error;
@@ -25,21 +36,42 @@ export function useNames(): UseQueryResult<Name[]> {
   });
 }
 
-export function useVotes(): UseQueryResult<VoteWithExtras[]> {
+export function useVotes({
+  page,
+  pageSize,
+  orderBy,
+  orderDirection,
+}: {
+  page: number;
+  pageSize: number;
+  orderBy: string;
+  orderDirection: "asc" | "desc";
+}): UseQueryResult<{
+  data: VoteWithExtras[];
+  total: number;
+}> {
   return useQuery({
-    queryKey: ["votes"],
+    queryKey: ["votes", page, pageSize, orderBy],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error, count } = await supabase
         .from("Votes")
-        .select(`*, name:Names!name_id(name), user:Users!user_id(name)`)
-        .limit(2000)
+        .select(`*, name:Names!name_id(name), user:Users!user_id(name)`, {
+          count: "exact",
+        })
+        .range(page * pageSize, (page + 1) * pageSize - 1)
+        .order(orderBy === "undefined" ? "created_at" : orderBy, {
+          ascending: orderDirection === "asc",
+        })
         .returns<VoteWithExtras[]>();
 
       if (error) {
         throw error;
       }
 
-      return data.map((vote) => VoteWithExtrasSchema.parse(vote));
+      return {
+        data: data.map((vote) => VoteWithExtrasSchema.parse(vote)),
+        total: count,
+      };
     },
   });
 }
@@ -106,6 +138,7 @@ type NameScoreRPCResponse = {
   score: number;
   upvotes: number;
   downvotes: number;
+  total: number;
 };
 
 export type NameScore = {
@@ -115,24 +148,46 @@ export type NameScore = {
   score: number;
   upvotes: number;
   downvotes: number;
+  total: number;
 };
 
-export function useNameScores(): UseQueryResult<NameScore[]> {
+export function useNameScores({
+  limit = 50,
+  offset = 0,
+  orderBy = "score",
+  orderDirection = "desc",
+}: {
+  limit?: number;
+  offset?: number;
+  orderBy?: "score" | "name" | "created_at" | "upvotes" | "downvotes";
+  orderDirection?: "asc" | "desc";
+} = {}): UseQueryResult<{
+  data: NameScore[];
+  total: number;
+}> {
   return useQuery({
-    queryKey: ["nameScores"],
+    queryKey: ["nameScores", limit, offset, orderBy, orderDirection],
     queryFn: async () => {
       const { data, error } = await supabase
-        .rpc("get_leaderboard")
+        .rpc("get_leaderboard", {
+          p_limit: limit,
+          p_offset: offset,
+          p_order_by: orderBy,
+          p_order_direction: orderDirection,
+        })
         .returns<NameScoreRPCResponse[]>();
 
       if (error) {
         throw error;
       }
 
-      return data.map((score) => ({
-        ...score,
-        created_at: new Date(score.created_at),
-      }));
+      return {
+        data: data.map((score) => ({
+          ...score,
+          created_at: new Date(score.created_at),
+        })),
+        total: data?.[0]?.total ?? 0,
+      };
     },
   });
 }

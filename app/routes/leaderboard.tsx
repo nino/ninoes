@@ -9,7 +9,13 @@ export default function Leaderboard() {
     pageSize: 10,
   });
   const [sorting, setSorting] = useState<{
-    orderBy: "score" | "name" | "created_at" | "upvotes" | "downvotes";
+    orderBy:
+      | "score"
+      | "name"
+      | "created_at"
+      | "upvotes"
+      | "downvotes"
+      | "controversial";
     orderDirection: "asc" | "desc";
   }>({
     orderBy: "score",
@@ -45,6 +51,7 @@ export default function Leaderboard() {
       defaultSortOrder: "descend",
       sortDirections: ["ascend", "descend"],
       sorter: true,
+      render: (value: number) => value.toLocaleString(),
     },
     {
       title: "Upvotes",
@@ -52,6 +59,7 @@ export default function Leaderboard() {
       key: "upvotes",
       sortDirections: ["ascend", "descend"],
       sorter: true,
+      render: (value: number) => value.toLocaleString(),
     },
     {
       title: "Downvotes",
@@ -59,6 +67,15 @@ export default function Leaderboard() {
       key: "downvotes",
       sortDirections: ["ascend", "descend"],
       sorter: true,
+      render: (value: number) => value.toLocaleString(),
+    },
+    {
+      title: "Controversial",
+      dataIndex: "controversial",
+      key: "controversial",
+      sortDirections: ["ascend", "descend"],
+      sorter: true,
+      render: (value: number) => value.toLocaleString(),
     },
   ];
 
@@ -85,7 +102,8 @@ export default function Leaderboard() {
                 | "name"
                 | "created_at"
                 | "upvotes"
-                | "downvotes",
+                | "downvotes"
+                | "controversial",
               orderDirection: sorter.order === "ascend" ? "asc" : "desc",
             });
           }

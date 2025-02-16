@@ -138,6 +138,7 @@ type NameScoreRPCResponse = {
   score: number;
   upvotes: number;
   downvotes: number;
+  controversial: number;
   total: number;
 };
 
@@ -148,6 +149,7 @@ export type NameScore = {
   score: number;
   upvotes: number;
   downvotes: number;
+  controversial: number;
   total: number;
 };
 
@@ -159,7 +161,13 @@ export function useNameScores({
 }: {
   limit?: number;
   offset?: number;
-  orderBy?: "score" | "name" | "created_at" | "upvotes" | "downvotes";
+  orderBy?:
+    | "score"
+    | "name"
+    | "created_at"
+    | "upvotes"
+    | "downvotes"
+    | "controversial";
   orderDirection?: "asc" | "desc";
 } = {}): UseQueryResult<{
   data: NameScore[];

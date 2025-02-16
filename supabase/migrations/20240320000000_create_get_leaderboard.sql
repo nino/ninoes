@@ -13,6 +13,7 @@ returns table (
   score bigint,
   upvotes bigint,
   downvotes bigint,
+  controversial bigint,
   total bigint
 )
 language plpgsql
@@ -24,7 +25,7 @@ declare
   v_order_direction text;
 begin
   -- Validate order_by parameter
-  if p_order_by not in ('score', 'name', 'created_at', 'upvotes', 'downvotes') then
+  if p_order_by not in ('score', 'name', 'created_at', 'upvotes', 'downvotes', 'controversial') then
     v_order_by := 'score';
   else
     v_order_by := p_order_by;
@@ -53,6 +54,7 @@ begin
     coalesce(vc.upvotes, 0) - coalesce(vc.downvotes, 0) as score,
     coalesce(vc.upvotes, 0) as upvotes,
     coalesce(vc.downvotes, 0) as downvotes,
+    least(coalesce(vc.upvotes, 0), coalesce(vc.downvotes, 0)) as controversial,
     count(*) over() as total
   from "Names" n
   left join vote_counts vc on n.id = vc.name_id
@@ -66,7 +68,9 @@ begin
     case when v_order_by = 'upvotes' and v_order_direction = 'desc' then coalesce(vc.upvotes, 0) end desc,
     case when v_order_by = 'upvotes' and v_order_direction = 'asc' then coalesce(vc.upvotes, 0) end asc,
     case when v_order_by = 'downvotes' and v_order_direction = 'desc' then coalesce(vc.downvotes, 0) end desc,
-    case when v_order_by = 'downvotes' and v_order_direction = 'asc' then coalesce(vc.downvotes, 0) end asc
+    case when v_order_by = 'downvotes' and v_order_direction = 'asc' then coalesce(vc.downvotes, 0) end asc,
+    case when v_order_by = 'controversial' and v_order_direction = 'desc' then least(coalesce(vc.upvotes, 0), coalesce(vc.downvotes, 0)) end desc,
+    case when v_order_by = 'controversial' and v_order_direction = 'asc' then least(coalesce(vc.upvotes, 0), coalesce(vc.downvotes, 0)) end asc
   limit p_limit
   offset p_offset;
 end;

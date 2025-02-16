@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { supabase } from "./supabaseClient";
-import { Button, Form, Input, Layout, Menu, message } from "antd";
+import { App, Button, Form, Input, Layout } from "antd";
 
 type LoginForm = {
   email: string;
@@ -10,6 +10,7 @@ type LoginForm = {
 export function Auth() {
   const [loading, setLoading] = useState(false);
   const [form] = Form.useForm<LoginForm>();
+  const { message } = App.useApp();
 
   const handleLogin = async (data: LoginForm) => {
     try {

@@ -1,4 +1,4 @@
-import { Button, Space, message } from "antd";
+import { Button, Space, App } from "antd";
 import { useRandomNames, useCreateVote } from "~/hooks/useSupabase";
 import { useSession } from "~/hooks/useSession";
 import { VOTE_TYPE } from "~/model/types";
@@ -11,7 +11,7 @@ export default function Vote() {
   const session = useSession();
   const { data: names, isLoading, refetch } = useRandomNames();
   const createVote = useCreateVote();
-
+  const { message } = App.useApp();
   if (!session) {
     return null;
   }

@@ -121,7 +121,7 @@ function AuthenticatedLayout({ children }: { children: React.ReactNode }) {
         />
       </AntdLayout.Header>
 
-      <AntdLayout.Content className="p-8">{children}</AntdLayout.Content>
+      <AntdLayout.Content className="p-4 md:p-8">{children}</AntdLayout.Content>
       <AntdLayout.Footer>
         <Button onClick={() => supabase.auth.signOut()}>Sign Out</Button>
       </AntdLayout.Footer>

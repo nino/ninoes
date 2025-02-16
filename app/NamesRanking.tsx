@@ -48,14 +48,14 @@ export function NamesRanking() {
       title: "Created At",
       dataIndex: "created_at",
       key: "created_at",
-      render: (date: Date) => date.toLocaleDateString(),
+      render: (date: Date) => date.toLocaleString(),
       sorter: (a, b) => a.created_at.getTime() - b.created_at.getTime(),
       defaultSortOrder: "descend",
     },
   ];
 
   return (
-    <div className="p-2 md:p-8 space-y-8">
+    <div className="space-y-8">
       <div>
         <h2 className="text-xl font-bold mb-4">Names</h2>
         <Table

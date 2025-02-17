@@ -87,6 +87,7 @@ export default function Leaderboard() {
         columns={columns}
         loading={isLoading}
         rowKey="id"
+        scroll={{ x: "max-content" }}
         pagination={{
           ...pagination,
           onChange: (page, pageSize) => {

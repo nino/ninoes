@@ -138,7 +138,7 @@ export default function App() {
       <ConfigProvider
         theme={{
           token: {
-            colorPrimary: "#3bf",
+            colorPrimary: "#835",
             borderRadius: 6,
           },
           algorithm: isDarkMode ? theme.darkAlgorithm : theme.defaultAlgorithm,

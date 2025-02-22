@@ -1,3 +1,3 @@
-- Teams
-- List banned names (and un-ban-button)
-- Sign-ups
+- [o] Teams
+- [ ] List banned names (and un-ban-button)
+- [ ] Sign-ups

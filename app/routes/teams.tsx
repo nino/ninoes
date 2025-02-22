@@ -27,7 +27,7 @@ export default function Teams() {
   const [pageSize, setPageSize] = useState(10);
   const [membershipPage, setMembershipPage] = useState(0);
   const [membershipPageSize, setMembershipPageSize] = useState(10);
-  const session = useSession();
+  const { session } = useSession();
   const { data: teamsData, isLoading } = useTeams({ page, pageSize });
   const { data: membershipsData, isLoading: isMembershipsLoading } =
     useTeamMemberships({ page: membershipPage, pageSize: membershipPageSize });

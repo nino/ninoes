@@ -8,7 +8,7 @@ import { VOTE_TYPE } from "~/model/types";
 // );
 
 export default function Vote() {
-  const session = useSession();
+  const { session } = useSession();
   const { data: names, isLoading, refetch } = useRandomNames();
   const createVote = useCreateVote();
   const { message } = App.useApp();
@@ -45,7 +45,7 @@ export default function Vote() {
     }
   };
 
-  const handleBan = (nameIndexes: number[]) => {
+  const handleBan = (nameIndexes: Array<number>) => {
     if (!names) return;
 
     try {

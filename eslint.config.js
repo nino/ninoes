@@ -67,6 +67,12 @@ export default [
           varsIgnorePattern: "^_",
         },
       ],
+      "@typescript-eslint/array-type": [
+        "error",
+        {
+          default: "generic",
+        },
+      ],
     },
   },
 ];

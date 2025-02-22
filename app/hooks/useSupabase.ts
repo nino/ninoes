@@ -32,7 +32,7 @@ export function useNames({
   pageSize: number;
   orderBy: string;
   orderDirection: "asc" | "desc";
-}): UseQueryResult<Name[]> {
+}): UseQueryResult<Array<Name>> {
   return useQuery({
     queryKey: ["names", page, pageSize, orderBy],
     queryFn: async () => {
@@ -62,7 +62,7 @@ export function useVotes({
   orderBy: string;
   orderDirection: "asc" | "desc";
 }): UseQueryResult<{
-  data: VoteWithExtras[];
+  data: Array<VoteWithExtras>;
   total: number;
 }> {
   return useQuery({
@@ -77,7 +77,7 @@ export function useVotes({
         .order(orderBy === "undefined" ? "created_at" : orderBy, {
           ascending: orderDirection === "asc",
         })
-        .returns<VoteWithExtras[]>();
+        .returns<Array<VoteWithExtras>>();
 
       if (error) {
         throw error;
@@ -109,7 +109,7 @@ export function useUser(userId: string): UseQueryResult<User> {
   });
 }
 
-export function useRandomNames(): UseQueryResult<Name[]> {
+export function useRandomNames(): UseQueryResult<Array<Name>> {
   return useQuery({
     queryKey: ["randomNames"],
     queryFn: async () => {
@@ -185,7 +185,7 @@ export function useNameScores({
     | "controversial";
   orderDirection?: "asc" | "desc";
 } = {}): UseQueryResult<{
-  data: NameScore[];
+  data: Array<NameScore>;
   total: number;
 }> {
   return useQuery({
@@ -198,7 +198,7 @@ export function useNameScores({
           p_order_by: orderBy,
           p_order_direction: orderDirection,
         })
-        .returns<NameScoreRPCResponse[]>();
+        .returns<Array<NameScoreRPCResponse>>();
 
       if (error) {
         throw error;
@@ -226,7 +226,7 @@ export function useTeams({
   orderBy?: string;
   orderDirection?: "asc" | "desc";
 }): UseQueryResult<{
-  data: Team[];
+  data: Array<Team>;
   total: number;
 }> {
   return useQuery({
@@ -300,10 +300,10 @@ export function useTeamMemberships({
   orderBy?: string;
   orderDirection?: "asc" | "desc";
 }): UseQueryResult<{
-  data: TeamMembershipWithTeam[];
+  data: Array<TeamMembershipWithTeam>;
   total: number;
 }> {
-  const session = useSession();
+  const { session } = useSession();
 
   return useQuery({
     queryKey: [
@@ -342,7 +342,7 @@ export function useTeamMemberships({
 
 export function useJoinTeam() {
   const queryClient = useQueryClient();
-  const session = useSession();
+  const { session } = useSession();
 
   return useMutation({
     mutationFn: async ({ teamId }: { teamId: string }) => {

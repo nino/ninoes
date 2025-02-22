@@ -88,19 +88,22 @@ const queryClient = new QueryClient({
 
 function useSession() {
   const [session, setSession] = useState<Session | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
+      setIsLoading(false);
     });
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
+      setIsLoading(false);
     });
     return () => subscription.unsubscribe();
   }, []);
-  return session;
+  return { session, isLoading };
 }
 
 function AuthenticatedLayout({ children }: { children: ReactNode }) {
@@ -137,7 +140,7 @@ function AuthenticatedLayout({ children }: { children: ReactNode }) {
 
 export default function App() {
   const isDarkMode = useSystemDarkMode();
-  const session = useSession();
+  const { session, isLoading } = useSession();
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -151,7 +154,7 @@ export default function App() {
         }}
       >
         <AntApp>
-          {session ? (
+          {isLoading ? null : session ? (
             <AuthenticatedLayout>
               <Outlet />
             </AuthenticatedLayout>

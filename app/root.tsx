@@ -16,7 +16,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useState, useEffect } from "react";
 import { supabase } from "./supabaseClient";
 import { Auth } from "./Auth";
-import { Button, Layout as AntdLayout, Menu } from "antd";
+import { Button, Layout as AntdLayout, Menu, Spin } from "antd";
 import type { Session } from "@supabase/supabase-js";
 
 if (import.meta.env.PROD) {
@@ -154,7 +154,11 @@ export default function App() {
         }}
       >
         <AntApp>
-          {isLoading ? null : session ? (
+          {isLoading ? (
+            <div className="flex m-8 justify-center">
+              <Spin />
+            </div>
+          ) : session ? (
             <AuthenticatedLayout>
               <Outlet />
             </AuthenticatedLayout>

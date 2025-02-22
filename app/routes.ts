@@ -6,4 +6,5 @@ export default [
   route("/vote", "routes/vote.tsx"),
   route("/leaderboard", "routes/leaderboard.tsx"),
   route("/teams", "routes/teams.tsx"),
+  route("/data", "routes/data.tsx"),
 ] satisfies RouteConfig;

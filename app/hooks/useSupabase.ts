@@ -2,10 +2,25 @@ import {
   useQuery,
   useMutation,
   type UseQueryResult,
+  useQueryClient,
 } from "@tanstack/react-query";
 import { supabase } from "../supabaseClient";
-import type { Name, User, VoteWithExtras, VoteType } from "~/model/types";
-import { NameSchema, UserSchema, VoteWithExtrasSchema } from "../model/types";
+import type {
+  Name,
+  User,
+  VoteWithExtras,
+  VoteType,
+  Team,
+  TeamMembershipWithTeam,
+} from "~/model/types";
+import {
+  NameSchema,
+  UserSchema,
+  VoteWithExtrasSchema,
+  TeamSchema,
+  TeamMembershipWithTeamSchema,
+} from "../model/types";
+import { useSession } from "./useSession";
 
 export function useNames({
   page,
@@ -196,6 +211,175 @@ export function useNameScores({
         })),
         total: data?.[0]?.total ?? 0,
       };
+    },
+  });
+}
+
+export function useTeams({
+  page,
+  pageSize,
+  orderBy = "created_at",
+  orderDirection = "desc",
+}: {
+  page: number;
+  pageSize: number;
+  orderBy?: string;
+  orderDirection?: "asc" | "desc";
+}): UseQueryResult<{
+  data: Team[];
+  total: number;
+}> {
+  return useQuery({
+    queryKey: ["teams", page, pageSize, orderBy, orderDirection],
+    queryFn: async () => {
+      const { data, error, count } = await supabase
+        .from("teams")
+        .select("*", { count: "exact" })
+        .range(page * pageSize, (page + 1) * pageSize - 1)
+        .order(orderBy, { ascending: orderDirection === "asc" });
+
+      if (error) {
+        throw error;
+      }
+
+      return {
+        data: data.map((team) => TeamSchema.parse(team)),
+        total: count ?? 0,
+      };
+    },
+  });
+}
+
+type CreateTeamParams = {
+  name: string;
+  creator: string;
+};
+
+export function useCreateTeam() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ name, creator }: CreateTeamParams) => {
+      const { error } = await supabase.from("teams").insert({ name, creator });
+
+      if (error) {
+        throw error;
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["teams"] });
+    },
+  });
+}
+
+export function useDeleteTeam() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (teamId: string) => {
+      const { error } = await supabase.from("teams").delete().eq("id", teamId);
+
+      if (error) {
+        throw error;
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["teams"] });
+    },
+  });
+}
+
+export function useTeamMemberships({
+  page,
+  pageSize,
+  orderBy = "created_at",
+  orderDirection = "desc",
+}: {
+  page: number;
+  pageSize: number;
+  orderBy?: string;
+  orderDirection?: "asc" | "desc";
+}): UseQueryResult<{
+  data: TeamMembershipWithTeam[];
+  total: number;
+}> {
+  const session = useSession();
+
+  return useQuery({
+    queryKey: [
+      "teamMemberships",
+      session?.user.id,
+      page,
+      pageSize,
+      orderBy,
+      orderDirection,
+    ],
+    queryFn: async () => {
+      if (!session) {
+        throw new Error("User not authenticated");
+      }
+
+      const { data, error, count } = await supabase
+        .from("TeamMemberships")
+        .select("*, team:teams(*)", { count: "exact" })
+        .eq("user_id", session.user.id)
+        .range(page * pageSize, (page + 1) * pageSize - 1)
+        .order(orderBy, { ascending: orderDirection === "asc" });
+
+      if (error) {
+        throw error;
+      }
+
+      return {
+        data: data.map((membership) =>
+          TeamMembershipWithTeamSchema.parse(membership)
+        ),
+        total: count ?? 0,
+      };
+    },
+  });
+}
+
+export function useJoinTeam() {
+  const queryClient = useQueryClient();
+  const session = useSession();
+
+  return useMutation({
+    mutationFn: async ({ teamId }: { teamId: string }) => {
+      if (!session) {
+        throw new Error("User not authenticated");
+      }
+
+      const { error } = await supabase
+        .from("TeamMemberships")
+        .insert({ team_id: teamId, user_id: session.user.id });
+
+      if (error) {
+        throw error;
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["teamMemberships"] });
+    },
+  });
+}
+
+export function useLeaveTeam() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (membershipId: string) => {
+      const { error } = await supabase
+        .from("TeamMemberships")
+        .delete()
+        .eq("id", membershipId);
+
+      if (error) {
+        throw error;
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["teamMemberships"] });
     },
   });
 }

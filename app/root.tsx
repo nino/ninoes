@@ -1,3 +1,4 @@
+import "@ant-design/v5-patch-for-react-19";
 import { App as AntApp } from "antd";
 import {
   isRouteErrorResponse,
@@ -9,7 +10,7 @@ import {
   ScrollRestoration,
 } from "react-router";
 import * as Sentry from "@sentry/react";
-import { useSyncExternalStore } from "react";
+import { useSyncExternalStore, type ReactNode } from "react";
 import { ConfigProvider, theme } from "antd";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useState, useEffect } from "react";
@@ -40,7 +41,7 @@ import "./app.css";
 
 export const links: Route.LinksFunction = () => [];
 
-export function Layout({ children }: { children: React.ReactNode }) {
+export function Layout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
       <head>
@@ -102,7 +103,7 @@ function useSession() {
   return session;
 }
 
-function AuthenticatedLayout({ children }: { children: React.ReactNode }) {
+function AuthenticatedLayout({ children }: { children: ReactNode }) {
   return (
     <AntdLayout>
       <AntdLayout.Header>
@@ -112,6 +113,11 @@ function AuthenticatedLayout({ children }: { children: React.ReactNode }) {
             { key: "2", title: "Vote", label: <Link to="/vote">Vote 🏩</Link> },
             {
               key: "3",
+              title: "Teams",
+              label: <Link to="/teams">Teams 🏃‍♂️</Link>,
+            },
+            {
+              key: "4",
               title: "Leaderboard",
               label: <Link to="/leaderboard">Leaderboard 🥇</Link>,
             },

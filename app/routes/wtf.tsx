@@ -1,8 +1,10 @@
-const Th = ({ children }: { children: React.ReactNode }) => {
+import type { ReactNode } from "react";
+
+const Th = ({ children }: { children: ReactNode }) => {
   return <th className="p-1">{children}</th>;
 };
 
-const Td = ({ children }: { children: React.ReactNode }) => {
+const Td = ({ children }: { children: ReactNode }) => {
   return <td className="p-1">{children}</td>;
 };
 

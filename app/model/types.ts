@@ -41,3 +41,25 @@ export const UserSchema = z.object({
   created_at: z.coerce.date(),
 });
 export type User = z.infer<typeof UserSchema>;
+
+export const TeamSchema = z.object({
+  id: z.string(),
+  name: z.string().min(1),
+  creator: z.string().uuid(),
+  created_at: z.coerce.date(),
+});
+export type Team = z.infer<typeof TeamSchema>;
+
+export const TeamMemberShipSchema = z.object({
+  id: z.string(),
+  team_id: z.string(),
+  user_id: z.string(),
+});
+export type TeamMemberShip = z.infer<typeof TeamMemberShipSchema>;
+
+export const TeamMembershipWithTeamSchema = TeamMemberShipSchema.extend({
+  team: TeamSchema,
+});
+export type TeamMembershipWithTeam = z.infer<
+  typeof TeamMembershipWithTeamSchema
+>;

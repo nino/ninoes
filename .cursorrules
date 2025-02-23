@@ -1,0 +1,1 @@
+For some reason, Claude is unable to generate curly quotes and apostrophes. Therefore, when you need to generate one in HTML/JSX, output “ as `&rdquo;`, ” as `&ldquo;`, ‘ as `&lsquo;`, and ’ as `&rsquo;`.

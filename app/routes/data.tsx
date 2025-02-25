@@ -2,6 +2,8 @@ import { Typography } from "antd";
 import { useMemo } from "react";
 import * as d3 from "d3";
 import { useQuery } from "@tanstack/react-query";
+import React from "react";
+import type { GeoSphere, GeoPermissibleObjects } from "d3-geo";
 
 type Troop = {
   LATP: number;
@@ -81,6 +83,47 @@ function parseCsv(csv: string, schema: Record<string, string>) {
   });
 }
 
+const dimensions: Dimensions = {
+  margin: { top: 20, right: 20, bottom: 100, left: 60 },
+  width: 800 - 80,
+  height: 400 - 120,
+  tempHeight: 100,
+  tempMargin: { top: 40, bottom: 20 },
+};
+
+// Configure projection for the specific region we're interested in
+const projection = d3
+  .geoOrthographic()
+  .scale(4500)
+  .rotate([-31, -55.5, 0])
+  .translate([dimensions.width / 2, dimensions.height / 2])
+  .clipAngle(90);
+
+// Create graticules with specific lines for our region of interest
+const graticule = d3
+  .geoGraticule()
+  .stepMinor([0.5, 0.5])
+  .stepMajor([1, 1])
+  .extentMajor([
+    [24, 54],
+    [38, 56],
+  ]);
+
+const pathGenerator = d3.geoPath(projection);
+
+const strokeScale = d3.scaleLinear().range([0, 40]);
+
+const tempXScale = d3
+  .scaleLinear()
+  .domain([24, 37.6])
+  .range([0, dimensions.width]);
+
+const tempYScale = d3
+  .scaleLinear()
+  .domain([-30, 0])
+  .range([dimensions.tempHeight, 0])
+  .nice();
+
 function TroopPath({
   points,
   strokeWidth,
@@ -88,8 +131,14 @@ function TroopPath({
 }: Omit<LineSegment, "division">) {
   const lineGenerator = d3
     .line<Troop>()
-    .x((d) => xScale(d.LONP))
-    .y((d) => yScale(d.LATP));
+    .x((d) => {
+      const p = projection([d.LONP, d.LATP]);
+      return p ? p[0] : 0;
+    })
+    .y((d) => {
+      const p = projection([d.LONP, d.LATP]);
+      return p ? p[1] : 0;
+    });
   const d = lineGenerator(points) || "";
 
   return (
@@ -104,11 +153,12 @@ function TroopPath({
 }
 
 function TroopPoint({ troop }: { troop: Troop }) {
+  const [x, y] = projection([troop.LONP, troop.LATP]) || [0, 0];
   return (
     <circle
-      cx={xScale(troop.LATP)}
-      cy={yScale(troop.LONP)}
-      r={5}
+      cx={x}
+      cy={y}
+      r={1}
       fill={troop.DIR === "A" ? "#D4B996" : "#000000"}
     />
   );
@@ -148,84 +198,117 @@ function XAxis({
   scale: d3.ScaleLinear<number, number>;
   transform?: string;
 }) {
-  const ticks = scale.ticks();
-  return (
-    <g transform={transform}>
-      <line x1={0} x2={dimensions.width} y1={0} y2={0} stroke="black" />
-      {ticks.map((tick) => (
-        <g key={tick} transform={`translate(${scale(tick)},0)`}>
-          <line y2={6} stroke="black" />
-          <text
-            style={{
-              fontSize: "10px",
-              textAnchor: "middle",
-              transform: "translateY(20px)",
-            }}
-          >
-            {tick}
-          </text>
-        </g>
-      ))}
-    </g>
-  );
+  const ref = React.useRef<SVGGElement>(null);
+
+  React.useEffect(() => {
+    if (ref.current) {
+      // Create geographic ticks
+      const ticks = d3.range(24, 38, 2);
+      const axis = d3
+        .axisBottom(scale)
+        .tickValues(ticks)
+        .tickFormat((d) => `${d}°E`);
+      d3.select(ref.current).call(axis);
+    }
+  }, [scale]);
+
+  return <g ref={ref} transform={transform} />;
 }
 
 function YAxis({
   scale,
   transform,
   tickFormat,
-  height,
   tickValues,
 }: {
   scale: d3.ScaleLinear<number, number>;
   transform?: string;
-  tickFormat?: (d: number) => string;
-  height: number;
+  tickFormat?: (domainValue: d3.NumberValue, index: number) => string;
   tickValues?: Array<number>;
 }) {
-  const ticks = tickValues ?? scale.ticks(5);
-  return (
-    <g transform={transform}>
-      <line y1={0} y2={height} x1={0} x2={0} stroke="black" />
-      {ticks.map((tick) => (
-        <g key={tick} transform={`translate(0,${scale(tick)})`}>
-          <line x2={-6} stroke="black" />
-          <text
-            style={{
-              fontSize: "10px",
-              textAnchor: "end",
-              transform: "translateX(-10px)",
-              alignmentBaseline: "middle",
-            }}
-          >
-            {tickFormat ? tickFormat(tick) : tick}
-          </text>
-        </g>
-      ))}
-    </g>
-  );
+  const ref = React.useRef<SVGGElement>(null);
+
+  React.useEffect(() => {
+    if (ref.current) {
+      // Create geographic ticks
+      const ticks = d3.range(50, 60, 2);
+      const axis = d3
+        .axisLeft(scale)
+        .tickValues(tickValues || ticks)
+        .tickFormat(tickFormat || ((d) => `${d}°N`));
+      d3.select(ref.current).call(axis);
+    }
+  }, [scale, tickFormat, tickValues]);
+
+  return <g ref={ref} transform={transform} />;
 }
 
-const dimensions: Dimensions = {
-  margin: { top: 20, right: 20, bottom: 100, left: 60 },
-  width: 800 - 80,
-  height: 400 - 120,
-  tempHeight: 100,
-  tempMargin: { top: 40, bottom: 20 },
-};
+function GeoBackground() {
+  const sphere: GeoSphere = { type: "Sphere" };
+  const graticulePath = graticule() as GeoPermissibleObjects;
+  const graticuleMajor = graticule.lines() as Array<GeoPermissibleObjects>;
+  const graticuleOutline = graticule.outline() as GeoPermissibleObjects;
 
-const xScale = d3.scaleLinear().range([0, dimensions.width]);
-const yScale = d3.scaleLinear().range([dimensions.height, 0]).nice();
-const strokeScale = d3.scaleLinear().range([0, 50]);
-const tempXScale = d3
-  .scaleLinear()
-  .domain([24, 37.6])
-  .range([0, dimensions.width]);
-const tempYScale = d3
-  .scaleLinear()
-  .domain([-30, 0])
-  .range([dimensions.tempHeight, 0])
-  .nice();
+  return (
+    <>
+      <path
+        d={pathGenerator(sphere) || ""}
+        fill="#f0f0f0"
+        stroke="#000"
+        strokeWidth={0.5}
+      />
+      <path
+        d={pathGenerator(graticulePath) || ""}
+        fill="none"
+        stroke="#ddd"
+        strokeWidth={0.2}
+      />
+      {graticuleMajor.map((line, i) => (
+        <path
+          key={i}
+          d={pathGenerator(line) || ""}
+          fill="none"
+          stroke="#999"
+          strokeWidth={0.5}
+        />
+      ))}
+      <path
+        d={pathGenerator(graticuleOutline) || ""}
+        fill="none"
+        stroke="#ddd"
+        strokeWidth={1}
+      />
+      {/* Add latitude labels */}
+      {[50, 52, 54, 56, 58, 60].map((lat) => {
+        const [x, y] = projection([24, lat]) || [0, 0];
+        return (
+          <text
+            key={lat}
+            x={x - 5}
+            y={y}
+            style={{ fontSize: "10px", textAnchor: "end" }}
+          >
+            {lat}°N
+          </text>
+        );
+      })}
+      {/* Add longitude labels */}
+      {[24, 26, 28, 30, 32, 34, 36, 38].map((lon) => {
+        const [x, y] = projection([lon, 50]) || [0, 0];
+        return (
+          <text
+            key={lon}
+            x={x}
+            y={y + 15}
+            style={{ fontSize: "10px", textAnchor: "middle" }}
+          >
+            {lon}°E
+          </text>
+        );
+      })}
+    </>
+  );
+}
 
 export default function Data() {
   const troopsQuery = useQuery({
@@ -242,9 +325,7 @@ export default function Data() {
 
   const { lineSegments, points } = useMemo(() => {
     const troops = troopsQuery.data ?? [];
-    // Update scales based on data
-    xScale.domain(d3.extent(troops, (d) => d.LONP) as [number, number]);
-    yScale.domain(d3.extent(troops, (d) => d.LATP) as [number, number]);
+    // Update stroke scale based on data
     strokeScale.domain([0, d3.max(troops, (d) => d.SURV) || 340000]);
 
     const divisionGroups = d3.group(troops, (d) => d.DIV);
@@ -292,21 +373,13 @@ export default function Data() {
           transform={`translate(${dimensions.margin.left},${dimensions.margin.top})`}
         >
           {/* Main plot */}
+          <GeoBackground />
           {lineSegments.map((segment, i) => (
             <TroopPath key={i} {...segment} />
           ))}
           {points.map((point, i) => (
             <TroopPoint key={i} troop={point} />
           ))}
-          <XAxis
-            scale={xScale}
-            transform={`translate(0,${dimensions.height})`}
-          />
-          <YAxis
-            scale={yScale.nice()}
-            height={dimensions.height}
-            tickValues={yScale.nice().ticks(10)}
-          />
 
           {/* Temperature subplot */}
           <g
@@ -324,9 +397,8 @@ export default function Data() {
             />
             <YAxis
               scale={tempYScale}
-              height={dimensions.tempHeight}
-              tickFormat={(d) => `${d}°C`}
-              tickValues={tempYScale.ticks(5)}
+              tickFormat={(d) => `${Number(d)}°C`}
+              tickValues={[-30, -25, -20, -15, -10, -5, 0]}
             />
             <text
               transform="rotate(-90)"

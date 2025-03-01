@@ -3,6 +3,7 @@ import {
   useMutation,
   type UseQueryResult,
   useQueryClient,
+  type UseMutationResult,
 } from "@tanstack/react-query";
 import { supabase } from "../supabaseClient";
 import type {
@@ -21,6 +22,7 @@ import {
   TeamMembershipWithTeamSchema,
 } from "../model/types";
 import { useSession } from "./useSession";
+import { z } from "zod";
 
 export function useNames({
   page,
@@ -109,14 +111,28 @@ export function useUser(userId: string): UseQueryResult<User> {
   });
 }
 
+const TwoNamesSchema = z.union([
+  z.object({
+    data: z.array(NameSchema),
+    error: z.undefined(),
+  }),
+  z.object({ data: z.undefined(), error: z.unknown() }),
+]);
+
 export function useRandomNames(): UseQueryResult<Array<Name>> {
   return useQuery({
     queryKey: ["randomNames"],
     queryFn: async () => {
-      const { data, error } = await supabase.rpc("get_two_names");
+      const { data, error } = TwoNamesSchema.parse(
+        await supabase.rpc("get_two_names")
+      );
 
-      if (error) {
+      if (error != null) {
         throw error;
+      }
+
+      if (data == null) {
+        throw new Error("I don't think this will ever happen.");
       }
 
       return data.map((name: unknown) => NameSchema.parse(name));
@@ -130,7 +146,11 @@ type CreateVoteParams = {
   voteType: VoteType;
 };
 
-export function useCreateVote() {
+export function useCreateVote(): UseMutationResult<
+  void,
+  Error,
+  CreateVoteParams
+> {
   return useMutation({
     mutationFn: async ({ nameId, userId, voteType }: CreateVoteParams) => {
       const { error } = await supabase.from("Votes").insert({
@@ -146,27 +166,30 @@ export function useCreateVote() {
   });
 }
 
-type NameScoreRPCResponse = {
-  id: string;
-  name: string;
-  created_at: string;
-  score: number;
-  upvotes: number;
-  downvotes: number;
-  controversial: number;
-  total: number;
-};
+const NameScoreRPCResponseSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  created_at: z.string(),
+  score: z.number(),
+  upvotes: z.number(),
+  downvotes: z.number(),
+  controversial: z.number(),
+  total: z.number(),
+});
 
-export type NameScore = {
-  id: string;
-  name: string;
-  created_at: Date;
-  score: number;
-  upvotes: number;
-  downvotes: number;
-  controversial: number;
-  total: number;
-};
+const _NameScoreSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  created_at: z.date(),
+  score: z.number(),
+  upvotes: z.number(),
+  downvotes: z.number(),
+  controversial: z.number(),
+  total: z.number(),
+});
+
+export type NameScoreRPCResponse = z.infer<typeof NameScoreRPCResponseSchema>;
+export type NameScore = z.infer<typeof _NameScoreSchema>;
 
 export function useNameScores({
   limit = 50,
@@ -191,25 +214,26 @@ export function useNameScores({
   return useQuery({
     queryKey: ["nameScores", limit, offset, orderBy, orderDirection],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .rpc("get_leaderboard", {
-          p_limit: limit,
-          p_offset: offset,
-          p_order_by: orderBy,
-          p_order_direction: orderDirection,
-        })
-        .returns<Array<NameScoreRPCResponse>>();
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      const { data, error } = await supabase.rpc("get_leaderboard", {
+        p_limit: limit,
+        p_offset: offset,
+        p_order_by: orderBy,
+        p_order_direction: orderDirection,
+      });
+
+      const result = z.array(NameScoreRPCResponseSchema).parse(data);
 
       if (error) {
         throw error;
       }
 
       return {
-        data: data.map((score) => ({
+        data: result.map((score) => ({
           ...score,
           created_at: new Date(score.created_at),
         })),
-        total: data?.[0]?.total ?? 0,
+        total: result[0]?.total ?? 0,
       };
     },
   });
@@ -255,7 +279,11 @@ type CreateTeamParams = {
   creator: string;
 };
 
-export function useCreateTeam() {
+export function useCreateTeam(): UseMutationResult<
+  void,
+  Error,
+  CreateTeamParams
+> {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -266,13 +294,13 @@ export function useCreateTeam() {
         throw error;
       }
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["teams"] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["teams"] });
     },
   });
 }
 
-export function useDeleteTeam() {
+export function useDeleteTeam(): UseMutationResult<void, Error, string> {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -283,8 +311,8 @@ export function useDeleteTeam() {
         throw error;
       }
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["teams"] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["teams"] });
     },
   });
 }
@@ -340,7 +368,11 @@ export function useTeamMemberships({
   });
 }
 
-export function useJoinTeam() {
+export function useJoinTeam(): UseMutationResult<
+  void,
+  Error,
+  { teamId: string }
+> {
   const queryClient = useQueryClient();
   const { session } = useSession();
 
@@ -358,13 +390,13 @@ export function useJoinTeam() {
         throw error;
       }
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["teamMemberships"] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["teamMemberships"] });
     },
   });
 }
 
-export function useLeaveTeam() {
+export function useLeaveTeam(): UseMutationResult<void, Error, string> {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -378,8 +410,8 @@ export function useLeaveTeam() {
         throw error;
       }
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["teamMemberships"] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["teamMemberships"] });
     },
   });
 }

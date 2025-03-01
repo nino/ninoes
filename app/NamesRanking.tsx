@@ -1,7 +1,7 @@
 import { Table, type TableProps } from "antd";
 import { useNames, useVotes } from "./hooks/useSupabase";
 import type { Name, VoteWithExtras } from "./model/types";
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 
 type SortState = {
   orderBy: string;
@@ -13,7 +13,7 @@ type PaginationState = {
   pageSize: number;
 };
 
-export function NamesRanking() {
+export function NamesRanking(): ReactNode {
   const [namesPagination, setNamesPagination] = useState<PaginationState>({
     page: 0,
     pageSize: 10,

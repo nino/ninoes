@@ -1,21 +1,36 @@
 import { useState, useEffect } from "react";
-import { supabase } from "../supabaseClient";
-import type { Session } from "@supabase/supabase-js";
+import { createBrowserClient } from "@supabase/ssr";
+import type { Session, SupabaseClient } from "@supabase/supabase-js";
 
 export type UseSessionReturn = {
   session: Session | null;
   isLoading: boolean;
+  supabase: SupabaseClient;
 };
 
 export function useSession(): UseSessionReturn {
   const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [supabase] = useState(() =>
+    createBrowserClient(
+      import.meta.env.VITE_SUPABASE_URL,
+      import.meta.env.VITE_SUPABASE_ANON_KEY
+    )
+  );
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setIsLoading(false);
-    });
+    const getSession = async (): Promise<void> => {
+      try {
+        const { data } = await supabase.auth.getSession();
+        setSession(data.session);
+      } catch (error) {
+        console.error("Error getting session:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    void getSession();
 
     const {
       data: { subscription },
@@ -25,7 +40,7 @@ export function useSession(): UseSessionReturn {
     });
 
     return () => subscription.unsubscribe();
-  }, []);
+  }, [supabase]);
 
-  return { session, isLoading };
+  return { session, isLoading, supabase };
 }

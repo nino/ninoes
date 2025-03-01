@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { supabase } from "./supabaseClient";
 import { App, Button, Form, Input, Layout } from "antd";
 
@@ -7,12 +7,12 @@ type LoginForm = {
   password: string;
 };
 
-export function Auth() {
+export function Auth(): ReactNode {
   const [loading, setLoading] = useState(false);
   const [form] = Form.useForm<LoginForm>();
   const { message } = App.useApp();
 
-  const handleLogin = async (data: LoginForm) => {
+  const handleLogin = async (data: LoginForm): Promise<void> => {
     try {
       setLoading(true);
       const { error } = await supabase.auth.signInWithPassword({

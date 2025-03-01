@@ -8,4 +8,5 @@ export default [
   route("/teams", "routes/teams.tsx"),
   route("/data", "routes/data.tsx"),
   route("/login", "routes/login.tsx"),
+  route("/logout", "routes/logout.tsx"),
 ] satisfies RouteConfig;

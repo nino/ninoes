@@ -8,13 +8,18 @@ import {
 import { z } from "zod";
 import { Form, Input, Button, Alert, Card } from "antd";
 import { UserOutlined, LockOutlined } from "@ant-design/icons";
-
+import type { AuthError } from "@supabase/supabase-js";
+import type { ReactNode } from "react";
 const LoginSchema = z.object({
   email: z.string().email(),
   password: z.string().min(8),
 });
 
-export async function action({ request }: ActionFunctionArgs) {
+export async function action({
+  request,
+}: ActionFunctionArgs): Promise<
+  Response | { error: string } | { error: AuthError }
+> {
   const formData = await request.formData();
   const data = Object.fromEntries(formData);
   const parsedData = LoginSchema.safeParse(data);
@@ -40,22 +45,23 @@ export async function action({ request }: ActionFunctionArgs) {
   });
 }
 
-export default function LoginPage() {
+export default function LoginPage(): ReactNode {
   const actionData = useActionData<typeof action>();
   const submit = useSubmit();
 
-  const onFinish = (values: { email: string; password: string }) => {
+  const onFinish = (values: { email: string; password: string }): void => {
     const formData = new FormData();
     formData.append("email", values.email);
     formData.append("password", values.password);
-    submit(formData, { method: "post" });
+    void submit(formData, { method: "post" });
   };
 
-  const errorMessage = actionData?.error
-    ? typeof actionData.error === "string"
-      ? actionData.error
-      : actionData.error.message || "Login failed. Please try again."
-    : null;
+  const errorMessage =
+    actionData?.error != null
+      ? typeof actionData.error === "string"
+        ? actionData.error
+        : actionData.error.message || "Login failed. Please try again."
+      : null;
 
   return (
     <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
@@ -67,7 +73,7 @@ export default function LoginPage() {
 
       <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
         <Card>
-          {errorMessage && (
+          {errorMessage != null && (
             <Alert
               message="Error"
               description={errorMessage}

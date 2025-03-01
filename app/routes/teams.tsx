@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { Typography, Table, Form, Input, Button, App, Popconfirm } from "antd";
 import { CopyOutlined } from "@ant-design/icons";
 import type { ColumnsType } from "antd/es/table";
@@ -10,8 +10,11 @@ import {
   useJoinTeam,
   useLeaveTeam,
 } from "~/hooks/useSupabase";
-import { useSession } from "~/hooks/useSession";
 import type { Team, TeamMembershipWithTeam } from "~/model/types";
+import { useLoaderData } from "react-router";
+import type { LoaderFunctionArgs } from "react-router";
+import type { User } from "@supabase/supabase-js";
+import { requireUser } from "~/server/guards.server";
 
 type CreateTeamFormData = {
   name: string;
@@ -21,13 +24,20 @@ type JoinTeamFormData = {
   teamId: string;
 };
 
-export default function Teams() {
+export const loader = async ({
+  request,
+}: LoaderFunctionArgs): Promise<{ user: User }> => {
+  const { user } = await requireUser(request);
+  return { user };
+};
+
+export default function Teams(): ReactNode {
+  const { user } = useLoaderData<typeof loader>();
   const { message } = App.useApp();
   const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useState(10);
   const [membershipPage, setMembershipPage] = useState(0);
   const [membershipPageSize, setMembershipPageSize] = useState(10);
-  const { session } = useSession();
   const { data: teamsData, isLoading } = useTeams({ page, pageSize });
   const { data: membershipsData, isLoading: isMembershipsLoading } =
     useTeamMemberships({ page: membershipPage, pageSize: membershipPageSize });
@@ -132,16 +142,13 @@ export default function Teams() {
     },
   ];
 
-  const handleCreateTeam = async (values: CreateTeamFormData) => {
-    if (!session?.user.id) {
-      message.error("You must be logged in to create a team");
-      return;
-    }
-
+  const handleCreateTeam = async (
+    values: CreateTeamFormData
+  ): Promise<void> => {
     try {
       await createTeam.mutateAsync({
         name: values.name,
-        creator: session.user.id,
+        creator: user.id,
       });
       message.success("Team created successfully");
       form.resetFields();
@@ -151,12 +158,7 @@ export default function Teams() {
     }
   };
 
-  const handleJoinTeam = async (values: JoinTeamFormData) => {
-    if (!session?.user.id) {
-      message.error("You must be logged in to join a team");
-      return;
-    }
-
+  const handleJoinTeam = async (values: JoinTeamFormData): Promise<void> => {
     try {
       await joinTeam.mutateAsync({ teamId: values.teamId });
       message.success("Joined team successfully");

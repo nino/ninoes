@@ -1,14 +1,14 @@
 import type { ReactNode } from "react";
 
-const Th = ({ children }: { children: ReactNode }) => {
+const Th = ({ children }: { children: ReactNode }): ReactNode => {
   return <th className="p-1">{children}</th>;
 };
 
-const Td = ({ children }: { children: ReactNode }) => {
+const Td = ({ children }: { children: ReactNode }): ReactNode => {
   return <td className="p-1">{children}</td>;
 };
 
-export default function Ugh() {
+export default function Ugh(): ReactNode {
   return (
     <div className="flex">
       <div className="bg-[grey] w-[200px] flex-grow-0 flex-shrink-0 border h-screen"></div>

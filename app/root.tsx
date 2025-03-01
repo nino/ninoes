@@ -13,11 +13,7 @@ import * as Sentry from "@sentry/react";
 import { useSyncExternalStore, type ReactNode } from "react";
 import { ConfigProvider, theme } from "antd";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { useState, useEffect } from "react";
-import { supabase } from "./supabaseClient";
-import { Auth } from "./Auth";
-import { Button, Layout as AntdLayout, Menu, Spin } from "antd";
-import type { Session } from "@supabase/supabase-js";
+import { Button, Layout as AntdLayout, Menu } from "antd";
 
 if (import.meta.env.PROD) {
   Sentry.init({
@@ -38,10 +34,11 @@ if (import.meta.env.PROD) {
 
 import type { Route } from "./+types/root";
 import "./app.css";
+import { useSession } from "./hooks/useSession";
 
 export const links: Route.LinksFunction = () => [];
 
-export function Layout({ children }: { children: ReactNode }) {
+export function Layout({ children }: { children: ReactNode }): ReactNode {
   return (
     <html lang="en">
       <head>
@@ -59,7 +56,7 @@ export function Layout({ children }: { children: ReactNode }) {
   );
 }
 
-function useSystemDarkMode() {
+function useSystemDarkMode(): boolean {
   const mediaQuery = "(prefers-color-scheme: dark)";
 
   const subscribe = (callback: () => void) => {
@@ -68,11 +65,11 @@ function useSystemDarkMode() {
     return () => matchMedia.removeEventListener("change", callback);
   };
 
-  const getSnapshot = () => {
+  const getSnapshot = (): boolean => {
     return window.matchMedia(mediaQuery).matches;
   };
 
-  const getServerSnapshot = () => false;
+  const getServerSnapshot = (): boolean => false;
 
   return useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 }
@@ -86,27 +83,8 @@ const queryClient = new QueryClient({
   },
 });
 
-function useSession() {
-  const [session, setSession] = useState<Session | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setIsLoading(false);
-    });
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-      setIsLoading(false);
-    });
-    return () => subscription.unsubscribe();
-  }, []);
-  return { session, isLoading };
-}
-
-function AuthenticatedLayout({ children }: { children: ReactNode }) {
+function AuthenticatedLayout({ children }: { children: ReactNode }): ReactNode {
+  const { session } = useSession();
   return (
     <AntdLayout>
       <AntdLayout.Header>
@@ -132,15 +110,18 @@ function AuthenticatedLayout({ children }: { children: ReactNode }) {
 
       <AntdLayout.Content className="p-4 md:p-8">{children}</AntdLayout.Content>
       <AntdLayout.Footer>
-        <Button onClick={() => supabase.auth.signOut()}>Sign Out</Button>
+        {session && (
+          <form action="/logout" method="post">
+            <Button htmlType="submit">Sign Out</Button>
+          </form>
+        )}
       </AntdLayout.Footer>
     </AntdLayout>
   );
 }
 
-export default function App() {
+export default function App(): ReactNode {
   const isDarkMode = useSystemDarkMode();
-  const { session, isLoading } = useSession();
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -154,7 +135,7 @@ export default function App() {
         }}
       >
         <AntApp>
-          {isLoading ? (
+          {/* {isLoading ? (
             <div className="flex m-8 justify-center">
               <Spin />
             </div>
@@ -164,14 +145,17 @@ export default function App() {
             </AuthenticatedLayout>
           ) : (
             <Auth />
-          )}
+          )} */}
+          <AuthenticatedLayout>
+            <Outlet />
+          </AuthenticatedLayout>
         </AntApp>
       </ConfigProvider>
     </QueryClientProvider>
   );
 }
 
-export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
+export function ErrorBoundary({ error }: Route.ErrorBoundaryProps): ReactNode {
   let message = "Oops!";
   let details = "An unexpected error occurred.";
   let stack: string | undefined;
@@ -182,7 +166,7 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
       error.status === 404
         ? "The requested page could not be found."
         : error.statusText || details;
-  } else if (import.meta.env.DEV && error && error instanceof Error) {
+  } else if (import.meta.env.DEV && error != null && error instanceof Error) {
     details = error.message;
     stack = error.stack;
   }
@@ -191,7 +175,7 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
     <main className="pt-16 p-4 container mx-auto">
       <h1>{message}</h1>
       <p>{details}</p>
-      {stack && (
+      {stack != null && (
         <pre className="w-full p-4 overflow-x-auto">
           <code>{stack}</code>
         </pre>

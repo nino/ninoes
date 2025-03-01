@@ -1,64 +1,65 @@
-import { Button, Space, App } from "antd";
+import { Button, Space, App, Spin } from "antd";
 import { useRandomNames, useCreateVote } from "~/hooks/useSupabase";
-import { useSession } from "~/hooks/useSession";
 import { VOTE_TYPE } from "~/model/types";
+import { requireUser } from "~/server/guards.server";
+import type { LoaderFunctionArgs } from "react-router";
+import { useLoaderData } from "react-router";
+import type { ReactNode } from "react";
+import type { User } from "@supabase/supabase-js";
 
-// const laserSound = new Audio(
-//   "https://f001.backblazeb2.com/file/NinoPublic/Laser_01.mp3"
-// );
+export const loader = async ({
+  request,
+}: LoaderFunctionArgs): Promise<{ user: User }> => {
+  const { user } = await requireUser(request);
+  return { user };
+};
 
-export default function Vote() {
-  const { session } = useSession();
+export default function Vote(): ReactNode {
+  const { user } = useLoaderData<typeof loader>();
   const { data: names, isLoading, refetch } = useRandomNames();
   const createVote = useCreateVote();
   const { message } = App.useApp();
-  if (!session) {
-    return null;
-  }
 
   if (isLoading || !names) {
-    return <div>Loading names…</div>;
+    return <Spin />;
   }
 
-  const handleVote = async (selectedNameIndex: number) => {
-    if (!names || names.length !== 2) return;
+  const handleVote = async (selectedNameIndex: number): Promise<void> => {
+    if (names.length !== 2) return;
 
     try {
-      // laserSound.play().catch(console.error);
       createVote.mutate({
         nameId: names[selectedNameIndex].id,
-        userId: session.user.id,
+        userId: user.id,
         voteType: VOTE_TYPE.UP,
       });
 
       createVote.mutate({
         nameId: names[1 - selectedNameIndex].id,
-        userId: session.user.id,
+        userId: user.id,
         voteType: VOTE_TYPE.DOWN,
       });
 
       message.success("Votes recorded successfully!");
-      refetch();
+      void refetch();
     } catch (error) {
       message.error("Failed to record votes");
       console.error(error);
     }
   };
 
-  const handleBan = (nameIndexes: Array<number>) => {
-    if (!names) return;
-
+  const handleBan = (nameIndexes: Array<number>): void => {
     try {
       nameIndexes.forEach((index) => {
         createVote.mutate({
           nameId: names[index].id,
-          userId: session.user.id,
+          userId: user.id,
           voteType: VOTE_TYPE.BAN,
         });
       });
 
       message.success("Ban votes recorded successfully!");
-      refetch();
+      void refetch();
     } catch (error) {
       message.error("Failed to record ban votes");
       console.error(error);

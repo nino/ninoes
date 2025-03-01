@@ -1,5 +1,5 @@
 import { Typography } from "antd";
-import { useMemo } from "react";
+import { useMemo, type ReactNode } from "react";
 import * as d3 from "d3";
 import { useQuery } from "@tanstack/react-query";
 import React from "react";
@@ -60,14 +60,17 @@ async function fetchTemperatures(): Promise<Array<Temperature>> {
   }) as unknown as Array<Temperature>;
 }
 
-function parseValue(value: string, type: string) {
+function parseValue(value: string, type: string): string | number {
   if (type === "number") {
     return Number(value);
   }
   return value;
 }
 
-function parseCsv(csv: string, schema: Record<string, string>) {
+function parseCsv(
+  csv: string,
+  schema: Record<string, string>
+): Array<Record<string, unknown>> {
   const lines = csv.split(/[\r\n]+/);
   const headers = lines[0].split(",");
 
@@ -128,7 +131,7 @@ function TroopPath({
   points,
   strokeWidth,
   color,
-}: Omit<LineSegment, "division">) {
+}: Omit<LineSegment, "division">): ReactNode {
   const lineGenerator = d3
     .line<Troop>()
     .x((d) => {
@@ -139,7 +142,7 @@ function TroopPath({
       const p = projection([d.LONP, d.LATP]);
       return p ? p[1] : 0;
     });
-  const d = lineGenerator(points) || "";
+  const d = lineGenerator(points) ?? "";
 
   return (
     <path
@@ -152,8 +155,8 @@ function TroopPath({
   );
 }
 
-function TroopPoint({ troop }: { troop: Troop }) {
-  const [x, y] = projection([troop.LONP, troop.LATP]) || [0, 0];
+function TroopPoint({ troop }: { troop: Troop }): ReactNode {
+  const [x, y] = projection([troop.LONP, troop.LATP]) ?? [0, 0];
   return (
     <circle
       cx={x}
@@ -168,19 +171,23 @@ function TemperatureLine({
   temperatures,
 }: {
   temperatures: Array<Temperature>;
-}) {
+}): ReactNode {
   const d = useMemo(() => {
     const tempLine = d3
       .line<Temperature>()
       .x((d) => tempXScale(d.LONT))
       .y((d) => tempYScale(d.TEMP));
-    return tempLine(temperatures) || "";
+    return tempLine(temperatures) ?? "";
   }, [temperatures]);
 
   return <path d={d} fill="none" stroke="black" strokeWidth={1.5} />;
 }
 
-function TemperaturePoint({ temperature }: { temperature: Temperature }) {
+function TemperaturePoint({
+  temperature,
+}: {
+  temperature: Temperature;
+}): ReactNode {
   return (
     <circle
       cx={tempXScale(temperature.LONT)}
@@ -197,7 +204,7 @@ function XAxis({
 }: {
   scale: d3.ScaleLinear<number, number>;
   transform?: string;
-}) {
+}): ReactNode {
   const ref = React.useRef<SVGGElement>(null);
 
   React.useEffect(() => {
@@ -225,7 +232,7 @@ function YAxis({
   transform?: string;
   tickFormat?: (domainValue: d3.NumberValue, index: number) => string;
   tickValues?: Array<number>;
-}) {
+}): ReactNode {
   const ref = React.useRef<SVGGElement>(null);
 
   React.useEffect(() => {
@@ -234,8 +241,8 @@ function YAxis({
       const ticks = d3.range(50, 60, 2);
       const axis = d3
         .axisLeft(scale)
-        .tickValues(tickValues || ticks)
-        .tickFormat(tickFormat || ((d) => `${d}°N`));
+        .tickValues(tickValues ?? ticks)
+        .tickFormat(tickFormat ?? ((d) => `${d}°N`));
       d3.select(ref.current).call(axis);
     }
   }, [scale, tickFormat, tickValues]);
@@ -243,7 +250,7 @@ function YAxis({
   return <g ref={ref} transform={transform} />;
 }
 
-function GeoBackground() {
+function GeoBackground(): ReactNode {
   const sphere: GeoSphere = { type: "Sphere" };
   const graticulePath = graticule() as GeoPermissibleObjects;
   const graticuleMajor = graticule.lines() as Array<GeoPermissibleObjects>;
@@ -252,13 +259,13 @@ function GeoBackground() {
   return (
     <>
       <path
-        d={pathGenerator(sphere) || ""}
+        d={pathGenerator(sphere) ?? ""}
         fill="#f0f0f0"
         stroke="#000"
         strokeWidth={0.5}
       />
       <path
-        d={pathGenerator(graticulePath) || ""}
+        d={pathGenerator(graticulePath) ?? ""}
         fill="none"
         stroke="#ddd"
         strokeWidth={0.2}
@@ -266,21 +273,21 @@ function GeoBackground() {
       {graticuleMajor.map((line, i) => (
         <path
           key={i}
-          d={pathGenerator(line) || ""}
+          d={pathGenerator(line) ?? ""}
           fill="none"
           stroke="#999"
           strokeWidth={0.5}
         />
       ))}
       <path
-        d={pathGenerator(graticuleOutline) || ""}
+        d={pathGenerator(graticuleOutline) ?? ""}
         fill="none"
         stroke="#ddd"
         strokeWidth={1}
       />
       {/* Add latitude labels */}
       {[50, 52, 54, 56, 58, 60].map((lat) => {
-        const [x, y] = projection([24, lat]) || [0, 0];
+        const [x, y] = projection([24, lat]) ?? [0, 0];
         return (
           <text
             key={lat}
@@ -294,7 +301,7 @@ function GeoBackground() {
       })}
       {/* Add longitude labels */}
       {[24, 26, 28, 30, 32, 34, 36, 38].map((lon) => {
-        const [x, y] = projection([lon, 50]) || [0, 0];
+        const [x, y] = projection([lon, 50]) ?? [0, 0];
         return (
           <text
             key={lon}
@@ -310,7 +317,7 @@ function GeoBackground() {
   );
 }
 
-export default function Data() {
+export default function Data(): ReactNode {
   const troopsQuery = useQuery({
     queryKey: ["troops"],
     queryFn: fetchTroops,
@@ -326,7 +333,7 @@ export default function Data() {
   const { lineSegments, points } = useMemo(() => {
     const troops = troopsQuery.data ?? [];
     // Update stroke scale based on data
-    strokeScale.domain([0, d3.max(troops, (d) => d.SURV) || 340000]);
+    strokeScale.domain([0, d3.max(troops, (d) => d.SURV) ?? 340000]);
 
     const divisionGroups = d3.group(troops, (d) => d.DIV);
     const segments: Array<LineSegment> = [];

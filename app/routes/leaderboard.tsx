@@ -1,9 +1,9 @@
 import { Table, type TableProps } from "antd";
 import { useNameScores } from "~/hooks/useSupabase";
 import type { NameScore } from "~/hooks/useSupabase";
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 
-export default function Leaderboard() {
+export default function Leaderboard(): ReactNode {
   const [pagination, setPagination] = useState({
     current: 1,
     pageSize: 10,

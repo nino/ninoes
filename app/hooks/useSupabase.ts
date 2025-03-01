@@ -111,31 +111,20 @@ export function useUser(userId: string): UseQueryResult<User> {
   });
 }
 
-const TwoNamesSchema = z.union([
-  z.object({
-    data: z.array(NameSchema),
-    error: z.undefined(),
-  }),
-  z.object({ data: z.undefined(), error: z.unknown() }),
-]);
-
 export function useRandomNames(): UseQueryResult<Array<Name>> {
   return useQuery({
     queryKey: ["randomNames"],
     queryFn: async () => {
-      const { data, error } = TwoNamesSchema.parse(
-        await supabase.rpc("get_two_names")
-      );
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      const { data, error } = await supabase.rpc("get_two_names");
+
+      const result = z.array(NameSchema).parse(data);
 
       if (error != null) {
         throw error;
       }
 
-      if (data == null) {
-        throw new Error("I don't think this will ever happen.");
-      }
-
-      return data.map((name: unknown) => NameSchema.parse(name));
+      return result;
     },
   });
 }

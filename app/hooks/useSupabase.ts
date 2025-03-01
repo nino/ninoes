@@ -131,7 +131,6 @@ export function useRandomNames(): UseQueryResult<Array<Name>> {
 
 type CreateVoteParams = {
   nameId: string;
-  userId: string;
   voteType: VoteType;
 };
 
@@ -140,11 +139,18 @@ export function useCreateVote(): UseMutationResult<
   Error,
   CreateVoteParams
 > {
+  const queryClient = useQueryClient();
+  const { session, supabase: authSupabase } = useSession();
+
   return useMutation({
-    mutationFn: async ({ nameId, userId, voteType }: CreateVoteParams) => {
-      const { error } = await supabase.from("Votes").insert({
+    mutationFn: async ({ nameId, voteType }: CreateVoteParams) => {
+      if (!session) {
+        throw new Error("User not authenticated");
+      }
+
+      const { error } = await authSupabase.from("Votes").insert({
         name_id: nameId,
-        user_id: userId,
+        user_id: session.user.id,
         vote_type: voteType,
       });
 
@@ -152,6 +158,11 @@ export function useCreateVote(): UseMutationResult<
         throw error;
       }
     },
+    onSuccess: () =>
+      Promise.all([
+        queryClient.invalidateQueries({ queryKey: ["votes"] }),
+        queryClient.invalidateQueries({ queryKey: ["nameScores"] }),
+      ]),
   });
 }
 
@@ -283,9 +294,7 @@ export function useCreateTeam(): UseMutationResult<
         throw error;
       }
     },
-    onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ["teams"] });
-    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["teams"] }),
   });
 }
 
@@ -300,9 +309,7 @@ export function useDeleteTeam(): UseMutationResult<void, Error, string> {
         throw error;
       }
     },
-    onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ["teams"] });
-    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["teams"] }),
   });
 }
 
@@ -379,9 +386,8 @@ export function useJoinTeam(): UseMutationResult<
         throw error;
       }
     },
-    onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ["teamMemberships"] });
-    },
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: ["teamMemberships"] }),
   });
 }
 
@@ -399,8 +405,7 @@ export function useLeaveTeam(): UseMutationResult<void, Error, string> {
         throw error;
       }
     },
-    onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ["teamMemberships"] });
-    },
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: ["teamMemberships"] }),
   });
 }

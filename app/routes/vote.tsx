@@ -15,8 +15,8 @@ export const loader = async ({
 };
 
 export default function Vote(): ReactNode {
-  const { user } = useLoaderData<typeof loader>();
-  const { data: names, isLoading, refetch } = useRandomNames();
+  const { user: _ } = useLoaderData<typeof loader>();
+  const { data: names, isLoading, refetch, isFetching } = useRandomNames();
   const createVote = useCreateVote();
   const { message } = App.useApp();
 
@@ -31,12 +31,10 @@ export default function Vote(): ReactNode {
       await Promise.all([
         createVote.mutateAsync({
           nameId: names[selectedNameIndex].id,
-          userId: user.id,
           voteType: VOTE_TYPE.UP,
         }),
         createVote.mutateAsync({
           nameId: names[1 - selectedNameIndex].id,
-          userId: user.id,
           voteType: VOTE_TYPE.DOWN,
         }),
       ]);
@@ -49,15 +47,16 @@ export default function Vote(): ReactNode {
     }
   };
 
-  const handleBan = (nameIndexes: Array<number>): void => {
+  const handleBan = async (nameIndexes: Array<number>): Promise<void> => {
     try {
-      nameIndexes.forEach((index) => {
-        createVote.mutate({
-          nameId: names[index].id,
-          userId: user.id,
-          voteType: VOTE_TYPE.BAN,
-        });
-      });
+      await Promise.all(
+        nameIndexes.map((index) => {
+          createVote.mutate({
+            nameId: names[index].id,
+            voteType: VOTE_TYPE.BAN,
+          });
+        })
+      );
 
       message.success("Ban votes recorded successfully!");
       void refetch();
@@ -77,7 +76,7 @@ export default function Vote(): ReactNode {
             size="large"
             type="primary"
             onClick={() => handleVote(index)}
-            loading={createVote.isPending}
+            loading={createVote.isPending || isFetching}
           >
             {name.name}
           </Button>
@@ -87,21 +86,21 @@ export default function Vote(): ReactNode {
         <Button
           danger
           onClick={() => handleBan([0])}
-          loading={createVote.isPending}
+          loading={createVote.isPending || isFetching}
         >
           Ban {names[0].name}
         </Button>
         <Button
           danger
           onClick={() => handleBan([1])}
-          loading={createVote.isPending}
+          loading={createVote.isPending || isFetching}
         >
           Ban {names[1].name}
         </Button>
         <Button
           danger
           onClick={() => handleBan([0, 1])}
-          loading={createVote.isPending}
+          loading={createVote.isPending || isFetching}
         >
           Ban both
         </Button>

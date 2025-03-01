@@ -28,17 +28,18 @@ export default function Vote(): ReactNode {
     if (names.length !== 2) return;
 
     try {
-      createVote.mutate({
-        nameId: names[selectedNameIndex].id,
-        userId: user.id,
-        voteType: VOTE_TYPE.UP,
-      });
-
-      createVote.mutate({
-        nameId: names[1 - selectedNameIndex].id,
-        userId: user.id,
-        voteType: VOTE_TYPE.DOWN,
-      });
+      await Promise.all([
+        createVote.mutateAsync({
+          nameId: names[selectedNameIndex].id,
+          userId: user.id,
+          voteType: VOTE_TYPE.UP,
+        }),
+        createVote.mutateAsync({
+          nameId: names[1 - selectedNameIndex].id,
+          userId: user.id,
+          voteType: VOTE_TYPE.DOWN,
+        }),
+      ]);
 
       message.success("Votes recorded successfully!");
       void refetch();

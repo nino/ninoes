@@ -1,10 +1,12 @@
-DROP FUNCTION get_leaderboard(integer,integer,text,text);
+begin;
+DROP FUNCTION get_leaderboard;
 -- Create a function to get the leaderboard
 create or replace function get_leaderboard(
   p_limit integer default 50,
   p_offset integer default 0,
   p_order_by text default 'score',
-  p_order_direction text default 'desc'
+  p_order_direction text default 'desc',
+  p_team_id uuid default null
 )
 returns table (
   id uuid,
@@ -45,6 +47,13 @@ begin
       sum(case when vote_type = 'up' then 1 else 0 end) as upvotes,
       sum(case when vote_type = 'down' then 1 else 0 end) as downvotes
     from "Votes"
+    where p_team_id is null
+      or exists (
+        select 1 
+        from "TeamMemberships" 
+        where "Votes".user_id = "TeamMemberships".user_id 
+        and "TeamMemberships".team_id = p_team_id
+      )
     group by name_id
   )
   select
@@ -75,3 +84,4 @@ begin
   offset p_offset;
 end;
 $$;
+commit;

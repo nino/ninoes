@@ -17,7 +17,7 @@
     "@js-temporal/polyfill": "^0.4.4",
     "@react-router/node": "^7.1.5",
     "@react-router/serve": "^7.1.5",
-    "@sentry/react": "^9.1.0",
+    "@sentry/react": "^9.3.0",
     "@sentry/vite-plugin": "^3.1.2",
     "@supabase/ssr": "^0.5.2",
     "@supabase/supabase-js": "^2.48.1",

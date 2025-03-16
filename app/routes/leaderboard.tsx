@@ -6,7 +6,7 @@ import { useState, type ReactNode } from "react";
 export default function Leaderboard(): ReactNode {
   const [pagination, setPagination] = useState({
     current: 1,
-    pageSize: 10,
+    pageSize: 50,
   });
   const [sorting, setSorting] = useState<{
     orderBy:

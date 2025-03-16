@@ -35,9 +35,9 @@ export default function Teams(): ReactNode {
   const { user } = useLoaderData<typeof loader>();
   const { message } = App.useApp();
   const [page, setPage] = useState(0);
-  const [pageSize, setPageSize] = useState(10);
+  const [pageSize, setPageSize] = useState(50);
   const [membershipPage, setMembershipPage] = useState(0);
-  const [membershipPageSize, setMembershipPageSize] = useState(10);
+  const [membershipPageSize, setMembershipPageSize] = useState(50);
   const { data: teamsData, isLoading } = useTeams({ page, pageSize });
   const { data: membershipsData, isLoading: isMembershipsLoading } =
     useTeamMemberships({ page: membershipPage, pageSize: membershipPageSize });
@@ -211,7 +211,7 @@ export default function Teams(): ReactNode {
       />
 
       <Typography.Title level={1} className="mt-8">
-        Teams I’m a Member Of
+        Teams I&rsquo;m a Member Of
       </Typography.Title>
 
       <div className="mb-8">

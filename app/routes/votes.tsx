@@ -16,7 +16,7 @@ type PaginationState = {
 export default function Votes(): ReactNode {
   const [votesPagination, setVotesPagination] = useState<PaginationState>({
     page: 0,
-    pageSize: 10,
+    pageSize: 50,
   });
   const [votesSort, setVotesSort] = useState<SortState>({
     orderBy: "created_at",

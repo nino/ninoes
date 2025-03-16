@@ -16,7 +16,7 @@ type PaginationState = {
 export function NamesRanking(): ReactNode {
   const [namesPagination, setNamesPagination] = useState<PaginationState>({
     page: 0,
-    pageSize: 10,
+    pageSize: 50,
   });
   const [namesSort, setNamesSort] = useState<SortState>({
     orderBy: "created_at",
@@ -25,7 +25,7 @@ export function NamesRanking(): ReactNode {
 
   const [votesPagination, setVotesPagination] = useState<PaginationState>({
     page: 0,
-    pageSize: 10,
+    pageSize: 50,
   });
   const [votesSort, setVotesSort] = useState<SortState>({
     orderBy: "created_at",

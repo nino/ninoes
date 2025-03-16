@@ -23,6 +23,7 @@ import {
 } from "../model/types";
 import { useSession } from "./useSession";
 import { z } from "zod";
+import { App } from "antd";
 
 export function useNames({
   page,
@@ -58,28 +59,37 @@ export function useVotes({
   pageSize,
   orderBy,
   orderDirection,
+  voteTypes = [],
 }: {
   page: number;
   pageSize: number;
   orderBy: string;
   orderDirection: "asc" | "desc";
+  voteTypes?: Array<VoteType>;
 }): UseQueryResult<{
   data: Array<VoteWithExtras>;
   total: number;
 }> {
   return useQuery({
-    queryKey: ["votes", page, pageSize, orderBy],
+    queryKey: ["votes", page, pageSize, orderBy, voteTypes],
     queryFn: async () => {
-      const { data, error, count } = await supabase
+      let q = supabase
         .from("Votes")
         .select(`*, name:Names!name_id(name), user:Users!user_id(name)`, {
           count: "exact",
-        })
+        });
+
+      if (voteTypes.length > 0) {
+        q = q.in("vote_type", voteTypes);
+      }
+
+      q = q
         .range(page * pageSize, (page + 1) * pageSize - 1)
         .order(orderBy === "undefined" ? "created_at" : orderBy, {
           ascending: orderDirection === "asc",
-        })
-        .returns<Array<VoteWithExtras>>();
+        });
+
+      const { data, error, count } = await q;
 
       if (error) {
         throw error;
@@ -407,5 +417,28 @@ export function useLeaveTeam(): UseMutationResult<void, Error, string> {
     },
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: ["teamMemberships"] }),
+  });
+}
+
+export function useDeleteVote(): UseMutationResult<void, Error, string> {
+  const queryClient = useQueryClient();
+  const { message } = App.useApp();
+
+  return useMutation({
+    mutationFn: async (voteId: string) => {
+      const { error } = await supabase.from("Votes").delete().eq("id", voteId);
+
+      if (error) {
+        throw error;
+      }
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["votes"] });
+      message.success("Vote deleted successfully");
+    },
+    onError: (error) => {
+      console.error(error);
+      message.error("Failed to delete vote");
+    },
   });
 }

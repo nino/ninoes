@@ -1,6 +1,6 @@
-import { Table, type TableProps } from "antd";
-import { useNames, useVotes } from "./hooks/useSupabase";
-import type { Name, VoteWithExtras } from "./model/types";
+import { Button, Popconfirm, Table, type TableProps } from "antd";
+import { useDeleteVote, useVotes } from "~/hooks/useSupabase";
+import { VOTE_TYPE, type VoteType, type VoteWithExtras } from "~/model/types";
 import { useState, type ReactNode } from "react";
 
 type SortState = {
@@ -13,16 +13,7 @@ type PaginationState = {
   pageSize: number;
 };
 
-export function NamesRanking(): ReactNode {
-  const [namesPagination, setNamesPagination] = useState<PaginationState>({
-    page: 0,
-    pageSize: 10,
-  });
-  const [namesSort, setNamesSort] = useState<SortState>({
-    orderBy: "created_at",
-    orderDirection: "desc",
-  });
-
+export default function Votes(): ReactNode {
   const [votesPagination, setVotesPagination] = useState<PaginationState>({
     page: 0,
     pageSize: 10,
@@ -31,37 +22,20 @@ export function NamesRanking(): ReactNode {
     orderBy: "created_at",
     orderDirection: "desc",
   });
-
-  const { data: names = [], isLoading: isLoadingNames } = useNames({
-    page: namesPagination.page,
-    pageSize: namesPagination.pageSize,
-    orderBy: namesSort.orderBy,
-    orderDirection: namesSort.orderDirection,
-  });
-
+  const [typeFilter, setTypeFilter] = useState<Array<VoteType>>([]);
   const { data: votesData, isFetching: isLoadingVotes } = useVotes({
     page: votesPagination.page,
     pageSize: votesPagination.pageSize,
     orderBy: votesSort.orderBy,
     orderDirection: votesSort.orderDirection,
+    voteTypes: typeFilter,
   });
 
-  const nameColumns: TableProps<Name>["columns"] = [
-    {
-      title: "Name",
-      dataIndex: "name",
-      key: "name",
-      sorter: true,
-    },
-    {
-      title: "Created At",
-      dataIndex: "created_at",
-      key: "created_at",
-      render: (date: Date) => date.toLocaleDateString(),
-      sorter: true,
-      defaultSortOrder: "descend",
-    },
-  ];
+  const deleteVote = useDeleteVote();
+
+  const handleDelete = (id: string): void => {
+    deleteVote.mutate(id);
+  };
 
   const voteColumns: TableProps<VoteWithExtras>["columns"] = [
     {
@@ -81,6 +55,11 @@ export function NamesRanking(): ReactNode {
       dataIndex: "vote_type",
       key: "vote_type",
       sorter: true,
+      filters: [
+        { text: "Upvote", value: VOTE_TYPE.UP },
+        { text: "Downvote", value: VOTE_TYPE.DOWN },
+        { text: "Ban", value: VOTE_TYPE.BAN },
+      ],
     },
     {
       title: "Created At",
@@ -90,43 +69,24 @@ export function NamesRanking(): ReactNode {
       sorter: true,
       defaultSortOrder: "descend",
     },
+    {
+      title: "Actions",
+      key: "actions",
+      render: (_: unknown, record: VoteWithExtras) => (
+        <Popconfirm
+          title="Are you sure you want to delete this vote?"
+          onConfirm={() => handleDelete(record.id)}
+        >
+          <Button danger>Delete</Button>
+        </Popconfirm>
+      ),
+    },
   ];
 
   return (
     <div className="space-y-8">
       <div>
-        <h2 className="text-xl font-bold mb-4">Names</h2>
-        <Table
-          size="small"
-          scroll={{ x: "max-content" }}
-          dataSource={names}
-          columns={nameColumns}
-          loading={isLoadingNames}
-          rowKey="id"
-          pagination={{
-            current: namesPagination.page + 1,
-            pageSize: namesPagination.pageSize,
-            onChange: (page, pageSize) => {
-              setNamesPagination({
-                page: page - 1,
-                pageSize,
-              });
-            },
-          }}
-          onChange={(pagination, _, sorter) => {
-            if ("field" in sorter && "order" in sorter) {
-              setNamesSort({
-                orderBy: String(sorter.field),
-                orderDirection: sorter.order === "ascend" ? "asc" : "desc",
-              });
-            }
-          }}
-        />
-      </div>
-      <div>
-        <h2 className="text-xl font-bold mb-4">
-          Votes <a href="/votes">(see all)</a>
-        </h2>
+        <h2 className="text-xl font-bold mb-4">All votes</h2>
         <Table
           size="small"
           scroll={{ x: "max-content" }}
@@ -145,7 +105,13 @@ export function NamesRanking(): ReactNode {
             },
             total: votesData?.total,
           }}
-          onChange={(pagination, _, sorter) => {
+          onChange={(pagination, filters, sorter) => {
+            console.log(filters);
+            if (filters.vote_type) {
+              setTypeFilter(filters.vote_type as Array<VoteType>);
+            } else {
+              setTypeFilter([]);
+            }
             if ("field" in sorter && "order" in sorter) {
               setVotesSort({
                 orderBy: String(sorter.field),

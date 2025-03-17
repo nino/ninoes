@@ -22,7 +22,7 @@
     "@supabase/ssr": "^0.5.2",
     "@supabase/supabase-js": "^2.48.1",
     "@tanstack/react-query": "^5.67.2",
-    "antd": "^5.24.3",
+    "antd": "^5.24.4",
     "d3": "^7.9.0",
     "date-fns": "^4.1.0",
     "isbot": "^5.1.25",

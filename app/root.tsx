@@ -8,6 +8,7 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
+  useNavigation,
 } from "react-router";
 import * as Sentry from "@sentry/react";
 import { useSyncExternalStore, type ReactNode } from "react";
@@ -39,6 +40,7 @@ import { useSession } from "./hooks/useSession";
 export const links: Route.LinksFunction = () => [];
 
 export function Layout({ children }: { children: ReactNode }): ReactNode {
+  const nav = useNavigation();
   return (
     <html lang="en">
       <head>
@@ -47,7 +49,7 @@ export function Layout({ children }: { children: ReactNode }): ReactNode {
         <Meta />
         <Links />
       </head>
-      <body>
+      <body className={nav.state === "loading" ? "opacity-40" : ""}>
         {children}
         <ScrollRestoration />
         <Scripts />

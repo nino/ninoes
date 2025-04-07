@@ -14,7 +14,7 @@
   "dependencies": {
     "@ant-design/v5-patch-for-react-19": "^1.0.3",
     "@headlessui/react": "^2.2.0",
-    "@js-temporal/polyfill": "^0.5.0",
+    "@js-temporal/polyfill": "^0.5.1",
     "@react-router/node": "^7.1.5",
     "@react-router/serve": "^7.1.5",
     "@sentry/react": "^9.10.1",

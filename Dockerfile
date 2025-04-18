@@ -1,14 +1,14 @@
-FROM node:20-alpine AS development-dependencies-env
+FROM node:22-alpine AS development-dependencies-env
 COPY . /app
 WORKDIR /app
 RUN yarn install
 
-FROM node:20-alpine AS production-dependencies-env
+FROM node:22-alpine AS production-dependencies-env
 COPY ./package.json yarn.lock /app/
 WORKDIR /app
 RUN yarn install --production
 
-FROM node:20-alpine AS build-env
+FROM node:22-alpine AS build-env
 # Define build arguments
 ARG VITE_SUPABASE_URL
 ARG VITE_SUPABASE_ANON_KEY
@@ -20,7 +20,7 @@ COPY --from=development-dependencies-env /app/node_modules /app/node_modules
 WORKDIR /app
 RUN yarn build
 
-FROM node:20-alpine
+FROM node:22-alpine
 ENV NODE_ENV=production
 # Define build arguments again for the final stage
 ARG VITE_SUPABASE_URL

@@ -14,6 +14,7 @@ import type {
   Team,
   TeamMembershipWithTeam,
   TeamElo,
+  TeamEloWithName,
 } from "~/model/types";
 import {
   NameSchema,
@@ -514,5 +515,55 @@ export function useEloFight(): UseMutationResult<void, Error, EloFightParams> {
         queryClient.invalidateQueries({ queryKey: ["nameScores"] }),
         queryClient.invalidateQueries({ queryKey: ["teamElo"] }),
       ]),
+  });
+}
+
+export function useEloLeaderboard({
+  teamId = null,
+  page = 0,
+  pageSize = 10,
+  orderBy = "elo",
+  orderDirection = "desc",
+}: {
+  teamId?: string | null;
+  page?: number;
+  pageSize?: number;
+  orderBy?: "elo" | "name";
+  orderDirection?: "asc" | "desc";
+} = {}): UseQueryResult<{
+  data: Array<TeamEloWithName>;
+  total: number;
+} | null> {
+  const { session, supabase: authSupabase } = useSession();
+
+  return useQuery({
+    queryKey: [
+      "useEloLeaderboard",
+      teamId,
+      page,
+      pageSize,
+      orderBy,
+      orderDirection,
+    ],
+    queryFn: async () => {
+      if (teamId == null) return null;
+      if (!session) {
+        throw new Error("User not authenticated");
+      }
+
+      const {
+        data,
+        error: fetchError,
+        count,
+      } = await authSupabase
+        .from("team_elo")
+        .select("*, name:Names(*)", { count: "exact" })
+        .eq("team_id", teamId)
+        .range(page * pageSize, (page + 1) * pageSize - 1)
+        .order(orderBy, { ascending: orderDirection === "asc" });
+      if (fetchError) throw fetchError;
+      console.log({ data, count });
+      return { data, total: count };
+    },
   });
 }

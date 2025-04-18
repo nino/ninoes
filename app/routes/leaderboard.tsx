@@ -1,5 +1,9 @@
 import { Table, type TableProps } from "antd";
-import { useNameScores } from "~/hooks/useSupabase";
+import {
+  useEloLeaderboard,
+  useNameScores,
+  useTeams,
+} from "~/hooks/useSupabase";
 import type { NameScore } from "~/hooks/useSupabase";
 import { useState, type ReactNode } from "react";
 

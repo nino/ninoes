@@ -67,3 +67,6 @@ export const TeamEloSchema = z.object({
   team_id: z.string(),
 });
 export type TeamElo = z.infer<typeof TeamEloSchema>;
+
+export const TeamEloWithNameSchema = TeamEloSchema.extend({ name: NameSchema });
+export type TeamEloWithName = z.infer<typeof TeamEloWithNameSchema>;

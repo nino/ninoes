@@ -13,6 +13,7 @@ import type {
   VoteType,
   Team,
   TeamMembershipWithTeam,
+  TeamElo,
 } from "~/model/types";
 import {
   NameSchema,
@@ -20,10 +21,12 @@ import {
   VoteWithExtrasSchema,
   TeamSchema,
   TeamMembershipWithTeamSchema,
+  TeamEloSchema,
 } from "../model/types";
 import { useSession } from "./useSession";
 import { z } from "zod";
 import { App } from "antd";
+import { BASE_ELO, updateEloRatings } from "~/utils/elo";
 
 export function useNames({
   page,
@@ -440,5 +443,71 @@ export function useDeleteVote(): UseMutationResult<void, Error, string> {
       console.error(error);
       message.error("Failed to delete vote");
     },
+  });
+}
+
+// export function useTeamElo(
+//   teamId: string | null,
+//   nameId: string | null
+// ): UseQueryResult<TeamElo | null> {
+//   return useQuery({
+//     queryKey: ["teamElo", teamId, nameId],
+//     queryFn: () => null,
+//   });
+// }
+
+type EloFightParams = { win: string; lose: string; teamId: string };
+
+export function useEloFight(): UseMutationResult<void, Error, EloFightParams> {
+  const queryClient = useQueryClient();
+  const { session, supabase: authSupabase } = useSession();
+
+  return useMutation({
+    mutationFn: async ({ win, lose, teamId }: EloFightParams) => {
+      if (!session) {
+        throw new Error("User not authenticated");
+      }
+
+      const { data, error: fetchError } = await authSupabase
+        .from("team_elo")
+        .select("*")
+        .eq("team_id", teamId)
+        .in("name_id", [win, lose]);
+
+      if (fetchError) {
+        throw fetchError;
+      }
+
+      const winnerElo = TeamEloSchema.parse(
+        data.find((item: TeamElo) => item.name_id === win) ?? {
+          name_id: win,
+          elo: BASE_ELO,
+          team_id: teamId,
+        }
+      );
+      const loserElo = TeamEloSchema.parse(
+        data.find((item: TeamElo) => item.name_id === win) ?? {
+          name_id: lose,
+          elo: BASE_ELO,
+          team_id: teamId,
+        }
+      );
+
+      const [winnerNewElo, loserNewElo] = updateEloRatings(
+        winnerElo.elo,
+        loserElo.elo
+      );
+
+      await authSupabase.from("team_elo").upsert([
+        { ...winnerElo, elo: winnerNewElo },
+        { ...loserElo, elo: loserNewElo },
+      ]);
+    },
+    onSuccess: () =>
+      Promise.all([
+        queryClient.invalidateQueries({ queryKey: ["votes"] }),
+        queryClient.invalidateQueries({ queryKey: ["nameScores"] }),
+        queryClient.invalidateQueries({ queryKey: ["teamElo"] }),
+      ]),
   });
 }

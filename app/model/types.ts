@@ -1,13 +1,10 @@
 import { z } from "zod";
 
-export type Enum<T> = T[keyof T];
-
-export const VOTE_TYPE = {
-  UP: "up",
-  DOWN: "down",
-  BAN: "ban",
-} as const;
-export type VoteType = Enum<typeof VOTE_TYPE>;
+export enum VoteType {
+  UP = "up",
+  DOWN = "down",
+  BAN = "ban",
+}
 
 export const NameSchema = z.object({
   id: z.string().uuid(),
@@ -21,7 +18,7 @@ export const VoteSchema = z.object({
   name_id: z.string().uuid(),
   user_id: z.string().uuid(),
   created_at: z.coerce.date(),
-  vote_type: z.nativeEnum(VOTE_TYPE),
+  vote_type: z.nativeEnum(VoteType),
 });
 export type Vote = z.infer<typeof VoteSchema>;
 
@@ -63,3 +60,10 @@ export const TeamMembershipWithTeamSchema = TeamMemberShipSchema.extend({
 export type TeamMembershipWithTeam = z.infer<
   typeof TeamMembershipWithTeamSchema
 >;
+
+export const TeamEloSchema = z.object({
+  name_id: z.string(),
+  elo: z.number(),
+  team_id: z.string(),
+});
+export type TeamElo = z.infer<typeof TeamEloSchema>;

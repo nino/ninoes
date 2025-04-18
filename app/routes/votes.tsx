@@ -1,6 +1,6 @@
 import { Button, Popconfirm, Table, type TableProps } from "antd";
 import { useDeleteVote, useVotes } from "~/hooks/useSupabase";
-import { VOTE_TYPE, type VoteType, type VoteWithExtras } from "~/model/types";
+import { type VoteType, type VoteWithExtras } from "~/model/types";
 import { useState, type ReactNode } from "react";
 
 type SortState = {
@@ -56,9 +56,9 @@ export default function Votes(): ReactNode {
       key: "vote_type",
       sorter: true,
       filters: [
-        { text: "Upvote", value: VOTE_TYPE.UP },
-        { text: "Downvote", value: VOTE_TYPE.DOWN },
-        { text: "Ban", value: VOTE_TYPE.BAN },
+        { text: "Upvote", value: VoteType.UP },
+        { text: "Downvote", value: VoteType.DOWN },
+        { text: "Ban", value: VoteType.BAN },
       ],
     },
     {

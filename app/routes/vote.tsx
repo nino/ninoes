@@ -1,6 +1,11 @@
 import { Button, Space, App, Spin } from "antd";
-import { useRandomNames, useCreateVote } from "~/hooks/useSupabase";
-import { VOTE_TYPE } from "~/model/types";
+import {
+  useRandomNames,
+  useCreateVote,
+  useEloFight,
+  useTeams,
+} from "~/hooks/useSupabase";
+import { VoteType } from "~/model/types";
 import { requireUser } from "~/server/guards.server";
 import type { LoaderFunctionArgs } from "react-router";
 import { useLoaderData } from "react-router";
@@ -18,25 +23,34 @@ export default function Vote(): ReactNode {
   const { user: _ } = useLoaderData<typeof loader>();
   const { data: names, isLoading, refetch, isFetching } = useRandomNames();
   const createVote = useCreateVote();
+  const eloFight = useEloFight();
+  const teamsQuery = useTeams({ page: 0, pageSize: 10 });
   const { message } = App.useApp();
 
-  if (isLoading || !names) {
+  if (isLoading || !names || teamsQuery.isPending) {
     return <Spin />;
   }
 
   const handleVote = async (selectedNameIndex: number): Promise<void> => {
-    if (names.length !== 2) return;
+    if (names.length !== 2 || !teamsQuery.data) return;
 
     try {
       await Promise.all([
         createVote.mutateAsync({
           nameId: names[selectedNameIndex].id,
-          voteType: VOTE_TYPE.UP,
+          voteType: VoteType.UP,
         }),
         createVote.mutateAsync({
           nameId: names[1 - selectedNameIndex].id,
-          voteType: VOTE_TYPE.DOWN,
+          voteType: VoteType.DOWN,
         }),
+        teamsQuery.data.data.length > 0
+          ? eloFight.mutateAsync({
+              win: names[selectedNameIndex].id,
+              lose: names[1 - selectedNameIndex].id,
+              teamId: teamsQuery.data.data[0].id,
+            })
+          : true,
       ]);
 
       message.success("Votes recorded successfully!");
@@ -53,7 +67,7 @@ export default function Vote(): ReactNode {
         nameIndexes.map((index) => {
           createVote.mutate({
             nameId: names[index].id,
-            voteType: VOTE_TYPE.BAN,
+            voteType: VoteType.BAN,
           });
         })
       );

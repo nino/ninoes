@@ -474,6 +474,8 @@ export function useEloFight(): UseMutationResult<void, Error, EloFightParams> {
         .eq("team_id", teamId)
         .in("name_id", [win, lose]);
 
+      console.log({ data });
+
       if (fetchError) {
         throw fetchError;
       }

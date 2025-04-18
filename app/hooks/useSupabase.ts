@@ -492,11 +492,14 @@ export function useEloFight(): UseMutationResult<void, Error, EloFightParams> {
           team_id: teamId,
         }
       );
+      console.log({ win, lose, winnerElo, loserElo });
 
       const [winnerNewElo, loserNewElo] = updateEloRatings(
         winnerElo.elo,
         loserElo.elo
       );
+
+      console.log({ winnerNewElo, loserNewElo });
 
       await authSupabase.from("team_elo").upsert([
         { ...winnerElo, elo: winnerNewElo },

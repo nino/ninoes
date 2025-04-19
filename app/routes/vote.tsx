@@ -2,8 +2,8 @@ import { Button, Space, App, Spin } from "antd";
 import {
   useRandomNames,
   useCreateVote,
-  useEloFight,
   useTeams,
+  useCreateVoteNew,
 } from "~/hooks/useSupabase";
 import { VoteType } from "~/model/types";
 import { requireUser } from "~/server/guards.server";
@@ -23,7 +23,7 @@ export default function Vote(): ReactNode {
   const { user: _ } = useLoaderData<typeof loader>();
   const { data: names, isLoading, refetch, isFetching } = useRandomNames();
   const createVote = useCreateVote();
-  const eloFight = useEloFight();
+  const vote = useCreateVoteNew();
   const teamsQuery = useTeams({ page: 0, pageSize: 10 });
   const { message } = App.useApp();
 
@@ -35,23 +35,11 @@ export default function Vote(): ReactNode {
     if (names.length !== 2 || !teamsQuery.data) return;
 
     try {
-      await Promise.all([
-        createVote.mutateAsync({
-          nameId: names[selectedNameIndex].id,
-          voteType: VoteType.UP,
-        }),
-        createVote.mutateAsync({
-          nameId: names[1 - selectedNameIndex].id,
-          voteType: VoteType.DOWN,
-        }),
-        teamsQuery.data.data.length > 0
-          ? eloFight.mutateAsync({
-              win: names[selectedNameIndex].id,
-              lose: names[1 - selectedNameIndex].id,
-              teamId: teamsQuery.data.data[0].id,
-            })
-          : true,
-      ]);
+      await vote.mutateAsync({
+        winnerId: names[selectedNameIndex].id,
+        loserId: names[1 - selectedNameIndex].id,
+        teamId: teamsQuery.data.data[0].id,
+      });
 
       message.success("Votes recorded successfully!");
       void refetch();

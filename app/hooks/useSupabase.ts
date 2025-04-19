@@ -143,6 +143,32 @@ export function useRandomNames(): UseQueryResult<Array<Name>> {
   });
 }
 
+type CreateVoteNewParams = {
+  winnerId: string;
+  loserId: string;
+  teamId?: string;
+};
+
+export function useCreateVoteNew(): UseMutationResult<
+  void,
+  Error,
+  CreateVoteNewParams
+> {
+  const { session, supabase: authSupabase } = useSession();
+
+  return useMutation({
+    mutationFn: async ({ winnerId, loserId, teamId }) => {
+      if (!session) throw new Error("no auth");
+      const { error } = await authSupabase.rpc("vote", {
+        p_winner_id: winnerId,
+        p_loser_id: loserId,
+        p_team_id: teamId,
+      });
+      if (error) throw error;
+    },
+  });
+}
+
 type CreateVoteParams = {
   nameId: string;
   voteType: VoteType;

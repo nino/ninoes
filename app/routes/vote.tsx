@@ -8,7 +8,7 @@ import {
 import { VoteType } from "~/model/types";
 import { requireUser } from "~/server/guards.server";
 import type { LoaderFunctionArgs } from "react-router";
-import { useLoaderData } from "react-router";
+import { Link, useLoaderData } from "react-router";
 import type { ReactNode } from "react";
 import type { User } from "@supabase/supabase-js";
 
@@ -71,7 +71,9 @@ export default function Vote(): ReactNode {
   return (
     <div className="flex flex-col items-center gap-8 p-8">
       <h1 className="text-2xl font-bold">Choose a name</h1>
-      <div className="text-sm -mt-4">(now with Elo scores, ACTUALLY FOR REALZ!)</div>
+      <div className="text-sm -mt-4">
+        (now with <Link to="/elo">Elo scores</Link>, ACTUALLY FOR REALZ!)
+      </div>
       <Space size="large">
         {names.map((name, index) => (
           <Button

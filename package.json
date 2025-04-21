@@ -21,7 +21,7 @@
     "@sentry/vite-plugin": "^3.3.1",
     "@supabase/ssr": "^0.6.1",
     "@supabase/supabase-js": "^2.49.4",
-    "@tanstack/react-query": "^5.74.3",
+    "@tanstack/react-query": "^5.74.4",
     "antd": "^5.24.7",
     "d3": "^7.9.0",
     "date-fns": "^4.1.0",

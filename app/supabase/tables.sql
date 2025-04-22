@@ -1,61 +1,61 @@
-create table public."Names" (
-  id uuid not null default gen_random_uuid (),
-  created_at timestamp with time zone not null default now(),
-  updated_at timestamp with time zone not null default now(),
-  name character varying not null,
-  constraint Names_pkey primary key (id),
-  constraint Names_name_key unique (name)
+CREATE TABLE public."Names" (
+  id uuid NOT NULL DEFAULT gen_random_uuid (),
+  created_at timestamp WITH time zone NOT NULL DEFAULT NOW(),
+  updated_at timestamp WITH time zone NOT NULL DEFAULT NOW(),
+  name character varying NOT NULL,
+  CONSTRAINT Names_pkey PRIMARY KEY (id),
+  CONSTRAINT Names_name_key UNIQUE (name)
 ) TABLESPACE pg_default;
 
-create table public."TeamMemberships" (
-  id uuid not null default gen_random_uuid (),
-  created_at timestamp with time zone not null default now(),
-  team_id uuid null,
-  user_id uuid null,
-  constraint TeamMemberships_pkey primary key (id),
-  constraint TeamMemberships_team_id_fkey foreign KEY (team_id) references teams (id) on update CASCADE on delete CASCADE,
-  constraint TeamMemberships_user_id_fkey foreign KEY (user_id) references auth.users (id) on update CASCADE on delete CASCADE
+CREATE TABLE public."TeamMemberships" (
+  id uuid NOT NULL DEFAULT gen_random_uuid (),
+  created_at timestamp WITH time zone NOT NULL DEFAULT NOW(),
+  team_id uuid NULL,
+  user_id uuid NULL,
+  CONSTRAINT TeamMemberships_pkey PRIMARY KEY (id),
+  CONSTRAINT TeamMemberships_team_id_fkey FOREIGN KEY (team_id) REFERENCES teams (id) ON UPDATE CASCADE ON DELETE CASCADE,
+  CONSTRAINT TeamMemberships_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users (id) ON UPDATE CASCADE ON DELETE CASCADE
 ) TABLESPACE pg_default;
 
-create table public."Users" (
-  id uuid not null default gen_random_uuid (),
-  created_at timestamp with time zone not null default now(),
-  name character varying not null,
-  constraint Users_pkey primary key (id),
-  constraint Users_id_fkey foreign KEY (id) references auth.users (id) on update CASCADE on delete CASCADE
+CREATE TABLE public."Users" (
+  id uuid NOT NULL DEFAULT gen_random_uuid (),
+  created_at timestamp WITH time zone NOT NULL DEFAULT NOW(),
+  name character varying NOT NULL,
+  CONSTRAINT Users_pkey PRIMARY KEY (id),
+  CONSTRAINT Users_id_fkey FOREIGN KEY (id) REFERENCES auth.users (id) ON UPDATE CASCADE ON DELETE CASCADE
 ) TABLESPACE pg_default;
 
-create table public."Votes" (
-  id uuid not null default gen_random_uuid (),
-  created_at timestamp with time zone not null default now(),
-  updated_at timestamp with time zone not null default now(),
-  name_id uuid not null,
-  user_id uuid not null,
-  vote_type public.vote_type not null,
-  constraint Votes_pkey primary key (id),
-  constraint Votes_name_id_fkey foreign KEY (name_id) references "Names" (id) on update CASCADE on delete CASCADE,
-  constraint Votes_user_id_fkey foreign KEY (user_id) references auth.users (id) on update CASCADE on delete CASCADE,
-  constraint Votes_user_id_fkey1 foreign KEY (user_id) references "Users" (id) on update CASCADE on delete CASCADE
+CREATE TABLE public."Votes" (
+  id uuid NOT NULL DEFAULT gen_random_uuid (),
+  created_at timestamp WITH time zone NOT NULL DEFAULT NOW(),
+  updated_at timestamp WITH time zone NOT NULL DEFAULT NOW(),
+  name_id uuid NOT NULL,
+  user_id uuid NOT NULL,
+  vote_type public.vote_type NOT NULL,
+  CONSTRAINT Votes_pkey PRIMARY KEY (id),
+  CONSTRAINT Votes_name_id_fkey FOREIGN KEY (name_id) REFERENCES "Names" (id) ON UPDATE CASCADE ON DELETE CASCADE,
+  CONSTRAINT Votes_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users (id) ON UPDATE CASCADE ON DELETE CASCADE,
+  CONSTRAINT Votes_user_id_fkey1 FOREIGN KEY (user_id) REFERENCES "Users" (id) ON UPDATE CASCADE ON DELETE CASCADE
 ) TABLESPACE pg_default;
 
-create table public.team_elo (
-  id uuid not null default gen_random_uuid (),
-  created_at timestamp with time zone not null default now(),
-  team_id uuid not null,
-  name_id uuid not null,
-  elo double precision null,
-  updated_at timestamp with time zone null,
-  constraint team_elo_pkey primary key (id),
-  constraint team_elo_team_id_name_id_key unique (team_id, name_id),
-  constraint team_elo_name_id_fkey foreign KEY (name_id) references "Names" (id) on update CASCADE on delete CASCADE,
-  constraint team_elo_team_id_fkey foreign KEY (team_id) references teams (id) on update CASCADE on delete CASCADE
+CREATE TABLE public.team_elo (
+  id uuid NOT NULL DEFAULT gen_random_uuid (),
+  created_at timestamp WITH time zone NOT NULL DEFAULT NOW(),
+  team_id uuid NOT NULL,
+  name_id uuid NOT NULL,
+  elo double precision NULL,
+  updated_at timestamp WITH time zone NULL,
+  CONSTRAINT team_elo_pkey PRIMARY KEY (id),
+  CONSTRAINT team_elo_team_id_name_id_key UNIQUE (team_id, name_id),
+  CONSTRAINT team_elo_name_id_fkey FOREIGN KEY (name_id) REFERENCES "Names" (id) ON UPDATE CASCADE ON DELETE CASCADE,
+  CONSTRAINT team_elo_team_id_fkey FOREIGN KEY (team_id) REFERENCES teams (id) ON UPDATE CASCADE ON DELETE CASCADE
 ) TABLESPACE pg_default;
 
-create table public.teams (
-  id uuid not null default gen_random_uuid (),
-  created_at timestamp with time zone not null default now(),
-  creator uuid null,
-  name character varying null,
-  constraint Teams_pkey primary key (id),
-  constraint teams_creator_fkey foreign KEY (creator) references "Users" (id) on update CASCADE on delete CASCADE
+CREATE TABLE public.teams (
+  id uuid NOT NULL DEFAULT gen_random_uuid (),
+  created_at timestamp WITH time zone NOT NULL DEFAULT NOW(),
+  creator uuid NULL,
+  name character varying NULL,
+  CONSTRAINT Teams_pkey PRIMARY KEY (id),
+  CONSTRAINT teams_creator_fkey FOREIGN KEY (creator) REFERENCES "Users" (id) ON UPDATE CASCADE ON DELETE CASCADE
 ) TABLESPACE pg_default;

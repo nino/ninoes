@@ -1,6 +1,6 @@
 import { Button, Popconfirm, Table, type TableProps } from "antd";
 import { useDeleteVote, useVotes } from "~/hooks/useSupabase";
-import { type VoteType, type VoteWithExtras } from "~/model/types";
+import { VoteType, type VoteWithExtras } from "~/model/types";
 import { useState, type ReactNode } from "react";
 
 type SortState = {

@@ -103,7 +103,7 @@ export default function Votes(): ReactNode {
                 pageSize,
               });
             },
-            total: votesData?.total,
+            total: votesData?.total ?? undefined,
           }}
           onChange={(pagination, filters, sorter) => {
             console.log(filters);

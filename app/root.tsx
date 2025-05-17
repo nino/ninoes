@@ -92,15 +92,20 @@ function AuthenticatedLayout({ children }: { children: ReactNode }): ReactNode {
       <AntdLayout.Header>
         <Menu
           items={[
-            { key: "1", title: "Home", label: <Link to="/">Home 🏠</Link> },
-            { key: "2", title: "Vote", label: <Link to="/vote">Vote 🏩</Link> },
+            { key: "home", title: "Home", label: <Link to="/">Home 🏠</Link> },
+            { key: "vote", title: "Vote", label: <Link to="/vote">Vote 🏩</Link> },
             {
-              key: "3",
+              key: "teams",
               title: "Teams",
               label: <Link to="/teams">Teams 🏃‍♂️</Link>,
             },
             {
-              key: "4",
+              key: "elo",
+              title: "Elo Leaderboard",
+              label: <Link to="/elo">Elo Leaderboard</Link>,
+            },
+            {
+              key: "leaderboard",
               title: "Leaderboard",
               label: <Link to="/leaderboard">Leaderboard 🥇</Link>,
             },

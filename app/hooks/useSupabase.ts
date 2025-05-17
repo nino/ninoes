@@ -72,7 +72,7 @@ export function useVotes({
   voteTypes?: Array<VoteType>;
 }): UseQueryResult<{
   data: Array<VoteWithExtras>;
-  total: number;
+  total: number | null;
 }> {
   return useQuery({
     queryKey: ["votes", page, pageSize, orderBy, voteTypes],
@@ -558,7 +558,7 @@ export function useEloLeaderboard({
   orderDirection?: "asc" | "desc";
 } = {}): UseQueryResult<{
   data: Array<TeamEloWithName>;
-  total: number;
+  total: number | null;
 } | null> {
   const { session, supabase: authSupabase } = useSession();
 

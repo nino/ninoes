@@ -113,7 +113,7 @@ export function NamesRanking(): ReactNode {
               });
             },
           }}
-          onChange={(pagination, _, sorter) => {
+          onChange={(_, __, sorter) => {
             if ("field" in sorter && "order" in sorter) {
               setNamesSort({
                 orderBy: String(sorter.field),
@@ -143,9 +143,9 @@ export function NamesRanking(): ReactNode {
                 pageSize,
               });
             },
-            total: votesData?.total,
+            total: votesData?.total ?? undefined,
           }}
-          onChange={(pagination, _, sorter) => {
+          onChange={(_, __, sorter) => {
             if ("field" in sorter && "order" in sorter) {
               setVotesSort({
                 orderBy: String(sorter.field),

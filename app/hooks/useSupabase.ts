@@ -211,6 +211,7 @@ const NameScoreRPCResponseSchema = z.object({
   name: z.string(),
   created_at: z.string(),
   score: z.number(),
+  total_votes: z.number(),
   upvotes: z.number(),
   downvotes: z.number(),
   controversial: z.number(),
@@ -222,6 +223,7 @@ const _NameScoreSchema = z.object({
   name: z.string(),
   created_at: z.date(),
   score: z.number(),
+  total_votes: z.number(),
   upvotes: z.number(),
   downvotes: z.number(),
   controversial: z.number(),
@@ -243,6 +245,7 @@ export function useNameScores({
     | "score"
     | "name"
     | "created_at"
+    | "total_votes"
     | "upvotes"
     | "downvotes"
     | "controversial";

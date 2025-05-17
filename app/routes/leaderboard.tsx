@@ -1,7 +1,5 @@
 import { Table, type TableProps } from "antd";
-import {
-  useNameScores,
-} from "~/hooks/useSupabase";
+import { useNameScores } from "~/hooks/useSupabase";
 import type { NameScore } from "~/hooks/useSupabase";
 import { useState, type ReactNode } from "react";
 
@@ -15,6 +13,7 @@ export default function Leaderboard(): ReactNode {
       | "score"
       | "name"
       | "created_at"
+      | "total_votes"
       | "upvotes"
       | "downvotes"
       | "controversial";
@@ -72,6 +71,14 @@ export default function Leaderboard(): ReactNode {
       render: (value: number) => value.toLocaleString(),
     },
     {
+      title: "Total votes",
+      dataIndex: "total_votes",
+      key: "total_votes",
+      sortDirections: ["ascend", "descend"],
+      sorter: true,
+      render: (value: number) => value.toLocaleString(),
+    },
+    {
       title: "Controversial",
       dataIndex: "controversial",
       key: "controversial",
@@ -97,7 +104,7 @@ export default function Leaderboard(): ReactNode {
           },
           total: scores?.total,
         }}
-        onChange={(pagination, _, sorter) => {
+        onChange={(__, _, sorter) => {
           if (!Array.isArray(sorter) && sorter.column) {
             setSorting({
               orderBy: sorter.field as
@@ -105,6 +112,7 @@ export default function Leaderboard(): ReactNode {
                 | "name"
                 | "created_at"
                 | "upvotes"
+                | "total_votes"
                 | "downvotes"
                 | "controversial",
               orderDirection: sorter.order === "ascend" ? "asc" : "desc",

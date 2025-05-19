@@ -34,7 +34,7 @@
   "devDependencies": {
     "@eslint/js": "^9.21.0",
     "@react-router/dev": "^7.1.5",
-    "@tailwindcss/vite": "^4.1.6",
+    "@tailwindcss/vite": "^4.1.7",
     "@types/d3": "^7.4.3",
     "@types/node": "^22",
     "@types/react": "^19.1.3",

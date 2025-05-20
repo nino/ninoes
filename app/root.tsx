@@ -93,7 +93,11 @@ function AuthenticatedLayout({ children }: { children: ReactNode }): ReactNode {
         <Menu
           items={[
             { key: "home", title: "Home", label: <Link to="/">Home 🏠</Link> },
-            { key: "vote", title: "Vote", label: <Link to="/vote">Vote 🏩</Link> },
+            {
+              key: "vote",
+              title: "Vote",
+              label: <Link to="/vote">Vote 🏩</Link>,
+            },
             {
               key: "teams",
               title: "Teams",

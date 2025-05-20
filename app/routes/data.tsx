@@ -49,7 +49,7 @@ async function fetchTroops(): Promise<Array<Troop>> {
 
 async function fetchTemperatures(): Promise<Array<Temperature>> {
   const temperatures = await fetch("/temperatures.csv").then((res) =>
-    res.text()
+    res.text(),
   );
   return parseCsv(temperatures, {
     LONT: "number",
@@ -69,7 +69,7 @@ function parseValue(value: string, type: string): string | number {
 
 function parseCsv(
   csv: string,
-  schema: Record<string, string>
+  schema: Record<string, string>,
 ): Array<Record<string, unknown>> {
   const lines = csv.split(/[\r\n]+/);
   const headers = lines[0].split(",");

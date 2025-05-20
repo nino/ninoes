@@ -3,7 +3,7 @@ import { redirect } from "react-router";
 import { getSupabaseServerClient } from "~/supabase/supabase.server";
 
 export const requireUser = async (
-  request: Request
+  request: Request,
 ): Promise<{ user: User }> => {
   const headersToSet = new Headers();
   const { supabase } = getSupabaseServerClient(request, headersToSet);

@@ -8,7 +8,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 
 export const getSupabaseServerClient = (
   request: Request,
-  headers: Headers
+  headers: Headers,
 ): {
   supabase: SupabaseClient;
   headers: Headers;
@@ -20,19 +20,19 @@ export const getSupabaseServerClient = (
       cookies: {
         getAll() {
           return parseCookieHeader(request.headers.get("Cookie") ?? "").map(
-            ({ name, value }) => ({ name, value: value ?? "" })
+            ({ name, value }) => ({ name, value: value ?? "" }),
           );
         },
         setAll(cookiesToSet) {
           for (const { name, value, options } of cookiesToSet) {
             headers.append(
               "Set-Cookie",
-              serializeCookieHeader(name, value, options)
+              serializeCookieHeader(name, value, options),
             );
           }
         },
       },
-    }
+    },
   );
   return { supabase, headers };
 };

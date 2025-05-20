@@ -143,7 +143,7 @@ export default function Teams(): ReactNode {
   ];
 
   const handleCreateTeam = async (
-    values: CreateTeamFormData
+    values: CreateTeamFormData,
   ): Promise<void> => {
     try {
       await createTeam.mutateAsync({

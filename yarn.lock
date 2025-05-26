@@ -5527,10 +5527,10 @@ react-remove-scroll@^2.6.3:
     use-callback-ref "^1.3.3"
     use-sidecar "^1.1.3"
 
-react-router-devtools@^5.0.5:
-  version "5.0.5"
-  resolved "https://registry.yarnpkg.com/react-router-devtools/-/react-router-devtools-5.0.5.tgz#9ce7d44366775f084af71e56b7418d6258a7f61d"
-  integrity sha512-UmJnkfyvoOc08PvXMDdy0Iw5HyMW5kVBsGkJPH/DbsR5UxzguzTobVGtjq/AQLjRkEZnFbDxU5xehbVP1g7CMw==
+react-router-devtools@^5.0.6:
+  version "5.0.6"
+  resolved "https://registry.yarnpkg.com/react-router-devtools/-/react-router-devtools-5.0.6.tgz#219ce0be989e56fa86e8004e934ed6d327ce57ae"
+  integrity sha512-AoCBvYrp7E6cbplfWTJME6UyNQHLx/URnsSZPG92+XAKzrtmKwKfuwfm0mVf4dXTo1+JBJfpNhx+Gz7SYe0YoA==
   dependencies:
     "@babel/core" "^7.26.10"
     "@babel/generator" "^7.26.5"

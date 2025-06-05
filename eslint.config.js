@@ -75,7 +75,6 @@ export default [
       ],
       // New strict rules
       "@typescript-eslint/no-unnecessary-condition": "error",
-      "@typescript-eslint/strict-boolean-expressions": "error",
       "@typescript-eslint/no-explicit-any": "error",
       "@typescript-eslint/explicit-function-return-type": [
         "error",

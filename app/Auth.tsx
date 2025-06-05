@@ -1,16 +1,25 @@
 import { useState, type ReactNode } from "react";
 import { supabase } from "./supabaseClient";
-import { App, Button, Form, Input, Layout } from "antd";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Button } from "./components/ui/Button";
+import { Input } from "./components/ui/Input";
+import { useToast } from "./components/ui/Toast";
 
-type LoginForm = {
-  email: string;
-  password: string;
-};
+const loginSchema = z.object({
+  email: z.string().email("Please enter a valid email"),
+  password: z.string().min(1, "Password is required"),
+});
+
+type LoginForm = z.infer<typeof loginSchema>;
 
 export function Auth(): ReactNode {
   const [loading, setLoading] = useState(false);
-  const [form] = Form.useForm<LoginForm>();
-  const { message } = App.useApp();
+  const { showToast } = useToast();
+  const form = useForm<LoginForm>({
+    resolver: zodResolver(loginSchema),
+  });
 
   const handleLogin = async (data: LoginForm): Promise<void> => {
     try {
@@ -21,61 +30,54 @@ export function Auth(): ReactNode {
       });
 
       if (error) {
-        message.error(error.message);
+        showToast("error", error.message);
       } else {
-        message.success("Logged in successfully!");
+        showToast("success", "Logged in successfully!");
       }
     } catch (error) {
       console.error("Login error:", error);
-      message.error("An error occurred during login");
+      showToast("error", "An error occurred during login");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <Layout>
-      <Layout.Content className="p-8">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full space-y-8">
         <div>
-          <h1 className="header">Supabase + React</h1>
-          <p className="description">
+          <h1 className="text-3xl font-bold text-center">Supabase + React</h1>
+          <p className="mt-2 text-center text-gray-600">
             Sign in using your email and password below
           </p>
-          <Form
-            form={form}
-            onFinish={handleLogin}
-            layout="vertical"
-            className="flex flex-col gap-2 m-4"
-          >
-            <Form.Item
-              label="Email"
-              name="email"
-              rules={[
-                { required: true, message: "Please input your email!" },
-                { type: "email", message: "Please enter a valid email!" },
-              ]}
-            >
-              <Input type="email" />
-            </Form.Item>
-
-            <Form.Item
-              label="Password"
-              name="password"
-              rules={[
-                { required: true, message: "Please input your password!" },
-              ]}
-            >
-              <Input.Password />
-            </Form.Item>
-
-            <Form.Item className="flex justify-center mt-4">
-              <Button type="primary" htmlType="submit" loading={loading}>
-                Sign in
-              </Button>
-            </Form.Item>
-          </Form>
         </div>
-      </Layout.Content>
-    </Layout>
+        <form
+          onSubmit={form.handleSubmit(handleLogin)}
+          className="mt-8 space-y-6"
+        >
+          <div className="space-y-4">
+            <Input
+              {...form.register("email")}
+              type="email"
+              label="Email"
+              error={form.formState.errors.email?.message}
+            />
+
+            <Input
+              {...form.register("password")}
+              type="password"
+              label="Password"
+              error={form.formState.errors.password?.message}
+            />
+          </div>
+
+          <div className="flex justify-center">
+            <Button type="submit" isLoading={loading}>
+              Sign in
+            </Button>
+          </div>
+        </form>
+      </div>
+    </div>
   );
 }

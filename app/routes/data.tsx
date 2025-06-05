@@ -1,4 +1,3 @@
-import { Typography } from "antd";
 import { useMemo, type ReactNode } from "react";
 import * as d3 from "d3";
 import { useQuery } from "@tanstack/react-query";
@@ -49,7 +48,7 @@ async function fetchTroops(): Promise<Array<Troop>> {
 
 async function fetchTemperatures(): Promise<Array<Temperature>> {
   const temperatures = await fetch("/temperatures.csv").then((res) =>
-    res.text(),
+    res.text()
   );
   return parseCsv(temperatures, {
     LONT: "number",
@@ -69,7 +68,7 @@ function parseValue(value: string, type: string): string | number {
 
 function parseCsv(
   csv: string,
-  schema: Record<string, string>,
+  schema: Record<string, string>
 ): Array<Record<string, unknown>> {
   const lines = csv.split(/[\r\n]+/);
   const headers = lines[0].split(",");
@@ -318,119 +317,72 @@ function GeoBackground(): ReactNode {
 }
 
 export default function Data(): ReactNode {
-  const troopsQuery = useQuery({
+  const { data: troops } = useQuery({
     queryKey: ["troops"],
     queryFn: fetchTroops,
   });
 
-  const temperaturesQuery = useQuery({
+  const { data: temperatures } = useQuery({
     queryKey: ["temperatures"],
     queryFn: fetchTemperatures,
   });
 
-  const temperatures = temperaturesQuery.data ?? [];
-
-  const { lineSegments, points } = useMemo(() => {
-    const troops = troopsQuery.data ?? [];
-    // Update stroke scale based on data
-    strokeScale.domain([0, d3.max(troops, (d) => d.SURV) ?? 340000]);
-
-    const divisionGroups = d3.group(troops, (d) => d.DIV);
-    const segments: Array<LineSegment> = [];
-    const pts: Array<Troop> = [];
-
-    for (const [divisionNumber, divisionTroops] of divisionGroups) {
-      pts.push(...divisionTroops);
-
-      for (let i = 0; i < divisionTroops.length - 1; i++) {
-        const d = divisionTroops[i];
-        const currentWidth = strokeScale(d.SURV);
-        const prevWidth = strokeScale(divisionTroops[i + 1].SURV);
-
-        segments.push({
-          points: [divisionTroops[i + 1], d],
-          strokeWidth: (currentWidth + prevWidth) / 2,
-          color: d.DIR === "A" ? "#D4B996" : "#000000",
-          division: divisionNumber,
-        });
-      }
-    }
-
-    return { lineSegments: segments, points: pts };
-  }, [troopsQuery.data]);
-
-  const totalHeight =
-    dimensions.height +
-    dimensions.margin.top +
-    dimensions.margin.bottom +
-    dimensions.tempHeight +
-    dimensions.tempMargin.top +
-    dimensions.tempMargin.bottom;
+  if (!troops || !temperatures) {
+    return null;
+  }
 
   return (
-    <main>
-      <Typography.Title level={1}>Data</Typography.Title>
+    <div className="p-8">
+      <h1 className="text-2xl font-bold mb-8">Napoleon&rsquo;s March</h1>
       <svg
         width={
           dimensions.width + dimensions.margin.left + dimensions.margin.right
         }
-        height={totalHeight}
+        height={
+          dimensions.height + dimensions.margin.top + dimensions.margin.bottom
+        }
       >
         <g
           transform={`translate(${dimensions.margin.left},${dimensions.margin.top})`}
         >
-          {/* Main plot */}
           <GeoBackground />
-          {lineSegments.map((segment, i) => (
-            <TroopPath key={i} {...segment} />
+          {troops.map((troop, i) => (
+            <TroopPoint key={i} troop={troop} />
           ))}
-          {points.map((point, i) => (
-            <TroopPoint key={i} troop={point} />
+          {troops.map((troop, i) => {
+            if (i === troops.length - 1) return null;
+            const nextTroop = troops[i + 1];
+            const strokeWidth = strokeScale(troop.SURV);
+            const color = troop.DIR === "A" ? "#D4B996" : "#000000";
+            return (
+              <TroopPath
+                key={i}
+                points={[troop, nextTroop]}
+                strokeWidth={strokeWidth}
+                color={color}
+              />
+            );
+          })}
+        </g>
+        <g
+          transform={`translate(${dimensions.margin.left},${
+            dimensions.height +
+            dimensions.margin.top +
+            dimensions.tempMargin.top
+          })`}
+        >
+          <TemperatureLine temperatures={temperatures} />
+          {temperatures.map((temperature, i) => (
+            <TemperaturePoint key={i} temperature={temperature} />
           ))}
-
-          {/* Temperature subplot */}
-          <g
-            transform={`translate(0,${
-              dimensions.height + dimensions.tempMargin.top
-            })`}
-          >
-            <TemperatureLine temperatures={temperatures} />
-            {temperatures.map((temp, i) => (
-              <TemperaturePoint key={i} temperature={temp} />
-            ))}
-            <XAxis
-              scale={tempXScale}
-              transform={`translate(0,${dimensions.tempHeight})`}
-            />
-            <YAxis
-              scale={tempYScale}
-              tickFormat={(d) => `${Number(d)}°C`}
-              tickValues={[-30, -25, -20, -15, -10, -5, 0]}
-            />
-            <text
-              transform="rotate(-90)"
-              y={-45}
-              x={-dimensions.tempHeight / 2}
-              style={{
-                fontSize: "12px",
-                textAnchor: "middle",
-              }}
-            >
-              Temperature (°C)
-            </text>
-            <text
-              x={dimensions.width / 2}
-              y={dimensions.tempHeight + 35}
-              style={{
-                fontSize: "12px",
-                textAnchor: "middle",
-              }}
-            >
-              Longitude
-            </text>
-          </g>
+          <XAxis scale={tempXScale} />
+          <YAxis
+            scale={tempYScale}
+            transform={`translate(0,${dimensions.tempHeight})`}
+            tickFormat={(d) => `${d}°C`}
+          />
         </g>
       </svg>
-    </main>
+    </div>
   );
 }

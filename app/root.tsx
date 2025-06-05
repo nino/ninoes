@@ -1,8 +1,5 @@
-import "@ant-design/v5-patch-for-react-19";
-import { App as AntApp } from "antd";
 import {
   isRouteErrorResponse,
-  Link,
   Links,
   Meta,
   Outlet,
@@ -11,10 +8,12 @@ import {
   useNavigation,
 } from "react-router";
 import * as Sentry from "@sentry/react";
-import { useSyncExternalStore, type ReactNode } from "react";
-import { ConfigProvider, theme } from "antd";
+import { type ReactNode } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Button, Layout as AntdLayout, Menu } from "antd";
+import { useSession } from "./hooks/useSession";
+import { Layout as OtherLayout } from "./components/Layout";
+import { Button } from "./components/ui/Button";
+import { ToastProvider } from "./components/ui/Toast";
 
 if (import.meta.env.PROD) {
   Sentry.init({
@@ -35,7 +34,6 @@ if (import.meta.env.PROD) {
 
 import type { Route } from "./+types/root";
 import "./app.css";
-import { useSession } from "./hooks/useSession";
 
 export const links: Route.LinksFunction = () => [];
 
@@ -58,29 +56,11 @@ export function Layout({ children }: { children: ReactNode }): ReactNode {
   );
 }
 
-function useSystemDarkMode(): boolean {
-  const mediaQuery = "(prefers-color-scheme: dark)";
-
-  const subscribe = (callback: () => void) => {
-    const matchMedia = window.matchMedia(mediaQuery);
-    matchMedia.addEventListener("change", callback);
-    return () => matchMedia.removeEventListener("change", callback);
-  };
-
-  const getSnapshot = (): boolean => {
-    return window.matchMedia(mediaQuery).matches;
-  };
-
-  const getServerSnapshot = (): boolean => false;
-
-  return useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
-}
-
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       staleTime: 1000 * 60, // 1 minute
-      refetchOnWindowFocus: false,
+      refetchOnWindowFocus: true,
     },
   },
 });
@@ -88,80 +68,31 @@ const queryClient = new QueryClient({
 function AuthenticatedLayout({ children }: { children: ReactNode }): ReactNode {
   const { session } = useSession();
   return (
-    <AntdLayout>
-      <AntdLayout.Header>
-        <Menu
-          items={[
-            { key: "home", title: "Home", label: <Link to="/">Home 🏠</Link> },
-            {
-              key: "vote",
-              title: "Vote",
-              label: <Link to="/vote">Vote 🏩</Link>,
-            },
-            {
-              key: "teams",
-              title: "Teams",
-              label: <Link to="/teams">Teams 🏃‍♂️</Link>,
-            },
-            {
-              key: "elo",
-              title: "Elo Leaderboard",
-              label: <Link to="/elo">Elo Leaderboard</Link>,
-            },
-            {
-              key: "leaderboard",
-              title: "Leaderboard",
-              label: <Link to="/leaderboard">Leaderboard 🥇</Link>,
-            },
-          ]}
-          mode="horizontal"
-          theme="dark"
-        />
-      </AntdLayout.Header>
-
-      <AntdLayout.Content className="p-4 md:p-8">{children}</AntdLayout.Content>
-      <AntdLayout.Footer>
+    <Layout>
+      <OtherLayout>
+        {children}
         {session && (
-          <form action="/logout" method="post">
-            <Button htmlType="submit">Sign Out</Button>
-          </form>
+          <div className="fixed bottom-4 right-4">
+            <form action="/logout" method="post">
+              <Button variant="secondary" type="submit">
+                Sign Out
+              </Button>
+            </form>
+          </div>
         )}
-      </AntdLayout.Footer>
-    </AntdLayout>
+      </OtherLayout>
+    </Layout>
   );
 }
 
 export default function App(): ReactNode {
-  const isDarkMode = useSystemDarkMode();
-
   return (
     <QueryClientProvider client={queryClient}>
-      <ConfigProvider
-        theme={{
-          token: {
-            colorPrimary: "#835",
-            borderRadius: 6,
-          },
-          algorithm: isDarkMode ? theme.darkAlgorithm : theme.defaultAlgorithm,
-        }}
-      >
-        <AntApp>
-          {/* {isLoading ? (
-            <div className="flex m-8 justify-center">
-              <Spin />
-            </div>
-          ) : session ? (
-            <AuthenticatedLayout>
-              <Outlet />
-            </AuthenticatedLayout>
-          ) : (
-            <Auth />
-          )} */}
-          <AuthenticatedLayout>
-            <Outlet />
-          </AuthenticatedLayout>
-        </AntApp>
-      </ConfigProvider>
+      <ToastProvider>
+        <AuthenticatedLayout>
+          <Outlet />
+        </AuthenticatedLayout>
+      </ToastProvider>
     </QueryClientProvider>
   );
 }

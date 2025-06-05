@@ -1,4 +1,3 @@
-import { Button, Space, App, Spin } from "antd";
 import {
   useRandomNames,
   useCreateVote,
@@ -11,11 +10,14 @@ import type { LoaderFunctionArgs } from "react-router";
 import { Link, useLoaderData } from "react-router";
 import type { ReactNode } from "react";
 import type { User } from "@supabase/supabase-js";
+import { Button } from "~/components/ui/Button";
+import { useToast } from "~/components/ui/Toast";
 
 export const loader = async ({
   request,
 }: LoaderFunctionArgs): Promise<{ user: User }> => {
   const { user } = await requireUser(request);
+  console.log({ user });
   return { user };
 };
 
@@ -25,10 +27,14 @@ export default function Vote(): ReactNode {
   const createVote = useCreateVote();
   const vote = useCreateVoteNew();
   const teamsQuery = useTeams({ page: 0, pageSize: 10 });
-  const { message } = App.useApp();
+  const { showToast } = useToast();
 
   if (isLoading || !names || teamsQuery.isPending) {
-    return <Spin />;
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
   }
 
   const handleVote = async (selectedNameIndex: number): Promise<void> => {
@@ -41,10 +47,10 @@ export default function Vote(): ReactNode {
         teamId: teamsQuery.data.data[0].id,
       });
 
-      message.success("Votes recorded successfully!");
+      showToast("success", "Votes recorded successfully!");
       void refetch();
     } catch (error) {
-      message.error("Failed to record votes");
+      showToast("error", "Failed to record votes");
       console.error(error);
     }
   };
@@ -57,59 +63,58 @@ export default function Vote(): ReactNode {
             nameId: names[index].id,
             voteType: VoteType.BAN,
           });
-        }),
+        })
       );
 
-      message.success("Ban votes recorded successfully!");
+      showToast("success", "Ban votes recorded successfully!");
       void refetch();
     } catch (error) {
-      message.error("Failed to record ban votes");
+      showToast("error", "Failed to record ban votes");
       console.error(error);
     }
   };
 
+  console.log('what');
   return (
     <div className="flex flex-col items-center gap-8 p-8">
       <h1 className="text-2xl font-bold">Choose a name</h1>
       <div className="text-sm -mt-4">
         (now with <Link to="/elo">Elo scores</Link>, ACTUALLY FOR REALZ!)
       </div>
-      <Space size="large">
+      <div className="flex gap-4">
         {names.map((name, index) => (
           <Button
             key={name.id}
-            size="large"
-            type="primary"
             onClick={() => handleVote(index)}
-            loading={createVote.isPending || isFetching}
+            isLoading={createVote.isPending || isFetching}
           >
             {name.name}
           </Button>
         ))}
-      </Space>
-      <Space size="large" wrap className="justify-center">
+      </div>
+      <div className="flex gap-4 flex-wrap justify-center">
         <Button
-          danger
+          variant="danger"
           onClick={() => handleBan([0])}
-          loading={createVote.isPending || isFetching}
+          isLoading={createVote.isPending || isFetching}
         >
           Ban {names[0].name}
         </Button>
         <Button
-          danger
+          variant="danger"
           onClick={() => handleBan([1])}
-          loading={createVote.isPending || isFetching}
+          isLoading={createVote.isPending || isFetching}
         >
           Ban {names[1].name}
         </Button>
         <Button
-          danger
+          variant="danger"
           onClick={() => handleBan([0, 1])}
-          loading={createVote.isPending || isFetching}
+          isLoading={createVote.isPending || isFetching}
         >
           Ban both
         </Button>
-      </Space>
+      </div>
     </div>
   );
 }

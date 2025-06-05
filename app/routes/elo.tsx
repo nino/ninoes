@@ -1,7 +1,8 @@
-import { Table, type TableProps } from "antd";
 import { useEloLeaderboard, useTeams } from "~/hooks/useSupabase";
 import { useState, type ReactNode } from "react";
 import type { TeamEloWithName } from "~/model/types";
+import { Table } from "~/components/ui/Table";
+import type { ColumnDef } from "@tanstack/react-table";
 
 export default function Leaderboard(): ReactNode {
   const [pagination, setPagination] = useState({
@@ -26,43 +27,22 @@ export default function Leaderboard(): ReactNode {
     orderBy: sorting.orderBy,
     orderDirection: sorting.orderDirection,
   });
-  console.log({ teamId, eloLeaderboard: eloLeaderboard.data });
 
-  const columns: TableProps<TeamEloWithName>["columns"] = [
-    { title: "ELO", dataIndex: "elo", sorter: true },
+  const columns: Array<ColumnDef<TeamEloWithName>> = [
     {
-      title: "Name",
-      key: "name",
-      dataIndex: ["name", "name"],
+      accessorKey: "elo",
+      header: "ELO",
+    },
+    {
+      accessorKey: "name.name",
+      header: "Name",
     },
   ];
 
   return (
     <div className="space-y-8">
       <h1 className="text-2xl font-bold">Name Leaderboard</h1>
-      <Table
-        dataSource={eloLeaderboard.data?.data ?? []}
-        columns={columns}
-        loading={eloLeaderboard.isPending}
-        rowKey="id"
-        scroll={{ x: "max-content" }}
-        pagination={{
-          ...pagination,
-          onChange: (page, pageSize) => {
-            setPagination({ current: page, pageSize });
-          },
-          total: eloLeaderboard.data?.total ?? 0,
-        }}
-        onChange={(pagination, _, sorter) => {
-          if (!Array.isArray(sorter) && sorter.column) {
-            setSorting({
-              orderBy: sorter.field as "elo" | "name",
-              orderDirection: sorter.order === "ascend" ? "asc" : "desc",
-            });
-          }
-        }}
-        size="small"
-      />
+      <Table data={eloLeaderboard.data?.data ?? []} columns={columns} />
     </div>
   );
 }

@@ -6,14 +6,20 @@ import {
   useSubmit,
 } from "react-router";
 import { z } from "zod";
-import { Form, Input, Button, Alert, Card } from "antd";
-import { UserOutlined, LockOutlined } from "@ant-design/icons";
 import type { AuthError } from "@supabase/supabase-js";
 import type { ReactNode } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Button } from "~/components/ui/Button";
+import { Input } from "~/components/ui/Input";
+import { useToast } from "~/components/ui/Toast";
+
 const LoginSchema = z.object({
   email: z.string().email(),
   password: z.string().min(8),
 });
+
+type LoginFormData = z.infer<typeof LoginSchema>;
 
 export async function action({
   request,
@@ -48,8 +54,17 @@ export async function action({
 export default function LoginPage(): ReactNode {
   const actionData = useActionData<typeof action>();
   const submit = useSubmit();
+  const { showToast } = useToast();
 
-  const onFinish = (values: { email: string; password: string }): void => {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginFormData>({
+    resolver: zodResolver(LoginSchema),
+  });
+
+  const onSubmit = (values: LoginFormData): void => {
     const formData = new FormData();
     formData.append("email", values.email);
     formData.append("password", values.password);
@@ -63,6 +78,10 @@ export default function LoginPage(): ReactNode {
         : actionData.error.message || "Login failed. Please try again."
       : null;
 
+  if (errorMessage) {
+    showToast("error", errorMessage);
+  }
+
   return (
     <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-sm">
@@ -72,63 +91,51 @@ export default function LoginPage(): ReactNode {
       </div>
 
       <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-        <Card>
-          {errorMessage != null && (
-            <Alert
-              message="Error"
-              description={errorMessage}
-              type="error"
-              showIcon
-              className="mb-4"
-            />
-          )}
+        <div className="bg-white p-8 rounded-lg shadow">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+            <div>
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium leading-6 text-gray-900"
+              >
+                Email
+              </label>
+              <div className="mt-2">
+                <Input
+                  id="email"
+                  type="email"
+                  autoComplete="email"
+                  {...register("email")}
+                  error={errors.email?.message}
+                />
+              </div>
+            </div>
 
-          <Form
-            name="login"
-            initialValues={{ remember: true }}
-            onFinish={onFinish}
-            layout="vertical"
-          >
-            <Form.Item
-              name="email"
-              label="Email"
-              rules={[
-                { required: true, message: "Please input your email!" },
-                {
-                  type: "email",
-                  message: "Please enter a valid email address",
-                },
-              ]}
-            >
-              <Input
-                prefix={<UserOutlined />}
-                placeholder="Email"
-                size="large"
-              />
-            </Form.Item>
+            <div>
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium leading-6 text-gray-900"
+              >
+                Password
+              </label>
+              <div className="mt-2">
+                <Input
+                  id="password"
+                  type="password"
+                  autoComplete="current-password"
+                  {...register("password")}
+                  error={errors.password?.message}
+                />
+              </div>
+            </div>
 
-            <Form.Item
-              name="password"
-              label="Password"
-              rules={[
-                { required: true, message: "Please input your password!" },
-                { min: 8, message: "Password must be at least 8 characters" },
-              ]}
-            >
-              <Input.Password
-                prefix={<LockOutlined />}
-                placeholder="Password"
-                size="large"
-              />
-            </Form.Item>
-
-            <Form.Item>
-              <Button type="primary" htmlType="submit" size="large" block>
+            <div>
+              <Button type="submit" className="w-full">
                 Sign in
               </Button>
-            </Form.Item>
-          </Form>
-        </Card>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   );

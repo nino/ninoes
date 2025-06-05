@@ -1,7 +1,8 @@
-import { Table, type TableProps } from "antd";
 import { useNames, useVotes } from "./hooks/useSupabase";
 import type { Name, VoteWithExtras } from "./model/types";
 import { useState, type ReactNode } from "react";
+import { Table } from "~/components/ui/Table";
+import type { ColumnDef } from "@tanstack/react-table";
 
 type SortState = {
   orderBy: string;
@@ -46,49 +47,35 @@ export function NamesRanking(): ReactNode {
     orderDirection: votesSort.orderDirection,
   });
 
-  const nameColumns: TableProps<Name>["columns"] = [
+  const nameColumns: Array<ColumnDef<Name>> = [
     {
-      title: "Name",
-      dataIndex: "name",
-      key: "name",
-      sorter: true,
+      accessorKey: "name",
+      header: "Name",
     },
     {
-      title: "Created At",
-      dataIndex: "created_at",
-      key: "created_at",
-      render: (date: Date) => date.toLocaleDateString(),
-      sorter: true,
-      defaultSortOrder: "descend",
+      accessorKey: "created_at",
+      header: "Created At",
+      cell: ({ row }) => row.original.created_at.toLocaleDateString(),
     },
   ];
 
-  const voteColumns: TableProps<VoteWithExtras>["columns"] = [
+  const voteColumns: Array<ColumnDef<VoteWithExtras>> = [
     {
-      title: "Name",
-      dataIndex: "name_id",
-      key: "name_id",
-      render: (_: unknown, record: VoteWithExtras) => record.name.name,
+      accessorKey: "name.name",
+      header: "Name",
     },
     {
-      title: "User ID",
-      dataIndex: "user_id",
-      key: "user_id",
-      render: (_: unknown, record: VoteWithExtras) => record.user.name,
+      accessorKey: "user.name",
+      header: "User ID",
     },
     {
-      title: "Vote Type",
-      dataIndex: "vote_type",
-      key: "vote_type",
-      sorter: true,
+      accessorKey: "vote_type",
+      header: "Vote Type",
     },
     {
-      title: "Created At",
-      dataIndex: "created_at",
-      key: "created_at",
-      render: (date: Date) => date.toLocaleString(),
-      sorter: true,
-      defaultSortOrder: "descend",
+      accessorKey: "created_at",
+      header: "Created At",
+      cell: ({ row }) => row.original.created_at.toLocaleString(),
     },
   ];
 
@@ -97,29 +84,34 @@ export function NamesRanking(): ReactNode {
       <div>
         <h2 className="text-xl font-bold mb-4">Names</h2>
         <Table
-          size="small"
-          scroll={{ x: "max-content" }}
-          dataSource={names}
+          data={names}
           columns={nameColumns}
-          loading={isLoadingNames}
-          rowKey="id"
+          isLoading={isLoadingNames}
           pagination={{
-            current: namesPagination.page + 1,
+            pageIndex: namesPagination.page,
             pageSize: namesPagination.pageSize,
-            onChange: (page, pageSize) => {
-              setNamesPagination({
-                page: page - 1,
+            onPageChange: (page) => {
+              setNamesPagination((prev) => ({
+                ...prev,
+                page,
+              }));
+            },
+            onPageSizeChange: (pageSize) => {
+              setNamesPagination((prev) => ({
+                ...prev,
                 pageSize,
-              });
+              }));
             },
           }}
-          onChange={(_, __, sorter) => {
-            if ("field" in sorter && "order" in sorter) {
+          sorting={{
+            sortBy: namesSort.orderBy,
+            sortDirection: namesSort.orderDirection,
+            onSortChange: (sortBy, sortDirection) => {
               setNamesSort({
-                orderBy: String(sorter.field),
-                orderDirection: sorter.order === "ascend" ? "asc" : "desc",
+                orderBy: sortBy,
+                orderDirection,
               });
-            }
+            },
           }}
         />
       </div>
@@ -128,30 +120,35 @@ export function NamesRanking(): ReactNode {
           Votes <a href="/votes">(see all)</a>
         </h2>
         <Table
-          size="small"
-          scroll={{ x: "max-content" }}
-          dataSource={votesData?.data}
+          data={votesData?.data ?? []}
           columns={voteColumns}
-          loading={isLoadingVotes}
-          rowKey="id"
+          isLoading={isLoadingVotes}
           pagination={{
-            current: votesPagination.page + 1,
+            pageIndex: votesPagination.page,
             pageSize: votesPagination.pageSize,
-            onChange: (page, pageSize) => {
-              setVotesPagination({
-                page: page - 1,
+            totalCount: votesData?.total,
+            onPageChange: (page) => {
+              setVotesPagination((prev) => ({
+                ...prev,
+                page,
+              }));
+            },
+            onPageSizeChange: (pageSize) => {
+              setVotesPagination((prev) => ({
+                ...prev,
                 pageSize,
+              }));
+            },
+          }}
+          sorting={{
+            sortBy: votesSort.orderBy,
+            sortDirection: votesSort.orderDirection,
+            onSortChange: (sortBy, sortDirection) => {
+              setVotesSort({
+                orderBy: sortBy,
+                orderDirection,
               });
             },
-            total: votesData?.total ?? undefined,
-          }}
-          onChange={(_, __, sorter) => {
-            if ("field" in sorter && "order" in sorter) {
-              setVotesSort({
-                orderBy: String(sorter.field),
-                orderDirection: sorter.order === "ascend" ? "asc" : "desc",
-              });
-            }
           }}
         />
       </div>

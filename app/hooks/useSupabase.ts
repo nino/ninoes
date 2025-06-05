@@ -26,7 +26,6 @@ import {
 } from "../model/types";
 import { useSession } from "./useSession";
 import { z } from "zod";
-import { App } from "antd";
 import { BASE_ELO, updateEloRatings } from "~/utils/elo";
 
 export function useNames({
@@ -129,7 +128,7 @@ export function useRandomNames(): UseQueryResult<Array<Name>> {
   return useQuery({
     queryKey: ["randomNames"],
     queryFn: async () => {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+       
       const { data, error } = await supabase.rpc("get_two_names");
 
       const result = z.array(NameSchema).parse(data);
@@ -257,7 +256,7 @@ export function useNameScores({
   return useQuery({
     queryKey: ["nameScores", limit, offset, orderBy, orderDirection],
     queryFn: async () => {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+       
       const { data, error } = await supabase.rpc("get_leaderboard", {
         p_limit: limit,
         p_offset: offset,
@@ -369,7 +368,7 @@ export function useTeamMemberships({
 }): UseQueryResult<{
   data: Array<TeamMembershipWithTeam>;
   total: number;
-}> {
+} | null> {
   const { session } = useSession();
 
   return useQuery({
@@ -383,7 +382,8 @@ export function useTeamMemberships({
     ],
     queryFn: async () => {
       if (!session) {
-        throw new Error("User not authenticated");
+        return null;
+        // throw new Error("User not authenticated");
       }
 
       const { data, error, count } = await supabase
@@ -399,7 +399,7 @@ export function useTeamMemberships({
 
       return {
         data: data.map((membership) =>
-          TeamMembershipWithTeamSchema.parse(membership),
+          TeamMembershipWithTeamSchema.parse(membership)
         ),
         total: count ?? 0,
       };
@@ -455,7 +455,6 @@ export function useLeaveTeam(): UseMutationResult<void, Error, string> {
 
 export function useDeleteVote(): UseMutationResult<void, Error, string> {
   const queryClient = useQueryClient();
-  const { message } = App.useApp();
 
   return useMutation({
     mutationFn: async (voteId: string) => {
@@ -467,11 +466,9 @@ export function useDeleteVote(): UseMutationResult<void, Error, string> {
     },
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["votes"] });
-      message.success("Vote deleted successfully");
     },
     onError: (error) => {
       console.error(error);
-      message.error("Failed to delete vote");
     },
   });
 }
@@ -515,20 +512,20 @@ export function useEloFight(): UseMutationResult<void, Error, EloFightParams> {
           name_id: win,
           elo: BASE_ELO,
           team_id: teamId,
-        },
+        }
       );
       const loserElo = TeamEloSchema.parse(
         data.find((item: TeamElo) => item.name_id === win) ?? {
           name_id: lose,
           elo: BASE_ELO,
           team_id: teamId,
-        },
+        }
       );
       console.log({ win, lose, winnerElo, loserElo });
 
       const [winnerNewElo, loserNewElo] = updateEloRatings(
         winnerElo.elo,
-        loserElo.elo,
+        loserElo.elo
       );
 
       console.log({ winnerNewElo, loserNewElo });

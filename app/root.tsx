@@ -13,7 +13,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useSession } from "./hooks/useSession";
 import { Layout as OtherLayout } from "./components/Layout";
 import { Button } from "./components/ui/Button";
-import { ToastProvider } from "./components/ui/Toast";
+import { Toaster } from "sonner";
 
 if (import.meta.env.PROD) {
   Sentry.init({
@@ -46,6 +46,19 @@ export function Layout({ children }: { children: ReactNode }): ReactNode {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <Meta />
         <Links />
+        <style
+          dangerouslySetInnerHTML={{
+            __html: `
+              body {
+                transition: opacity ease-in 0.2s;
+              }
+              body[unresolved] {
+                opacity: 0;
+                display: block;
+              }
+            `,
+          }}
+        />
       </head>
       <body className={nav.state === "loading" ? "opacity-40" : ""}>
         {children}
@@ -88,11 +101,10 @@ function AuthenticatedLayout({ children }: { children: ReactNode }): ReactNode {
 export default function App(): ReactNode {
   return (
     <QueryClientProvider client={queryClient}>
-      <ToastProvider>
-        <AuthenticatedLayout>
-          <Outlet />
-        </AuthenticatedLayout>
-      </ToastProvider>
+      <AuthenticatedLayout>
+        <Outlet />
+      </AuthenticatedLayout>
+      <Toaster />
     </QueryClientProvider>
   );
 }

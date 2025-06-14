@@ -83,74 +83,13 @@ export function NamesRanking(): ReactNode {
     <div className="space-y-8">
       <div>
         <h2 className="text-xl font-bold mb-4">Names</h2>
-        <Table
-          data={names}
-          columns={nameColumns}
-          isLoading={isLoadingNames}
-          pagination={{
-            pageIndex: namesPagination.page,
-            pageSize: namesPagination.pageSize,
-            onPageChange: (page) => {
-              setNamesPagination((prev) => ({
-                ...prev,
-                page,
-              }));
-            },
-            onPageSizeChange: (pageSize) => {
-              setNamesPagination((prev) => ({
-                ...prev,
-                pageSize,
-              }));
-            },
-          }}
-          sorting={{
-            sortBy: namesSort.orderBy,
-            sortDirection: namesSort.orderDirection,
-            onSortChange: (sortBy, sortDirection) => {
-              setNamesSort({
-                orderBy: sortBy,
-                orderDirection,
-              });
-            },
-          }}
-        />
+        <Table data={names} columns={nameColumns} />
       </div>
       <div>
         <h2 className="text-xl font-bold mb-4">
           Votes <a href="/votes">(see all)</a>
         </h2>
-        <Table
-          data={votesData?.data ?? []}
-          columns={voteColumns}
-          isLoading={isLoadingVotes}
-          pagination={{
-            pageIndex: votesPagination.page,
-            pageSize: votesPagination.pageSize,
-            totalCount: votesData?.total,
-            onPageChange: (page) => {
-              setVotesPagination((prev) => ({
-                ...prev,
-                page,
-              }));
-            },
-            onPageSizeChange: (pageSize) => {
-              setVotesPagination((prev) => ({
-                ...prev,
-                pageSize,
-              }));
-            },
-          }}
-          sorting={{
-            sortBy: votesSort.orderBy,
-            sortDirection: votesSort.orderDirection,
-            onSortChange: (sortBy, sortDirection) => {
-              setVotesSort({
-                orderBy: sortBy,
-                orderDirection,
-              });
-            },
-          }}
-        />
+        <Table data={votesData?.data ?? []} columns={voteColumns} />
       </div>
     </div>
   );

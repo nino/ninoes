@@ -74,7 +74,6 @@ export default function Vote(): ReactNode {
     }
   };
 
-  console.log('what');
   return (
     <div className="flex flex-col items-center gap-8 p-8">
       <h1 className="text-2xl font-bold">Choose a name</h1>

@@ -1,37 +1,19 @@
 import { useDeleteVote, useVotes } from "~/hooks/useSupabase";
-import { VoteType, type VoteWithExtras } from "~/model/types";
-import { type ReactNode, useState } from "react";
+import { type VoteWithExtras } from "~/model/types";
+import { type ReactNode } from "react";
 import { Table } from "~/components/ui/Table";
 import { Button } from "~/components/ui/Button";
+import { Spinner } from "~/components/ui/Spinner";
 import { useToast } from "~/components/ui/Toast";
 import type { ColumnDef } from "@tanstack/react-table";
 
-type SortState = {
-   orderBy: string;
-   orderDirection: "asc" | "desc";
-};
-
-type PaginationState = {
-   page: number;
-   pageSize: number;
-};
-
 export default function Votes(): ReactNode {
-   const [votesPagination, setVotesPagination] = useState<PaginationState>({
+   const { data: votesData, isFetching: isLoadingVotes } = useVotes({
       page: 0,
-      pageSize: 50,
-   });
-   const [votesSort, setVotesSort] = useState<SortState>({
+      pageSize: 1000,
       orderBy: "created_at",
       orderDirection: "desc",
-   });
-   const [typeFilter, setTypeFilter] = useState<Array<VoteType>>([]);
-   const { data: votesData, isFetching: isLoadingVotes } = useVotes({
-      page: votesPagination.page,
-      pageSize: votesPagination.pageSize,
-      orderBy: votesSort.orderBy,
-      orderDirection: votesSort.orderDirection,
-      voteTypes: typeFilter,
+      voteTypes: undefined,
    });
 
    const deleteVote = useDeleteVote();
@@ -86,7 +68,12 @@ export default function Votes(): ReactNode {
       <div className="space-y-8">
          <div>
             <h2 className="text-xl font-bold mb-4">All votes</h2>
-            <Table data={votesData?.data ?? []} columns={voteColumns} />
+            {isLoadingVotes && (
+              <Spinner />
+            )}
+            {votesData?.data && (
+               <Table data={votesData.data} columns={voteColumns} />
+            )}
          </div>
       </div>
    );

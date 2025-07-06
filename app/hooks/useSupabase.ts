@@ -565,7 +565,7 @@ export function useEloLeaderboard({
    teamId?: string | null;
    page?: number;
    pageSize?: number;
-   orderBy?: "elo" | "name";
+   orderBy?: string;
    orderDirection?: "asc" | "desc";
 } = {}): UseQueryResult<{
    data: Array<TeamEloWithName>;

@@ -3,39 +3,44 @@ import {
    flexRender,
    getCoreRowModel,
    getSortedRowModel,
+   type OnChangeFn,
+   type PaginationState,
    type SortingState,
    useReactTable,
 } from "@tanstack/react-table";
-import { type ReactNode, useState } from "react";
-
-interface TableState {}
+import React from "react";
 
 interface TableProps<TData> {
    data: Array<TData>;
    columns: Array<ColumnDef<TData>>;
    onRowClick?: (row: TData) => void;
-   state: TableState;
-   onChange: (newState: TableState) => void;
+   sorting?: SortingState;
+   setSorting?: OnChangeFn<SortingState>;
+   pagination?: PaginationState;
+   setPagination?: OnChangeFn<PaginationState>;
 }
 
 export function Table<TData>({
    data,
    columns,
    onRowClick,
-   state,
-   onChange,
-}: TableProps<TData>): ReactNode {
-   const [sorting, setSorting] = useState<SortingState>([]);
-
+   pagination,
+   setPagination,
+   sorting,
+   setSorting,
+}: TableProps<TData>): React.ReactNode {
    const table = useReactTable({
       data,
       columns,
       getCoreRowModel: getCoreRowModel(),
       getSortedRowModel: getSortedRowModel(),
       onSortingChange: setSorting,
+      onPaginationChange: setPagination,
       state: {
          sorting,
+         pagination,
       },
+      manualPagination: true,
    });
 
    return (
@@ -47,12 +52,12 @@ export function Table<TData>({
                      {headerGroup.headers.map((header) => (
                         <th
                            key={header.id}
-                           className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                           className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
                            onClick={header.column.getToggleSortingHandler()}
                         >
                            {flexRender(
                               header.column.columnDef.header,
-                              header.getContext(),
+                              header.getContext()
                            )}
                            {{
                               asc: " 🔼",
@@ -75,11 +80,11 @@ export function Table<TData>({
                      {row.getVisibleCells().map((cell) => (
                         <td
                            key={cell.id}
-                           className="px-6 py-4 whitespace-nowrap text-sm text-gray-900"
+                           className="px-2 py-1 whitespace-nowrap text-sm text-gray-900"
                         >
                            {flexRender(
                               cell.column.columnDef.cell,
-                              cell.getContext(),
+                              cell.getContext()
                            )}
                         </td>
                      ))}

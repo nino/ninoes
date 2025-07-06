@@ -42,10 +42,6 @@ export const loader = async ({
 export default function Teams(): ReactNode {
    const { user } = useLoaderData<typeof loader>();
    const { showToast } = useToast();
-   const [page, setPage] = useState(0);
-   const [pageSize, setPageSize] = useState(50);
-   const [membershipPage, setMembershipPage] = useState(0);
-   const [membershipPageSize, setMembershipPageSize] = useState(50);
    const { data: teamsData, isLoading } = useTeams({ page, pageSize });
    const { data: membershipsData, isLoading: isMembershipsLoading } =
       useTeamMemberships({

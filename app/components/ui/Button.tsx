@@ -34,6 +34,7 @@ export function Button({
    return (
       <div className="p-1 bg-linear-to-tr from-red-200 to-pink-400 rounded-[1rem] shadow-xl">
          <button
+            style={{ margin: "1rem" }}
             className={`
         ${baseStyles}
         ${variantStyles[variant]}

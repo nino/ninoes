@@ -1,4 +1,4 @@
-import { type ReactNode, useState } from "react";
+import React from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -39,7 +39,7 @@ export const loader = async ({
    return { user };
 };
 
-export default function Teams(): ReactNode {
+export default function Teams(): React.ReactNode {
    const { user } = useLoaderData<typeof loader>();
    const { showToast } = useToast();
    const { data: teamsData, isLoading } = useTeams({ page, pageSize });

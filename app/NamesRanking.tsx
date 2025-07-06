@@ -1,50 +1,23 @@
 import { useNames, useVotes } from "./hooks/useSupabase";
 import type { Name, VoteWithExtras } from "./model/types";
-import { type ReactNode, useState } from "react";
+import { type ReactNode } from "react";
 import { Table } from "~/components/ui/Table";
 import type { ColumnDef } from "@tanstack/react-table";
-
-type SortState = {
-   orderBy: string;
-   orderDirection: "asc" | "desc";
-};
-
-type PaginationState = {
-   page: number;
-   pageSize: number;
-};
+import { Spinner } from "./components/ui/Spinner";
 
 export function NamesRanking(): ReactNode {
-   const [namesPagination, setNamesPagination] = useState<PaginationState>({
+   const { data: names, isLoading: isLoadingNames } = useNames({
       page: 0,
       pageSize: 50,
-   });
-   const [namesSort, setNamesSort] = useState<SortState>({
-      orderBy: "created_at",
-      orderDirection: "desc",
-   });
-
-   const [votesPagination, setVotesPagination] = useState<PaginationState>({
-      page: 0,
-      pageSize: 50,
-   });
-   const [votesSort, setVotesSort] = useState<SortState>({
-      orderBy: "created_at",
-      orderDirection: "desc",
-   });
-
-   const { data: names = [], isLoading: isLoadingNames } = useNames({
-      page: namesPagination.page,
-      pageSize: namesPagination.pageSize,
-      orderBy: namesSort.orderBy,
-      orderDirection: namesSort.orderDirection,
+      orderBy: "name",
+      orderDirection: "asc",
    });
 
    const { data: votesData, isFetching: isLoadingVotes } = useVotes({
-      page: votesPagination.page,
-      pageSize: votesPagination.pageSize,
-      orderBy: votesSort.orderBy,
-      orderDirection: votesSort.orderDirection,
+      page: 0,
+      pageSize: 50,
+      orderBy: "created_at",
+      orderDirection: "desc",
    });
 
    const nameColumns: Array<ColumnDef<Name>> = [
@@ -83,13 +56,17 @@ export function NamesRanking(): ReactNode {
       <div className="space-y-8">
          <div>
             <h2 className="text-xl font-bold mb-4">Names</h2>
-            <Table data={names} columns={nameColumns} />
+            {isLoadingNames && <Spinner />}
+            {names && <Table data={names} columns={nameColumns} />}
          </div>
          <div>
             <h2 className="text-xl font-bold mb-4">
                Votes <a href="/votes">(see all)</a>
             </h2>
-            <Table data={votesData?.data ?? []} columns={voteColumns} />
+            {isLoadingVotes && <Spinner />}
+            {votesData?.data && (
+               <Table data={votesData.data} columns={voteColumns} />
+            )}
          </div>
       </div>
    );

@@ -20,6 +20,7 @@ import { Input } from "~/components/ui/Input";
 import { Table } from "~/components/ui/Table";
 import { useToast } from "~/components/ui/Toast";
 import type { ColumnDef } from "@tanstack/react-table";
+import { Spinner } from "~/components/ui/Spinner";
 
 const createTeamSchema = z.object({
    name: z.string().min(1, "Team name is required"),
@@ -42,11 +43,14 @@ export const loader = async ({
 export default function Teams(): React.ReactNode {
    const { user } = useLoaderData<typeof loader>();
    const { showToast } = useToast();
-   const { data: teamsData, isLoading } = useTeams({ page, pageSize });
-   const { data: membershipsData, isLoading: isMembershipsLoading } =
+   const { data: teamsData, isPending: teamsPending } = useTeams({
+      page: 0,
+      pageSize: 100,
+   });
+   const { data: membershipsData, isPending: membershipsPending } =
       useTeamMemberships({
-         page: membershipPage,
-         pageSize: membershipPageSize,
+         page: 0,
+         pageSize: 100,
       });
    const createTeam = useCreateTeam();
    const deleteTeam = useDeleteTeam();
@@ -220,17 +224,20 @@ export default function Teams(): React.ReactNode {
 
          <div className="mb-8">
             <h2 className="text-xl font-semibold mb-4">My Teams</h2>
-            <Table data={teamsData?.data ?? []} columns={columns} />
+            {teamsPending && <Spinner />}
+            {teamsData?.data && (
+               <Table data={teamsData.data} columns={columns} />
+            )}
          </div>
 
          <div>
             <h2 className="text-xl font-semibold mb-4">
                Teams I&rsquo;m a member of
             </h2>
-            <Table
-               data={membershipsData?.data ?? []}
-               columns={membershipColumns}
-            />
+            {membershipsPending && <Spinner />}
+            {membershipsData?.data && (
+               <Table data={membershipsData.data} columns={membershipColumns} />
+            )}
          </div>
       </main>
    );

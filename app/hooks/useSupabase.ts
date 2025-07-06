@@ -245,14 +245,7 @@ export function useNameScores({
 }: {
    limit?: number;
    offset?: number;
-   orderBy?:
-      | "score"
-      | "name"
-      | "created_at"
-      | "total_votes"
-      | "upvotes"
-      | "downvotes"
-      | "controversial";
+   orderBy?: string;
    orderDirection?: "asc" | "desc";
 } = {}): UseQueryResult<{
    data: Array<NameScore>;

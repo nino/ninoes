@@ -3,41 +3,28 @@ import type { NameScore } from "~/hooks/useSupabase";
 import { type ReactNode, useState } from "react";
 import { Table } from "~/components/ui/Table";
 import type { ColumnDef } from "@tanstack/react-table";
+import { Spinner } from "~/components/ui/Spinner";
 
 export default function Leaderboard(): ReactNode {
    const [pagination, setPagination] = useState({
-      current: 1,
+      pageIndex: 0,
       pageSize: 50,
    });
-   const [sorting, setSorting] = useState<{
-      orderBy:
-         | "score"
-         | "name"
-         | "created_at"
-         | "total_votes"
-         | "upvotes"
-         | "downvotes"
-         | "controversial";
-      orderDirection: "asc" | "desc";
-   }>({
-      orderBy: "score",
-      orderDirection: "desc",
-   });
+   const [sorting, setSorting] = useState([
+      {
+         id: "score",
+         desc: true,
+      },
+   ]);
 
    const { data: scores, isLoading } = useNameScores({
       limit: pagination.pageSize,
-      offset: (pagination.current - 1) * pagination.pageSize,
-      orderBy: sorting.orderBy,
-      orderDirection: sorting.orderDirection,
+      offset: pagination.pageIndex * pagination.pageSize,
+      orderBy: sorting[0]?.id ?? "score",
+      orderDirection: sorting[0]?.desc !== false ? "desc" : "asc",
    });
 
    const columns: Array<ColumnDef<NameScore>> = [
-      {
-         id: "rank",
-         header: "Rank",
-         cell: ({ row }) =>
-            (pagination.current - 1) * pagination.pageSize + row.index + 1,
-      },
       {
          accessorKey: "name",
          header: "Name",
@@ -72,7 +59,17 @@ export default function Leaderboard(): ReactNode {
    return (
       <div className="space-y-8">
          <h1 className="text-2xl font-bold">Name Leaderboard</h1>
-         <Table data={scores?.data ?? []} columns={columns} />
+         {isLoading && <Spinner />}
+         {scores?.data && (
+            <Table
+               data={scores.data}
+               columns={columns}
+               sorting={sorting}
+               setSorting={setSorting}
+               pagination={pagination}
+               setPagination={setPagination}
+            />
+         )}
       </div>
    );
 }

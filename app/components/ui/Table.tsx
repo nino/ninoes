@@ -46,18 +46,18 @@ export function Table<TData>({
    return (
       <div className="w-full overflow-x-auto">
          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+            <thead className="bg-gray-50 dark:bg-gray-950">
                {table.getHeaderGroups().map((headerGroup) => (
                   <tr key={headerGroup.id}>
                      {headerGroup.headers.map((header) => (
                         <th
                            key={header.id}
-                           className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                           className="px-2 py-1 text-left text-xs font-medium text-gray-500 dark:text-gray-200 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
                            onClick={header.column.getToggleSortingHandler()}
                         >
                            {flexRender(
                               header.column.columnDef.header,
-                              header.getContext()
+                              header.getContext(),
                            )}
                            {{
                               asc: " 🔼",
@@ -68,7 +68,7 @@ export function Table<TData>({
                   </tr>
                ))}
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-amber-700">
                {table.getRowModel().rows.map((row) => (
                   <tr
                      key={row.id}
@@ -80,11 +80,11 @@ export function Table<TData>({
                      {row.getVisibleCells().map((cell) => (
                         <td
                            key={cell.id}
-                           className="px-2 py-1 whitespace-nowrap text-sm text-gray-900"
+                           className="px-2 py-1 whitespace-nowrap text-sm text-gray-900 dark:text-gray-50"
                         >
                            {flexRender(
                               cell.column.columnDef.cell,
-                              cell.getContext()
+                              cell.getContext(),
                            )}
                         </td>
                      ))}

@@ -68,7 +68,7 @@ export default function Leaderboard(): React.ReactNode {
                         ...current,
                         pageIndex: Math.min(
                            numPages - 1,
-                           current.pageIndex + 1
+                           current.pageIndex + 1,
                         ),
                      }))
                   }

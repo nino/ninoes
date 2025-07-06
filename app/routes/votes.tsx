@@ -68,9 +68,7 @@ export default function Votes(): ReactNode {
       <div className="space-y-8">
          <div>
             <h2 className="text-xl font-bold mb-4">All votes</h2>
-            {isLoadingVotes && (
-              <Spinner />
-            )}
+            {isLoadingVotes && <Spinner />}
             {votesData?.data && (
                <Table data={votesData.data} columns={voteColumns} />
             )}

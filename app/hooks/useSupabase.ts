@@ -400,7 +400,7 @@ export function useTeamMemberships({
 
          return {
             data: data.map((membership) =>
-               TeamMembershipWithTeamSchema.parse(membership)
+               TeamMembershipWithTeamSchema.parse(membership),
             ),
             total: count ?? 0,
          };
@@ -516,20 +516,20 @@ export function useEloFight(): UseMutationResult<void, Error, EloFightParams> {
                name_id: win,
                elo: BASE_ELO,
                team_id: teamId,
-            }
+            },
          );
          const loserElo = TeamEloSchema.parse(
             data.find((item: TeamElo) => item.name_id === win) ?? {
                name_id: lose,
                elo: BASE_ELO,
                team_id: teamId,
-            }
+            },
          );
          console.log({ win, lose, winnerElo, loserElo });
 
          const [winnerNewElo, loserNewElo] = updateEloRatings(
             winnerElo.elo,
-            loserElo.elo
+            loserElo.elo,
          );
 
          console.log({ winnerNewElo, loserNewElo });

@@ -99,7 +99,7 @@ export default function Teams(): React.ReactNode {
                   onClick={async () => {
                      if (
                         window.confirm(
-                           "Are you sure you want to delete this team?"
+                           "Are you sure you want to delete this team?",
                         )
                      ) {
                         try {
@@ -158,7 +158,7 @@ export default function Teams(): React.ReactNode {
    ];
 
    const handleCreateTeam = async (
-      values: CreateTeamFormData
+      values: CreateTeamFormData,
    ): Promise<void> => {
       try {
          await createTeam.mutateAsync({

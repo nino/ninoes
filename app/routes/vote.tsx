@@ -63,7 +63,7 @@ export default function Vote(): ReactNode {
                   nameId: names[index].id,
                   voteType: VoteType.BAN,
                });
-            })
+            }),
          );
 
          showToast("success", "Ban votes recorded successfully!");

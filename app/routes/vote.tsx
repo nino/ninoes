@@ -86,6 +86,7 @@ export default function Vote(): ReactNode {
                   key={name.id}
                   onClick={() => handleVote(index)}
                   isLoading={createVote.isPending || isFetching}
+                  big
                >
                   {name.name}
                </Button>

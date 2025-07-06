@@ -126,11 +126,15 @@ export function useUser(userId: string): UseQueryResult<User> {
 }
 
 export function useRandomNames(): UseQueryResult<Array<Name>> {
+  const teamsQuery = useTeams({ page: 0, pageSize: 10 });
+  const teamId = teamsQuery.data?.data[0]?.id;
   return useQuery({
     queryKey: ["randomNames"],
     queryFn: async () => {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      const { data, error } = await supabase.rpc("get_two_names");
+      if (teamId == null) throw new Error("unreachable");
+      const { data, error } = await supabase.rpc("get_two_names_beta", {
+        team_id: teamId,
+      });
 
       const result = z.array(NameSchema).parse(data);
 
@@ -140,6 +144,7 @@ export function useRandomNames(): UseQueryResult<Array<Name>> {
 
       return result;
     },
+    enabled: teamId != null,
   });
 }
 
@@ -257,7 +262,6 @@ export function useNameScores({
   return useQuery({
     queryKey: ["nameScores", limit, offset, orderBy, orderDirection],
     queryFn: async () => {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const { data, error } = await supabase.rpc("get_leaderboard", {
         p_limit: limit,
         p_offset: offset,
@@ -399,7 +403,7 @@ export function useTeamMemberships({
 
       return {
         data: data.map((membership) =>
-          TeamMembershipWithTeamSchema.parse(membership),
+          TeamMembershipWithTeamSchema.parse(membership)
         ),
         total: count ?? 0,
       };
@@ -515,20 +519,20 @@ export function useEloFight(): UseMutationResult<void, Error, EloFightParams> {
           name_id: win,
           elo: BASE_ELO,
           team_id: teamId,
-        },
+        }
       );
       const loserElo = TeamEloSchema.parse(
         data.find((item: TeamElo) => item.name_id === win) ?? {
           name_id: lose,
           elo: BASE_ELO,
           team_id: teamId,
-        },
+        }
       );
       console.log({ win, lose, winnerElo, loserElo });
 
       const [winnerNewElo, loserNewElo] = updateEloRatings(
         winnerElo.elo,
-        loserElo.elo,
+        loserElo.elo
       );
 
       console.log({ winnerNewElo, loserNewElo });

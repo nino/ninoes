@@ -1,6 +1,6 @@
 import { useNameScores } from "~/hooks/useSupabase";
 import type { NameScore } from "~/hooks/useSupabase";
-import { useState, type ReactNode } from "react";
+import { type ReactNode, useState } from "react";
 import { Table } from "~/components/ui/Table";
 import type { ColumnDef } from "@tanstack/react-table";
 

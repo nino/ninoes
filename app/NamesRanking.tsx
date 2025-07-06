@@ -1,6 +1,6 @@
 import { useNames, useVotes } from "./hooks/useSupabase";
 import type { Name, VoteWithExtras } from "./model/types";
-import { useState, type ReactNode } from "react";
+import { type ReactNode, useState } from "react";
 import { Table } from "~/components/ui/Table";
 import type { ColumnDef } from "@tanstack/react-table";
 

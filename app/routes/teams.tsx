@@ -1,14 +1,14 @@
-import { useState, type ReactNode } from "react";
+import { type ReactNode, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
-   useTeams,
    useCreateTeam,
    useDeleteTeam,
-   useTeamMemberships,
    useJoinTeam,
    useLeaveTeam,
+   useTeamMemberships,
+   useTeams,
 } from "~/hooks/useSupabase";
 import type { Team, TeamMembershipWithTeam } from "~/model/types";
 import { useLoaderData } from "react-router";

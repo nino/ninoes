@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import type { Route } from "./+types/home";
 import { NamesRanking } from "~/NamesRanking";
-import { useLoaderData, type LoaderFunctionArgs } from "react-router";
+import { type LoaderFunctionArgs, useLoaderData } from "react-router";
 import { requireUser } from "~/server/guards.server";
 import type { User } from "@supabase/supabase-js";
 

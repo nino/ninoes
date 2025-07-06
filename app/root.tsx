@@ -88,7 +88,7 @@ function AuthenticatedLayout({ children }: { children: ReactNode }): ReactNode {
          <OtherLayout>
             {children}
             {session && (
-               <div className="fixed bottom-4 right-4">
+               <div className="flex my-16 justify-end">
                   <form action="/logout" method="post">
                      <Button variant="secondary" type="submit">
                         Sign Out

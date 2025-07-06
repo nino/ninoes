@@ -1,6 +1,6 @@
 import { useDeleteVote, useVotes } from "~/hooks/useSupabase";
 import { VoteType, type VoteWithExtras } from "~/model/types";
-import { useState, type ReactNode } from "react";
+import { type ReactNode, useState } from "react";
 import { Table } from "~/components/ui/Table";
 import { Button } from "~/components/ui/Button";
 import { useToast } from "~/components/ui/Toast";

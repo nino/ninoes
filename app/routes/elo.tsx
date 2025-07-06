@@ -1,5 +1,5 @@
 import { useEloLeaderboard, useTeams } from "~/hooks/useSupabase";
-import { useState, type ReactNode } from "react";
+import { type ReactNode, useState } from "react";
 import type { TeamEloWithName } from "~/model/types";
 import { Table } from "~/components/ui/Table";
 import type { ColumnDef } from "@tanstack/react-table";
@@ -42,7 +42,12 @@ export default function Leaderboard(): ReactNode {
    return (
       <div className="space-y-8">
          <h1 className="text-2xl font-bold">Name Leaderboard</h1>
-         <Table data={eloLeaderboard.data?.data ?? []} columns={columns} />
+         <Table
+            data={eloLeaderboard.data?.data ?? []}
+            columns={columns}
+            state={tableState}
+            onChange={setTableState}
+         />
       </div>
    );
 }

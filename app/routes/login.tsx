@@ -1,7 +1,7 @@
 import { getSupabaseServerClient } from "~/supabase/supabase.server";
 import {
-   redirect,
    type ActionFunctionArgs,
+   redirect,
    useActionData,
    useSubmit,
 } from "react-router";

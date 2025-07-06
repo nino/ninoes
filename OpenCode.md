@@ -1,6 +1,7 @@
 # OpenCode Configuration
 
 ## Build/Test/Lint Commands
+
 - `yarn dev` - Start development server
 - `yarn build` - Build for production
 - `yarn typecheck` - Run TypeScript type checking
@@ -9,6 +10,7 @@
 - `yarn format` - Format code with Prettier
 
 ## Code Style Guidelines
+
 - **TypeScript**: All functions must have explicit return type annotations
 - **Imports**: Use `type` imports for types (`import type { User } from "..."`), group by external/internal
 - **Naming**: camelCase for variables/functions, PascalCase for components/types, UPPER_CASE for constants

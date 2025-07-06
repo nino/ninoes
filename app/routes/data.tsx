@@ -1,8 +1,8 @@
-import { useMemo, type ReactNode } from "react";
+import { type ReactNode, useMemo } from "react";
 import * as d3 from "d3";
 import { useQuery } from "@tanstack/react-query";
 import React from "react";
-import type { GeoSphere, GeoPermissibleObjects } from "d3-geo";
+import type { GeoPermissibleObjects, GeoSphere } from "d3-geo";
 
 type Troop = {
    LATP: number;

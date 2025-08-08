@@ -64,9 +64,7 @@ export function NamesRanking(): ReactNode {
                Votes <a href="/votes">(see all)</a>
             </h2>
             {isLoadingVotes && <Spinner />}
-            {votesData?.data && (
-               <Table data={votesData.data} columns={voteColumns} />
-            )}
+            {votesData?.data && <Table data={votesData.data} columns={voteColumns} />}
          </div>
       </div>
    );

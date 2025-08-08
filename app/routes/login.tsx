@@ -23,9 +23,7 @@ type LoginFormData = z.infer<typeof LoginSchema>;
 
 export async function action({
    request,
-}: ActionFunctionArgs): Promise<
-   Response | { error: string } | { error: AuthError }
-> {
+}: ActionFunctionArgs): Promise<Response | { error: string } | { error: AuthError }> {
    const formData = await request.formData();
    const data = Object.fromEntries(formData);
    const parsedData = LoginSchema.safeParse(data);

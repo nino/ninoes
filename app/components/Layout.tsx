@@ -97,9 +97,7 @@ export function Layout({ children }: LayoutProps): React.ReactNode {
             </div>
          </nav>
 
-         <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-            {children}
-         </main>
+         <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">{children}</main>
       </div>
    );
 }

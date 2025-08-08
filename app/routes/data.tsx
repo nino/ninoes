@@ -47,9 +47,7 @@ async function fetchTroops(): Promise<Array<Troop>> {
 }
 
 async function fetchTemperatures(): Promise<Array<Temperature>> {
-   const temperatures = await fetch("/temperatures.csv").then((res) =>
-      res.text(),
-   );
+   const temperatures = await fetch("/temperatures.csv").then((res) => res.text());
    return parseCsv(temperatures, {
       LONT: "number",
       TEMP: "number",
@@ -115,10 +113,7 @@ const pathGenerator = d3.geoPath(projection);
 
 const strokeScale = d3.scaleLinear().range([0, 40]);
 
-const tempXScale = d3
-   .scaleLinear()
-   .domain([24, 37.6])
-   .range([0, dimensions.width]);
+const tempXScale = d3.scaleLinear().domain([24, 37.6]).range([0, dimensions.width]);
 
 const tempYScale = d3
    .scaleLinear()
@@ -157,12 +152,7 @@ function TroopPath({
 function TroopPoint({ troop }: { troop: Troop }): ReactNode {
    const [x, y] = projection([troop.LONP, troop.LATP]) ?? [0, 0];
    return (
-      <circle
-         cx={x}
-         cy={y}
-         r={1}
-         fill={troop.DIR === "A" ? "#D4B996" : "#000000"}
-      />
+      <circle cx={x} cy={y} r={1} fill={troop.DIR === "A" ? "#D4B996" : "#000000"} />
    );
 }
 
@@ -182,11 +172,7 @@ function TemperatureLine({
    return <path d={d} fill="none" stroke="black" strokeWidth={1.5} />;
 }
 
-function TemperaturePoint({
-   temperature,
-}: {
-   temperature: Temperature;
-}): ReactNode {
+function TemperaturePoint({ temperature }: { temperature: Temperature }): ReactNode {
    return (
       <circle
          cx={tempXScale(temperature.LONT)}
@@ -335,16 +321,8 @@ export default function Data(): ReactNode {
       <div className="p-8">
          <h1 className="text-2xl font-bold mb-8">Napoleon&rsquo;s March</h1>
          <svg
-            width={
-               dimensions.width +
-               dimensions.margin.left +
-               dimensions.margin.right
-            }
-            height={
-               dimensions.height +
-               dimensions.margin.top +
-               dimensions.margin.bottom
-            }
+            width={dimensions.width + dimensions.margin.left + dimensions.margin.right}
+            height={dimensions.height + dimensions.margin.top + dimensions.margin.bottom}
          >
             <g
                transform={`translate(${dimensions.margin.left},${dimensions.margin.top})`}
@@ -370,9 +348,7 @@ export default function Data(): ReactNode {
             </g>
             <g
                transform={`translate(${dimensions.margin.left},${
-                  dimensions.height +
-                  dimensions.margin.top +
-                  dimensions.tempMargin.top
+                  dimensions.height + dimensions.margin.top + dimensions.tempMargin.top
                })`}
             >
                <TemperatureLine temperatures={temperatures} />

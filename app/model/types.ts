@@ -57,9 +57,7 @@ export type TeamMemberShip = z.infer<typeof TeamMemberShipSchema>;
 export const TeamMembershipWithTeamSchema = TeamMemberShipSchema.extend({
    team: TeamSchema,
 });
-export type TeamMembershipWithTeam = z.infer<
-   typeof TeamMembershipWithTeamSchema
->;
+export type TeamMembershipWithTeam = z.infer<typeof TeamMembershipWithTeamSchema>;
 
 export const TeamEloSchema = z.object({
    name_id: z.string(),

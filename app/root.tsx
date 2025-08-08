@@ -18,10 +18,7 @@ import { Toaster } from "sonner";
 if (import.meta.env.PROD) {
    Sentry.init({
       dsn: "https://6dedc280f764a89de4caa4d2af92ff01@o4508201817407488.ingest.de.sentry.io/4508789873180752",
-      integrations: [
-         Sentry.browserTracingIntegration(),
-         Sentry.replayIntegration(),
-      ],
+      integrations: [Sentry.browserTracingIntegration(), Sentry.replayIntegration()],
       // Tracing
       tracesSampleRate: 1.0, //  Capture 100% of the transactions
       // Set 'tracePropagationTargets' to control for which URLs distributed tracing should be enabled
@@ -45,10 +42,7 @@ export function Layout({ children }: { children: ReactNode }): ReactNode {
       <html lang="en">
          <head>
             <meta charSet="utf-8" />
-            <meta
-               name="viewport"
-               content="width=device-width, initial-scale=1"
-            />
+            <meta name="viewport" content="width=device-width, initial-scale=1" />
             <Meta />
             <Links />
             <style

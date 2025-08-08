@@ -5,10 +5,7 @@ const calculateExpectedScore = (ratingA: number, ratingB: number): number => {
    return 1 / (1 + Math.pow(10, (ratingB - ratingA) / 400));
 };
 
-export const updateEloRatings = (
-   winner: number,
-   loser: number,
-): [number, number] => {
+export const updateEloRatings = (winner: number, loser: number): [number, number] => {
    const expectedWinnerScore = calculateExpectedScore(winner, loser);
    const expectedLoserScore = calculateExpectedScore(loser, winner);
 

@@ -66,10 +66,7 @@ export default function Leaderboard(): React.ReactNode {
                   onClick={() =>
                      setPagination((current) => ({
                         ...current,
-                        pageIndex: Math.min(
-                           numPages - 1,
-                           current.pageIndex + 1,
-                        ),
+                        pageIndex: Math.min(numPages - 1, current.pageIndex + 1),
                      }))
                   }
                >

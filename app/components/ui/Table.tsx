@@ -73,19 +73,14 @@ export function Table<TData>({
                   <tr
                      key={row.id}
                      onClick={() => onRowClick?.(row.original)}
-                     className={
-                        onRowClick ? "cursor-pointer hover:bg-gray-50" : ""
-                     }
+                     className={onRowClick ? "cursor-pointer hover:bg-gray-50" : ""}
                   >
                      {row.getVisibleCells().map((cell) => (
                         <td
                            key={cell.id}
                            className="px-2 py-1 whitespace-nowrap text-sm text-gray-900 dark:text-gray-50"
                         >
-                           {flexRender(
-                              cell.column.columnDef.cell,
-                              cell.getContext(),
-                           )}
+                           {flexRender(cell.column.columnDef.cell, cell.getContext())}
                         </td>
                      ))}
                   </tr>

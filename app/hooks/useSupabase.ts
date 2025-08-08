@@ -153,11 +153,7 @@ type CreateVoteNewParams = {
    teamId?: string;
 };
 
-export function useCreateVoteNew(): UseMutationResult<
-   void,
-   Error,
-   CreateVoteNewParams
-> {
+export function useCreateVoteNew(): UseMutationResult<void, Error, CreateVoteNewParams> {
    const { session, supabase: authSupabase } = useSession();
 
    return useMutation({
@@ -178,11 +174,7 @@ type CreateVoteParams = {
    voteType: VoteType;
 };
 
-export function useCreateVote(): UseMutationResult<
-   void,
-   Error,
-   CreateVoteParams
-> {
+export function useCreateVote(): UseMutationResult<void, Error, CreateVoteParams> {
    const queryClient = useQueryClient();
    const { session, supabase: authSupabase } = useSession();
 
@@ -318,18 +310,12 @@ type CreateTeamParams = {
    creator: string;
 };
 
-export function useCreateTeam(): UseMutationResult<
-   void,
-   Error,
-   CreateTeamParams
-> {
+export function useCreateTeam(): UseMutationResult<void, Error, CreateTeamParams> {
    const queryClient = useQueryClient();
 
    return useMutation({
       mutationFn: async ({ name, creator }: CreateTeamParams) => {
-         const { error } = await supabase
-            .from("teams")
-            .insert({ name, creator });
+         const { error } = await supabase.from("teams").insert({ name, creator });
 
          if (error) {
             throw error;
@@ -344,10 +330,7 @@ export function useDeleteTeam(): UseMutationResult<void, Error, string> {
 
    return useMutation({
       mutationFn: async (teamId: string) => {
-         const { error } = await supabase
-            .from("teams")
-            .delete()
-            .eq("id", teamId);
+         const { error } = await supabase.from("teams").delete().eq("id", teamId);
 
          if (error) {
             throw error;
@@ -408,11 +391,7 @@ export function useTeamMemberships({
    });
 }
 
-export function useJoinTeam(): UseMutationResult<
-   void,
-   Error,
-   { teamId: string }
-> {
+export function useJoinTeam(): UseMutationResult<void, Error, { teamId: string }> {
    const queryClient = useQueryClient();
    const { session } = useSession();
 
@@ -430,8 +409,7 @@ export function useJoinTeam(): UseMutationResult<
             throw error;
          }
       },
-      onSuccess: () =>
-         queryClient.invalidateQueries({ queryKey: ["teamMemberships"] }),
+      onSuccess: () => queryClient.invalidateQueries({ queryKey: ["teamMemberships"] }),
    });
 }
 
@@ -449,8 +427,7 @@ export function useLeaveTeam(): UseMutationResult<void, Error, string> {
             throw error;
          }
       },
-      onSuccess: () =>
-         queryClient.invalidateQueries({ queryKey: ["teamMemberships"] }),
+      onSuccess: () => queryClient.invalidateQueries({ queryKey: ["teamMemberships"] }),
    });
 }
 
@@ -459,10 +436,7 @@ export function useDeleteVote(): UseMutationResult<void, Error, string> {
 
    return useMutation({
       mutationFn: async (voteId: string) => {
-         const { error } = await supabase
-            .from("Votes")
-            .delete()
-            .eq("id", voteId);
+         const { error } = await supabase.from("Votes").delete().eq("id", voteId);
 
          if (error) {
             throw error;
@@ -567,14 +541,7 @@ export function useEloLeaderboard({
    const { session, supabase: authSupabase } = useSession();
 
    return useQuery({
-      queryKey: [
-         "useEloLeaderboard",
-         teamId,
-         page,
-         pageSize,
-         orderBy,
-         orderDirection,
-      ],
+      queryKey: ["useEloLeaderboard", teamId, page, pageSize, orderBy, orderDirection],
       queryFn: async () => {
          if (teamId == null) return null;
          if (!session) {

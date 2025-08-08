@@ -1,9 +1,4 @@
-import React, {
-   type ReactNode,
-   useLayoutEffect,
-   useRef,
-   useState,
-} from "react";
+import React, { type ReactNode, useLayoutEffect, useRef, useState } from "react";
 import { Input } from "~/components/ui/Input";
 
 export default function Page(): ReactNode {

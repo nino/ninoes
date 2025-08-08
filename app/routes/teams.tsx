@@ -47,11 +47,10 @@ export default function Teams(): React.ReactNode {
       page: 0,
       pageSize: 100,
    });
-   const { data: membershipsData, isPending: membershipsPending } =
-      useTeamMemberships({
-         page: 0,
-         pageSize: 100,
-      });
+   const { data: membershipsData, isPending: membershipsPending } = useTeamMemberships({
+      page: 0,
+      pageSize: 100,
+   });
    const createTeam = useCreateTeam();
    const deleteTeam = useDeleteTeam();
    const joinTeam = useJoinTeam();
@@ -97,11 +96,7 @@ export default function Teams(): React.ReactNode {
                <Button
                   variant="danger"
                   onClick={async () => {
-                     if (
-                        window.confirm(
-                           "Are you sure you want to delete this team?",
-                        )
-                     ) {
+                     if (window.confirm("Are you sure you want to delete this team?")) {
                         try {
                            await deleteTeam.mutateAsync(row.original.id);
                            showToast("success", "Team deleted successfully");
@@ -137,9 +132,7 @@ export default function Teams(): React.ReactNode {
             <Button
                variant="danger"
                onClick={async () => {
-                  if (
-                     window.confirm("Are you sure you want to leave this team?")
-                  ) {
+                  if (window.confirm("Are you sure you want to leave this team?")) {
                      try {
                         await leaveTeam.mutateAsync(row.original.id);
                         showToast("success", "Left team successfully");
@@ -157,9 +150,7 @@ export default function Teams(): React.ReactNode {
       },
    ];
 
-   const handleCreateTeam = async (
-      values: CreateTeamFormData,
-   ): Promise<void> => {
+   const handleCreateTeam = async (values: CreateTeamFormData): Promise<void> => {
       try {
          await createTeam.mutateAsync({
             name: values.name,
@@ -225,15 +216,11 @@ export default function Teams(): React.ReactNode {
          <div className="mb-8">
             <h2 className="text-xl font-semibold mb-4">My Teams</h2>
             {teamsPending && <Spinner />}
-            {teamsData?.data && (
-               <Table data={teamsData.data} columns={columns} />
-            )}
+            {teamsData?.data && <Table data={teamsData.data} columns={columns} />}
          </div>
 
          <div>
-            <h2 className="text-xl font-semibold mb-4">
-               Teams I&rsquo;m a member of
-            </h2>
+            <h2 className="text-xl font-semibold mb-4">Teams I&rsquo;m a member of</h2>
             {membershipsPending && <Spinner />}
             {membershipsData?.data && (
                <Table data={membershipsData.data} columns={membershipColumns} />

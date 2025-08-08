@@ -46,17 +46,12 @@ export function Auth(): ReactNode {
       <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
          <div className="max-w-md w-full space-y-8">
             <div>
-               <h1 className="text-3xl font-bold text-center">
-                  Supabase + React
-               </h1>
+               <h1 className="text-3xl font-bold text-center">Supabase + React</h1>
                <p className="mt-2 text-center text-gray-600">
                   Sign in using your email and password below
                </p>
             </div>
-            <form
-               onSubmit={form.handleSubmit(handleLogin)}
-               className="mt-8 space-y-6"
-            >
+            <form onSubmit={form.handleSubmit(handleLogin)} className="mt-8 space-y-6">
                <div className="space-y-4">
                   <Input
                      {...form.register("email")}

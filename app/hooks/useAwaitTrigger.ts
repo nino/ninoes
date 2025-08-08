@@ -1,12 +1,12 @@
-import { useMemo, useRef } from "react";
+import React from "react";
 
 export function useAwaitTrigger<T = void>(): {
    wait: () => Promise<T>;
    resolve: (val: T) => void;
 } {
-   const resolveRef = useRef<(val: T) => void | null>(null);
+   const resolveRef = React.useRef<(val: T) => void | null>(null);
 
-   return useMemo(
+   return React.useMemo(
       () => ({
          wait: async () => {
             let resolve: (val: T) => void;
@@ -32,9 +32,9 @@ export function useAwaitQueue<T>(): {
    get: () => AsyncGenerator<T>;
    resolve: (val: T) => void;
 } {
-   const resolversRef = useRef<Array<(val: T) => void>>([]);
+   const resolversRef = React.useRef<Array<(val: T) => void>>([]);
 
-   return useMemo(
+   return React.useMemo(
       () => ({
          get: async function* () {
             for (;;) {

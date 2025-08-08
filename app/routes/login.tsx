@@ -15,7 +15,7 @@ import { Input } from "~/components/ui/Input";
 import { useToast } from "~/components/ui/Toast";
 
 const LoginSchema = z.object({
-   email: z.string().email(),
+   email: z.email(),
    password: z.string().min(8),
 });
 

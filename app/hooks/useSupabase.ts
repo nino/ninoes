@@ -7,6 +7,7 @@ import {
 } from "@tanstack/react-query";
 import { supabase } from "../supabaseClient";
 import type {
+   Enum,
    Name,
    Team,
    TeamElo,
@@ -68,7 +69,7 @@ export function useVotes({
    pageSize: number;
    orderBy: string;
    orderDirection: "asc" | "desc";
-   voteTypes?: Array<VoteType>;
+   voteTypes?: Array<Enum<typeof VoteType>>;
 }): UseQueryResult<{
    data: Array<VoteWithExtras>;
    total: number | null;
@@ -171,7 +172,7 @@ export function useCreateVoteNew(): UseMutationResult<void, Error, CreateVoteNew
 
 type CreateVoteParams = {
    nameId: string;
-   voteType: VoteType;
+   voteType: Enum<typeof VoteType>;
 };
 
 export function useCreateVote(): UseMutationResult<void, Error, CreateVoteParams> {

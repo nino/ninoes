@@ -1,24 +1,26 @@
 import { z } from "zod";
 
-export enum VoteType {
-   UP = "up",
-   DOWN = "down",
-   BAN = "ban",
-}
+export type Enum<T> = T[keyof T];
+
+export const VoteType = {
+   UP: "up",
+   DOWN: "down",
+   BAN: "ban",
+} as const;
 
 export const NameSchema = z.object({
-   id: z.string().uuid(),
+   id: z.uuid(),
    name: z.string().min(1),
    created_at: z.coerce.date(),
 });
 export type Name = z.infer<typeof NameSchema>;
 
 export const VoteSchema = z.object({
-   id: z.string().uuid(),
-   name_id: z.string().uuid(),
-   user_id: z.string().uuid(),
+   id: z.uuid(),
+   name_id: z.uuid(),
+   user_id: z.uuid(),
    created_at: z.coerce.date(),
-   vote_type: z.nativeEnum(VoteType),
+   vote_type: z.enum(VoteType),
 });
 export type Vote = z.infer<typeof VoteSchema>;
 
@@ -33,7 +35,7 @@ export const VoteWithExtrasSchema = VoteSchema.extend({
 export type VoteWithExtras = z.infer<typeof VoteWithExtrasSchema>;
 
 export const UserSchema = z.object({
-   id: z.string().uuid(),
+   id: z.uuid(),
    name: z.string().min(1),
    created_at: z.coerce.date(),
 });
@@ -42,7 +44,7 @@ export type User = z.infer<typeof UserSchema>;
 export const TeamSchema = z.object({
    id: z.string(),
    name: z.string().min(1),
-   creator: z.string().uuid(),
+   creator: z.uuid(),
    created_at: z.coerce.date(),
 });
 export type Team = z.infer<typeof TeamSchema>;

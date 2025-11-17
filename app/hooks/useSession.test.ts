@@ -1,5 +1,5 @@
 import { describe, expect, it, vi, beforeEach } from "vitest";
-import { renderHook, waitFor } from "@testing-library/react";
+import { renderHook, waitFor, act } from "@testing-library/react";
 import { useSession } from "./useSession";
 import { createBrowserClient } from "@supabase/ssr";
 
@@ -26,7 +26,7 @@ describe("useSession", () => {
     vi.mocked(createBrowserClient).mockReturnValue(mockSupabaseClient as any);
   });
 
-  it("should initialize with loading state", () => {
+  it("should initialize with loading state", async () => {
     mockGetSession.mockResolvedValue({ data: { session: null }, error: null });
 
     const { result } = renderHook(() => useSession());
@@ -34,6 +34,11 @@ describe("useSession", () => {
     expect(result.current.isLoading).toBe(true);
     expect(result.current.session).toBe(null);
     expect(result.current.supabase).toBeDefined();
+
+    // Wait for async effects to complete
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
+    });
   });
 
   it("should fetch session on mount", async () => {
@@ -78,13 +83,18 @@ describe("useSession", () => {
     consoleErrorSpy.mockRestore();
   });
 
-  it("should set up auth state change listener", () => {
+  it("should set up auth state change listener", async () => {
     mockGetSession.mockResolvedValue({ data: { session: null }, error: null });
 
-    renderHook(() => useSession());
+    const { result } = renderHook(() => useSession());
 
     expect(mockOnAuthStateChange).toHaveBeenCalledTimes(1);
     expect(mockOnAuthStateChange).toHaveBeenCalledWith(expect.any(Function));
+
+    // Wait for async effects to complete
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
+    });
   });
 
   it("should update session when auth state changes", async () => {
@@ -105,7 +115,9 @@ describe("useSession", () => {
       access_token: "new-token",
     };
 
-    authChangeCallback("SIGNED_IN", newSession);
+    act(() => {
+      authChangeCallback("SIGNED_IN", newSession);
+    });
 
     await waitFor(() => {
       expect(result.current.session).toEqual(newSession);
@@ -126,15 +138,20 @@ describe("useSession", () => {
     expect(mockUnsubscribe).toHaveBeenCalledTimes(1);
   });
 
-  it("should create supabase client with correct env vars", () => {
+  it("should create supabase client with correct env vars", async () => {
     mockGetSession.mockResolvedValue({ data: { session: null }, error: null });
 
-    renderHook(() => useSession());
+    const { result } = renderHook(() => useSession());
 
     expect(createBrowserClient).toHaveBeenCalledWith(
       "https://test.supabase.co",
       "test-anon-key"
     );
+
+    // Wait for async effects to complete
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
+    });
   });
 
   it("should return memoized value", async () => {
@@ -171,19 +188,26 @@ describe("useSession", () => {
 
     const { result } = renderHook(() => useSession());
 
+    // Wait for initial async effects to complete
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
+    });
+
     const authChangeCallback = mockOnAuthStateChange.mock.calls[0][0];
 
-    authChangeCallback("SIGNED_OUT", null);
+    act(() => {
+      authChangeCallback("SIGNED_OUT", null);
+    });
 
     await waitFor(() => {
       expect(result.current.isLoading).toBe(false);
     });
   });
 
-  it("should only create supabase client once", () => {
+  it("should only create supabase client once", async () => {
     mockGetSession.mockResolvedValue({ data: { session: null }, error: null });
 
-    const { rerender } = renderHook(() => useSession());
+    const { result, rerender } = renderHook(() => useSession());
 
     expect(createBrowserClient).toHaveBeenCalledTimes(1);
 
@@ -192,5 +216,10 @@ describe("useSession", () => {
     rerender();
 
     expect(createBrowserClient).toHaveBeenCalledTimes(1);
+
+    // Wait for async effects to complete
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
+    });
   });
 });

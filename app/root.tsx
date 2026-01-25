@@ -80,20 +80,18 @@ const queryClient = new QueryClient({
 function AuthenticatedLayout({ children }: { children: ReactNode }): ReactNode {
    const { session } = useSession();
    return (
-      <Layout>
-         <OtherLayout>
-            {children}
-            {session && (
-               <div className="flex my-16 justify-end">
-                  <form action="/logout" method="post">
-                     <Button variant="secondary" type="submit">
-                        Sign Out
-                     </Button>
-                  </form>
-               </div>
-            )}
-         </OtherLayout>
-      </Layout>
+      <OtherLayout>
+         {children}
+         {session && (
+            <div className="flex my-16 justify-end">
+               <form action="/logout" method="post">
+                  <Button variant="secondary" type="submit">
+                     Sign Out
+                  </Button>
+               </form>
+            </div>
+         )}
+      </OtherLayout>
    );
 }
 

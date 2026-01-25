@@ -6,6 +6,9 @@ app = 'ninoes'
 primary_region = 'lhr'
 
 [build]
+[build.args]
+VITE_SUPABASE_URL="https://niuinrpiaigbksezupjo.supabase.co"
+VITE_SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5pdWlucnBpYWlnYmtzZXp1cGpvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzkwOTg5NDQsImV4cCI6MjA1NDY3NDk0NH0.eMctLT4an_jJ4eCr2Mt0aWeJfcKOqN_rqjFzfq-QWRk"
 
 [http_service]
 internal_port = 3000

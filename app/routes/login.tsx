@@ -89,12 +89,12 @@ export default function LoginPage(): ReactNode {
          </div>
 
          <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-            <div className="bg-white p-8 rounded-lg shadow">
+            <div className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow">
                <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                   <div>
                      <label
                         htmlFor="email"
-                        className="block text-sm font-medium leading-6 text-gray-900"
+                        className="block text-sm font-medium leading-6 text-gray-900 dark:text-gray-100"
                      >
                         Email
                      </label>
@@ -112,7 +112,7 @@ export default function LoginPage(): ReactNode {
                   <div>
                      <label
                         htmlFor="password"
-                        className="block text-sm font-medium leading-6 text-gray-900"
+                        className="block text-sm font-medium leading-6 text-gray-900 dark:text-gray-100"
                      >
                         Password
                      </label>

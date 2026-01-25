@@ -22,17 +22,18 @@ export function Button({
 
    const variantStyles: Record<ButtonVariant, string> = {
       primary:
-         "bg-linear-[20deg] from-sky-50 to-emerald-50 text-black hover:bg-blue-700 focus:ring-blue-500",
-      secondary: "bg-gray-200 text-gray-900 hover:bg-gray-300 focus:ring-gray-500",
+         "bg-linear-[20deg] from-sky-50 to-emerald-50 dark:from-sky-900 dark:to-emerald-900 text-black dark:text-white hover:bg-blue-700 focus:ring-blue-500",
+      secondary:
+         "bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100 hover:bg-gray-300 dark:hover:bg-gray-600 focus:ring-gray-500",
       danger: "bg-red-600 text-white hover:bg-red-700 focus:ring-red-500",
-      ghost: "text-gray-700 hover:bg-gray-100 focus:ring-gray-500",
+      ghost: "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 focus:ring-gray-500",
    };
 
    const disabledStyles = "opacity-50 cursor-not-allowed";
    const loadingStyles = "relative text-transparent hover:text-transparent";
 
    return (
-      <div className="p-1 bg-linear-to-tr from-red-200 to-pink-400 rounded-[1rem] shadow-xl">
+      <div className="p-1 bg-linear-to-tr from-red-200 to-pink-400 dark:from-red-800 dark:to-pink-600 rounded-[1rem] shadow-xl">
          <button
             className={`
         ${baseStyles}

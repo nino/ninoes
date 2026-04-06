@@ -50,7 +50,7 @@
     "globals": "^17.4.0",
     "react-router-devtools": "^6.2.0",
     "tailwindcss": "^4.2.2",
-    "typescript": "^5.9.3",
+    "typescript": "^6.0.2",
     "vite": "^8.0.3",
     "vite-tsconfig-paths": "^6.1.1"
   }

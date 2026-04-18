@@ -6,7 +6,7 @@ import {
    useSubmit,
 } from "react-router";
 import { z } from "zod";
-import type { AuthError } from "@supabase/supabase-js";
+import { AuthError } from "@supabase/supabase-js";
 import type { ReactNode } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -23,30 +23,23 @@ type LoginFormData = z.infer<typeof LoginSchema>;
 
 export async function action({
    request,
-}: ActionFunctionArgs): Promise<Response | { error: string } | { error: AuthError }> {
+}: ActionFunctionArgs): Promise<Response | { error: AuthError }> {
    const formData = await request.formData();
    const data = Object.fromEntries(formData);
    const parsedData = LoginSchema.safeParse(data);
    if (!parsedData.success) {
-      return { error: "Invalid input" };
+      return { error: new AuthError("Invalid input") };
    }
 
    const { email, password } = parsedData.data;
    const headersToSet = new Headers();
    const { supabase, headers } = getSupabaseServerClient(request, headersToSet);
-
-   const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-   });
-
+   const { error } = await supabase.auth.signInWithPassword({ email, password });
    if (error) {
       return { error };
    }
 
-   return redirect("/", {
-      headers,
-   });
+   return redirect("/", { headers });
 }
 
 export default function LoginPage(): ReactNode {
@@ -69,12 +62,7 @@ export default function LoginPage(): ReactNode {
       void submit(formData, { method: "post" });
    };
 
-   const errorMessage =
-      actionData?.error != null
-         ? typeof actionData.error === "string"
-            ? actionData.error
-            : actionData.error.message || "Login failed. Please try again."
-         : null;
+   const errorMessage = actionData?.error != null ? actionData.error.message : null;
 
    if (errorMessage) {
       showToast("error", errorMessage);

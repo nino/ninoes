@@ -53,7 +53,10 @@ function StationInfo({ station }: { station: BusStop }): JSX.Element {
    });
 
    const sorted = React.useMemo(
-      () => (query.data ?? []).toSorted((a, b) => a.timeToStation - b.timeToStation),
+      () =>
+         (query.data ?? [])
+            .slice(0, 3)
+            .toSorted((a, b) => a.timeToStation - b.timeToStation),
       [query.data],
    );
 
@@ -88,7 +91,9 @@ export default function Page(): JSX.Element {
          <StationInfo station={busStops.hammersmith} />
          <StationInfo station={busStops.ashchurchTerrace} />
          <StationInfo station={busStops.shepherdsBush} />
-         <StationInfo station={busStops.askewRoad} />
+         <StationInfo station={busStops.askewRoadToShepherdsBush} />
+         <StationInfo station={busStops.askewRoadToActonGreen} />
+         <StationInfo station={busStops.woodLane} />
       </div>
    );
 }

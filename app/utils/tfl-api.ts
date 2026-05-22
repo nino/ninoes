@@ -7,7 +7,9 @@ export const busStops = {
    hammersmith: "490007705C",
    ashchurchTerrace: "490003424S",
    shepherdsBush: "490000203C",
-   askewRoad: "490015455E",
+   askewRoadToShepherdsBush: "490015455E",
+   askewRoadToActonGreen: "490015455W",
+   woodLane: "490014874J",
 } as const;
 
 export type BusStop = Enum<typeof busStops>;
@@ -16,14 +18,18 @@ export const busStopNames: Record<BusStop, string> = {
    [busStops.hammersmith]: "Hammersmith Bus Station",
    [busStops.ashchurchTerrace]: "Ashchurch Terrace Bus Station",
    [busStops.shepherdsBush]: "Shepherds Bush Bus Station",
-   [busStops.askewRoad]: "Askew Road Bus Station",
+   [busStops.askewRoadToShepherdsBush]: "Askew Road to Shepherds Bush",
+   [busStops.askewRoadToActonGreen]: "Askew Road to Acton Green",
+   [busStops.woodLane]: "Wood Lane Bus Station",
 };
 
 const linesPerStop = {
    [busStops.hammersmith]: [218, 306],
    [busStops.ashchurchTerrace]: [218, 306],
    [busStops.shepherdsBush]: [237],
-   [busStops.askewRoad]: [94],
+   [busStops.askewRoadToShepherdsBush]: [94, 237],
+   [busStops.askewRoadToActonGreen]: [94, 237],
+   [busStops.woodLane]: [237],
 } as const;
 
 export type BusArrival = {

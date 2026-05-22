@@ -8,8 +8,65 @@
    --breakpoint-xl: 1280px;
    --breakpoint-2xl: 1536px;
 
-   --font-sans: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
-      "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+   --font-sans:
+      ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
+      "Segoe UI Symbol", "Noto Color Emoji";
+
+   --animate-wiggle:
+      wiggle-rotate 0.37s linear infinite,
+      wiggle-translate 0.53s linear infinite;
+   @keyframes wiggle-rotate {
+      0% {
+         rotate: -7deg;
+      }
+      14% {
+         rotate: 11deg;
+      }
+      27% {
+         rotate: -14deg;
+      }
+      41% {
+         rotate: 6deg;
+      }
+      58% {
+         rotate: -9deg;
+      }
+      72% {
+         rotate: 13deg;
+      }
+      86% {
+         rotate: -5deg;
+      }
+      100% {
+         rotate: -7deg;
+      }
+   }
+   @keyframes wiggle-translate {
+      0% {
+         translate: 0 0;
+      }
+      17% {
+         translate: 3px -2px;
+      }
+      31% {
+         translate: -4px 1px;
+      }
+      48% {
+         translate: 2px 4px;
+      }
+      63% {
+         translate: -3px -3px;
+      }
+      79% {
+         translate: 4px 2px;
+      }
+      92% {
+         translate: -1px -4px;
+      }
+      100% {
+         translate: 0 0;
+      }
+   }
 }
 
 html,

@@ -68,7 +68,6 @@ export type BusArrival = {
 
 export async function getBusArrivals(stopId: BusStop): Promise<Array<BusArrival>> {
    const lines = linesPerStop[stopId];
-   console.log(`Getting arrivals for stop ${stopId} and lines ${lines.join(",")}`);
    const arrivals = await fetchJson<Array<BusArrival>>(
       `${tflApiBaseUrl}/Line/${lines.join(",")}/Arrivals/${stopId}`,
    );

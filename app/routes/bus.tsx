@@ -29,6 +29,7 @@ function formatExpectedArrival(iso: string): string {
 }
 
 function ArrivalRow({ arrival }: { arrival: BusArrival }): JSX.Element {
+   const timeToStation = formatTimeToStation(arrival.timeToStation);
    return (
       <li className="col-span-full grid grid-cols-subgrid items-center border-b border-gray-100 py-0.5 last:border-b-0">
          <span className="inline-flex min-w-8 justify-center rounded bg-red-600 px-1 py-0.5 font-bold leading-none text-white">
@@ -38,8 +39,10 @@ function ArrivalRow({ arrival }: { arrival: BusArrival }): JSX.Element {
          <span className="tabular-nums text-gray-500">
             {formatExpectedArrival(arrival.expectedArrival)}
          </span>
-         <span className="text-right whitespace-nowrap tabular-nums">
-            {formatTimeToStation(arrival.timeToStation)}
+         <span
+            className={`text-right whitespace-nowrap tabular-nums ${timeToStation === "due" ? "animate-wiggle" : ""}`}
+         >
+            {timeToStation}
          </span>
       </li>
    );

@@ -7,7 +7,7 @@ import globals from "globals";
 
 export default [
   {
-    ignores: ["**/.react-router/**"],
+    ignores: ["**/.react-router/**", "build/**"],
   },
   js.configs.recommended,
   {

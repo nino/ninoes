@@ -1,16 +1,20 @@
 import { useNames, useVotes } from "./hooks/useSupabase";
-import type { Name, VoteWithExtras } from "./model/types";
-import { type ReactNode } from "react";
+import type { Enum, Name, NameGender, VoteWithExtras } from "./model/types";
+import React, { type ReactNode } from "react";
 import { Table } from "~/components/ui/Table";
 import type { ColumnDef } from "@tanstack/react-table";
 import { Spinner } from "./components/ui/Spinner";
+import { GENDER_LABELS, GenderFilter } from "~/components/GenderFilter";
 
 export function NamesRanking(): ReactNode {
+   const [genders, setGenders] = React.useState<Array<Enum<typeof NameGender>>>([]);
+
    const { data: names, isLoading: isLoadingNames } = useNames({
       page: 0,
       pageSize: 50,
       orderBy: "name",
       orderDirection: "asc",
+      genders,
    });
 
    const { data: votesData, isFetching: isLoadingVotes } = useVotes({
@@ -24,6 +28,13 @@ export function NamesRanking(): ReactNode {
       {
          accessorKey: "name",
          header: "Name",
+      },
+      {
+         accessorKey: "gender",
+         header: "Gender",
+         enableSorting: false,
+         cell: ({ row }) =>
+            row.original.gender != null ? GENDER_LABELS[row.original.gender] : "—",
       },
       {
          accessorKey: "created_at",
@@ -56,6 +67,9 @@ export function NamesRanking(): ReactNode {
       <div className="space-y-8">
          <div>
             <h2 className="text-xl font-bold mb-4">Names</h2>
+            <div className="mb-4">
+               <GenderFilter value={genders} onChange={setGenders} />
+            </div>
             {isLoadingNames && <Spinner />}
             {names && <Table data={names} columns={nameColumns} />}
          </div>

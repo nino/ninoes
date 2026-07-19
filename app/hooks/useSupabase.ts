@@ -18,6 +18,7 @@ import type {
    VoteWithExtras,
 } from "~/model/types";
 import {
+   NameGender,
    NameSchema,
    TeamEloSchema,
    TeamMembershipWithTeamSchema,
@@ -34,18 +35,24 @@ export function useNames({
    pageSize,
    orderBy,
    orderDirection,
+   genders = [],
 }: {
    page: number;
    pageSize: number;
    orderBy: string;
    orderDirection: "asc" | "desc";
+   genders?: Array<Enum<typeof NameGender>>;
 }): UseQueryResult<Array<Name>> {
    return useQuery({
-      queryKey: ["names", page, pageSize, orderBy],
+      queryKey: ["names", page, pageSize, orderBy, genders],
       queryFn: async () => {
-         const { data, error } = await supabase
-            .from("Names")
-            .select("*")
+         let q = supabase.from("Names").select("*");
+
+         if (genders.length > 0) {
+            q = q.in("gender", genders);
+         }
+
+         const { data, error } = await q
             .range(page * pageSize, (page + 1) * pageSize - 1)
             .order(orderBy, { ascending: orderDirection === "asc" });
 
@@ -207,6 +214,7 @@ const NameScoreRPCResponseSchema = z.object({
    id: z.string(),
    name: z.string(),
    created_at: z.string(),
+   gender: z.enum(NameGender).nullish(),
    score: z.number(),
    total_votes: z.number(),
    upvotes: z.number(),
@@ -219,6 +227,7 @@ const _NameScoreSchema = z.object({
    id: z.string(),
    name: z.string(),
    created_at: z.date(),
+   gender: z.enum(NameGender).nullish(),
    score: z.number(),
    total_votes: z.number(),
    upvotes: z.number(),
@@ -235,23 +244,26 @@ export function useNameScores({
    offset = 0,
    orderBy = "score",
    orderDirection = "desc",
+   genders = [],
 }: {
    limit?: number;
    offset?: number;
    orderBy?: string;
    orderDirection?: "asc" | "desc";
+   genders?: Array<Enum<typeof NameGender>>;
 } = {}): UseQueryResult<{
    data: Array<NameScore>;
    total: number;
 }> {
    return useQuery({
-      queryKey: ["nameScores", limit, offset, orderBy, orderDirection],
+      queryKey: ["nameScores", limit, offset, orderBy, orderDirection, genders],
       queryFn: async () => {
          const { data, error } = await supabase.rpc("get_leaderboard", {
             p_limit: limit,
             p_offset: offset,
             p_order_by: orderBy,
             p_order_direction: orderDirection,
+            ...(genders.length > 0 ? { p_genders: genders } : {}),
          });
 
          const result = z.array(NameScoreRPCResponseSchema).parse(data);
@@ -529,12 +541,14 @@ export function useEloLeaderboard({
    pageSize = 10,
    orderBy = "elo",
    orderDirection = "desc",
+   genders = [],
 }: {
    teamId?: string | null;
    page?: number;
    pageSize?: number;
    orderBy?: string;
    orderDirection?: "asc" | "desc";
+   genders?: Array<Enum<typeof NameGender>>;
 } = {}): UseQueryResult<{
    data: Array<TeamEloWithName>;
    total: number | null;
@@ -542,21 +556,36 @@ export function useEloLeaderboard({
    const { session, supabase: authSupabase } = useSession();
 
    return useQuery({
-      queryKey: ["useEloLeaderboard", teamId, page, pageSize, orderBy, orderDirection],
+      queryKey: [
+         "useEloLeaderboard",
+         teamId,
+         page,
+         pageSize,
+         orderBy,
+         orderDirection,
+         genders,
+      ],
       queryFn: async () => {
          if (teamId == null) return null;
          if (!session) {
             throw new Error("User not authenticated");
          }
 
+         // !inner join so gender filters on Names also filter the elo rows
+         let q = authSupabase
+            .from("team_elo")
+            .select("*, name:Names!inner(*)", { count: "exact" })
+            .eq("team_id", teamId);
+
+         if (genders.length > 0) {
+            q = q.in("name.gender", genders);
+         }
+
          const {
             data,
             error: fetchError,
             count,
-         } = await authSupabase
-            .from("team_elo")
-            .select("*, name:Names(*)", { count: "exact" })
-            .eq("team_id", teamId)
+         } = await q
             .range(page * pageSize, (page + 1) * pageSize - 1)
             .order(orderBy, { ascending: orderDirection === "asc" });
          if (fetchError) throw fetchError;

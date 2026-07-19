@@ -1,9 +1,10 @@
 import { useEloLeaderboard, useTeams } from "~/hooks/useSupabase";
 import React from "react";
-import type { TeamEloWithName } from "~/model/types";
+import type { Enum, NameGender, TeamEloWithName } from "~/model/types";
 import { Table } from "~/components/ui/Table";
 import { type SortingState, type ColumnDef } from "@tanstack/react-table";
 import { Button } from "~/components/ui/Button";
+import { GENDER_LABELS, GenderFilter } from "~/components/GenderFilter";
 
 export default function Leaderboard(): React.ReactNode {
    const [pagination, setPagination] = React.useState({
@@ -11,6 +12,7 @@ export default function Leaderboard(): React.ReactNode {
       pageSize: 10,
    });
    const [sorting, setSorting] = React.useState<SortingState>([]);
+   const [genders, setGenders] = React.useState<Array<Enum<typeof NameGender>>>([]);
 
    const teamsQuery = useTeams({ page: 0, pageSize: 10 });
    const teamId = teamsQuery.data?.data[0]?.id;
@@ -21,6 +23,7 @@ export default function Leaderboard(): React.ReactNode {
       pageSize: pagination.pageSize,
       orderBy: sorting[0]?.id ?? "elo",
       orderDirection: sorting[0]?.desc === false ? "asc" : "desc",
+      genders,
    });
    const numPages =
       eloLeaderboard.data?.total == null
@@ -36,11 +39,27 @@ export default function Leaderboard(): React.ReactNode {
          accessorKey: "name.name",
          header: "Name",
       },
+      {
+         accessorKey: "name.gender",
+         header: "Gender",
+         enableSorting: false,
+         cell: ({ row }) =>
+            row.original.name.gender != null
+               ? GENDER_LABELS[row.original.name.gender]
+               : "—",
+      },
    ];
 
    return (
       <div className="space-y-8">
          <h1 className="text-2xl font-bold">Name Leaderboard</h1>
+         <GenderFilter
+            value={genders}
+            onChange={(value) => {
+               setGenders(value);
+               setPagination((current) => ({ ...current, pageIndex: 0 }));
+            }}
+         />
          <Table
             data={eloLeaderboard.data?.data ?? []}
             columns={columns}

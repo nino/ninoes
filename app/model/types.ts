@@ -8,10 +8,20 @@ export const VoteType = {
    BAN: "ban",
 } as const;
 
+export const NameGender = {
+   ALWAYS_MALE: "always_male",
+   MOSTLY_MALE: "mostly_male",
+   NEUTRAL: "neutral",
+   MOSTLY_FEMALE: "mostly_female",
+   ALWAYS_FEMALE: "always_female",
+} as const;
+
+// Nullish because the column is being rolled out and backfilled incrementally.
 export const NameSchema = z.object({
    id: z.uuid(),
    name: z.string().min(1),
    created_at: z.coerce.date(),
+   gender: z.enum(NameGender).nullish(),
 });
 export type Name = z.infer<typeof NameSchema>;
 

@@ -24,18 +24,16 @@ export function Button({
       ghost: "aqua-btn--ghost",
    };
 
-   const loadingStyles = "relative text-transparent hover:text-transparent";
-
    return (
       <button
          className={`
         aqua-btn
         ${variantStyles[variant]}
         ${big ? "aqua-btn--big" : ""}
-        ${isLoading ? loadingStyles : ""}
+        ${isLoading ? "is-loading" : ""}
         ${className}
       `}
-         disabled={disabled ?? isLoading}
+         disabled={(disabled ?? false) || isLoading}
          {...props}
       >
          {children}

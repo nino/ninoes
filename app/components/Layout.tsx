@@ -23,7 +23,7 @@ export function Layout({ children }: LayoutProps): React.ReactNode {
          <div className="aqua-window mx-auto max-w-7xl">
             {/* Titlebar with traffic lights */}
             <div className="aqua-titlebar">
-               <div className="aqua-lights">
+               <div className="aqua-lights" aria-hidden="true">
                   <span className="aqua-light aqua-light--close" />
                   <span className="aqua-light aqua-light--min" />
                   <span className="aqua-light aqua-light--max" />
@@ -32,9 +32,10 @@ export function Layout({ children }: LayoutProps): React.ReactNode {
 
                {/* Mobile menu button, right-aligned in the titlebar */}
                <button
-                  className="aqua-btn ml-auto !px-2 !py-1 sm:hidden"
+                  className="aqua-btn ml-auto px-2 py-1 sm:hidden"
                   onClick={() => setIsMenuOpen(!isMenuOpen)}
                   aria-label="Toggle navigation menu"
+                  aria-expanded={isMenuOpen}
                >
                   <svg
                      className="h-4 w-4"

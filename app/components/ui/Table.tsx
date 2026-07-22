@@ -52,6 +52,7 @@ export function Table<TData>({
                      {headerGroup.headers.map((header) => (
                         <th
                            key={header.id}
+                           className={header.column.getCanSort() ? "is-sortable" : ""}
                            onClick={header.column.getToggleSortingHandler()}
                         >
                            {flexRender(

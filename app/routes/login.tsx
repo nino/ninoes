@@ -80,10 +80,7 @@ export default function LoginPage(): ReactNode {
             <div className="aqua-panel p-8">
                <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                   <div>
-                     <label
-                        htmlFor="email"
-                        className="block text-[12px] font-bold leading-6 text-[#3d3d3d] [text-shadow:0_1px_0_rgba(255,255,255,0.7)]"
-                     >
+                     <label htmlFor="email" className="aqua-label leading-6">
                         Email
                      </label>
                      <div className="mt-2">
@@ -98,10 +95,7 @@ export default function LoginPage(): ReactNode {
                   </div>
 
                   <div>
-                     <label
-                        htmlFor="password"
-                        className="block text-[12px] font-bold leading-6 text-[#3d3d3d] [text-shadow:0_1px_0_rgba(255,255,255,0.7)]"
-                     >
+                     <label htmlFor="password" className="aqua-label leading-6">
                         Password
                      </label>
                      <div className="mt-2">

@@ -1,14 +1,5 @@
 @import "tailwindcss";
 
-/*
- * Disable the automatic `prefers-color-scheme: dark` behaviour of Tailwind's
- * `dark:` variant. The Aqua theme is a single, deliberately light look, so we
- * make `dark:` opt-in via a `.dark` class (never added) instead of the OS
- * setting. This neutralises the leftover `dark:*` utilities scattered across
- * the components without having to strip each one.
- */
-@custom-variant dark (&:where(.dark, .dark *));
-
 @theme {
    --breakpoint-xs: 480px;
    --breakpoint-sm: 640px;
@@ -83,16 +74,12 @@
  * ------------------------------------------------------------------ */
 
 :root {
+   /* The Aqua theme is a single, deliberately light look. */
    color-scheme: light;
 
-   --aqua-font:
-      "Lucida Grande", "Lucida Sans Unicode", "Helvetica Neue", Helvetica, Arial,
-      "Segoe UI", sans-serif;
-   --aqua-mono: "Monaco", "Menlo", "Consolas", "SFMono-Regular", monospace;
+   --aqua-font: var(--font-sans);
 
-   --metal-light: #f2f2f2;
    --metal-mid: #d8d8d8;
-   --metal-dark: #bcbcbc;
    --metal-line: #9a9a9a;
    --window-frame: #6a6a6a;
    --ink: #1a1a1a;
@@ -115,17 +102,6 @@ body {
  * utilities (e.g. `sm:hidden`, `flex-wrap`) can still override them.
  */
 @layer components {
-   /* Fine horizontal brushed-metal texture reused by several surfaces. */
-   .metal-texture {
-      background-image: repeating-linear-gradient(
-         0deg,
-         rgba(255, 255, 255, 0.35) 0,
-         rgba(255, 255, 255, 0.35) 1px,
-         rgba(0, 0, 0, 0.025) 1px,
-         rgba(0, 0, 0, 0.025) 2px
-      );
-   }
-
    /* ---- Window chrome ------------------------------------------------ */
 
    .aqua-window {
@@ -160,8 +136,9 @@ body {
 
    .aqua-title {
       position: absolute;
-      left: 0;
-      right: 0;
+      /* Keep clear of the traffic lights / menu button on narrow screens. */
+      left: 76px;
+      right: 76px;
       text-align: center;
       font-size: 13px;
       font-weight: 700;
@@ -169,6 +146,9 @@ body {
       text-shadow: 0 1px 0 rgba(255, 255, 255, 0.8);
       pointer-events: none;
       letter-spacing: 0.2px;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
    }
 
    /* Traffic-light window controls */
@@ -303,6 +283,17 @@ body {
       padding: 10px 26px;
       min-height: 40px;
       border-radius: 9px;
+      /* Long candidate names must wrap rather than overflow the window. */
+      white-space: normal;
+      max-width: 100%;
+   }
+
+   /* Hide the label under the spinner. `color: transparent` alone leaves the
+      text-shadow visible, so the shadow must be cleared too. */
+   .aqua-btn.is-loading,
+   .aqua-btn.is-loading:hover {
+      color: transparent;
+      text-shadow: none;
    }
 
    /* Default (blue "aqua") button */
@@ -356,9 +347,10 @@ body {
       border-radius: 50%;
       border: 2px solid currentColor;
       border-top-color: transparent;
-      animation: spin 0.7s linear infinite;
+      animation: aqua-spin 0.7s linear infinite;
    }
-   @keyframes spin {
+   /* Own name to avoid colliding with Tailwind's `spin` keyframes. */
+   @keyframes aqua-spin {
       to {
          rotate: 360deg;
       }
@@ -397,47 +389,15 @@ body {
          0 1px 0 rgba(255, 255, 255, 0.5);
    }
 
-   /* ---- Badge pills (status tokens) ---------------------------------- */
-
-   .aqua-badge {
-      display: inline-flex;
-      align-items: center;
-      padding: 1px 8px;
-      border-radius: 6px;
-      font-size: 11px;
-      font-weight: 600;
-      line-height: 1.5;
-      border: 1px solid rgba(0, 0, 0, 0.18);
-      box-shadow: 0 1px 0 rgba(255, 255, 255, 0.6) inset;
-      text-shadow: 0 1px 0 rgba(255, 255, 255, 0.4);
-   }
-   .aqua-badge--blue {
-      color: #1c4f8f;
-      background: linear-gradient(to bottom, #dcebfb, #bcd8f5);
-      border-color: #8fb6df;
-   }
-   .aqua-badge--purple {
-      color: #4b3b8f;
-      background: linear-gradient(to bottom, #e4defb, #cdc2f2);
-      border-color: #a99fdc;
-   }
-   .aqua-badge--green {
-      color: #2f6b28;
-      background: linear-gradient(to bottom, #dbf3d2, #bfe6b0);
-      border-color: #94c983;
-   }
-   .aqua-badge--amber {
-      color: #8a5a12;
-      background: linear-gradient(to bottom, #fbedcb, #f2dca0);
-      border-color: #d9bc78;
-   }
-   .aqua-badge--gray {
-      color: #555;
-      background: linear-gradient(to bottom, #f3f3f3, #e2e2e2);
-      border-color: #bcbcbc;
-   }
-
    /* ---- Inputs ------------------------------------------------------- */
+
+   .aqua-label {
+      display: block;
+      font-size: 12px;
+      font-weight: 700;
+      color: #3d3d3d;
+      text-shadow: 0 1px 0 rgba(255, 255, 255, 0.7);
+   }
 
    .aqua-input {
       width: 100%;
@@ -478,8 +438,6 @@ body {
       font-size: 13px;
    }
    .aqua-table thead th {
-      position: sticky;
-      top: 0;
       text-align: left;
       padding: 5px 12px;
       font-size: 11px;
@@ -489,14 +447,16 @@ body {
       border-right: 1px solid #cfcfcf;
       border-bottom: 1px solid #a9a9a9;
       background: linear-gradient(to bottom, #f6f6f6 0%, #e0e0e0 100%);
-      cursor: pointer;
       white-space: nowrap;
       user-select: none;
    }
    .aqua-table thead th:last-child {
       border-right: none;
    }
-   .aqua-table thead th:hover {
+   .aqua-table thead th.is-sortable {
+      cursor: pointer;
+   }
+   .aqua-table thead th.is-sortable:hover {
       background: linear-gradient(to bottom, #ffffff 0%, #e7e7e7 100%);
    }
    .aqua-table tbody td {
@@ -544,6 +504,6 @@ body {
       border-radius: 50%;
       border: 3px solid rgba(0, 0, 0, 0.2);
       border-top-color: #4a90e2;
-      animation: spin 0.7s linear infinite;
+      animation: aqua-spin 0.7s linear infinite;
    }
 }

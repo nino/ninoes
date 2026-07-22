@@ -31,8 +31,8 @@ export default function Vote(): ReactNode {
 
    if (isLoading || !names || teamsQuery.isPending) {
       return (
-         <div className="flex justify-center items-center min-h-screen">
-            <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" />
+         <div className="flex min-h-64 items-center justify-center">
+            <div className="aqua-spinner" role="status" aria-label="Loading" />
          </div>
       );
    }

@@ -44,15 +44,14 @@ export function Table<TData>({
    });
 
    return (
-      <div className="w-full overflow-x-auto">
-         <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50 dark:bg-gray-950">
+      <div className="aqua-panel w-full overflow-x-auto">
+         <table className="aqua-table min-w-full">
+            <thead>
                {table.getHeaderGroups().map((headerGroup) => (
                   <tr key={headerGroup.id}>
                      {headerGroup.headers.map((header) => (
                         <th
                            key={header.id}
-                           className="px-2 py-1 text-left text-xs font-medium text-gray-500 dark:text-gray-200 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
                            onClick={header.column.getToggleSortingHandler()}
                         >
                            {flexRender(
@@ -60,26 +59,23 @@ export function Table<TData>({
                               header.getContext(),
                            )}
                            {{
-                              asc: " 🔼",
-                              desc: " 🔽",
+                              asc: " ▲",
+                              desc: " ▼",
                            }[header.column.getIsSorted() as string] ?? null}
                         </th>
                      ))}
                   </tr>
                ))}
             </thead>
-            <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-amber-700">
+            <tbody>
                {table.getRowModel().rows.map((row) => (
                   <tr
                      key={row.id}
                      onClick={() => onRowClick?.(row.original)}
-                     className={onRowClick ? "cursor-pointer hover:bg-gray-50" : ""}
+                     className={onRowClick ? "is-clickable" : ""}
                   >
                      {row.getVisibleCells().map((cell) => (
-                        <td
-                           key={cell.id}
-                           className="px-2 py-1 whitespace-nowrap text-sm text-gray-900 dark:text-gray-50"
-                        >
+                        <td key={cell.id}>
                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
                         </td>
                      ))}

@@ -43,10 +43,10 @@ export function Auth(): ReactNode {
    };
 
    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-         <div className="max-w-md w-full space-y-8">
+      <div className="flex min-h-screen items-center justify-center px-4 py-12 sm:px-6 lg:px-8">
+         <div className="aqua-panel w-full max-w-md space-y-8 p-8">
             <div>
-               <h1 className="text-3xl font-bold text-center">Supabase + React</h1>
+               <h1 className="text-center text-3xl font-bold">Supabase + React</h1>
                <p className="mt-2 text-center text-gray-600">
                   Sign in using your email and password below
                </p>

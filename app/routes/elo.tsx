@@ -22,10 +22,16 @@ export default function Leaderboard(): React.ReactNode {
       orderBy: sorting[0]?.id ?? "elo",
       orderDirection: sorting[0]?.desc === false ? "asc" : "desc",
    });
-   const numPages =
-      eloLeaderboard.data?.total == null
-         ? null
-         : Math.ceil(eloLeaderboard.data.total / pagination.pageSize);
+
+   // Remember the last known total so the pager doesn't disappear (and the
+   // page doesn't jump) while the next page is being fetched.
+   const [lastTotal, setLastTotal] = React.useState<number | null>(null);
+   const dataTotal = eloLeaderboard.data?.total;
+   if (dataTotal != null && dataTotal !== lastTotal) {
+      setLastTotal(dataTotal);
+   }
+   const total = dataTotal ?? lastTotal;
+   const numPages = total == null ? null : Math.ceil(total / pagination.pageSize);
 
    const columns: Array<ColumnDef<TeamEloWithName>> = [
       {
@@ -48,8 +54,9 @@ export default function Leaderboard(): React.ReactNode {
             setPagination={setPagination}
             sorting={sorting}
             setSorting={setSorting}
+            isLoading={eloLeaderboard.isFetching}
          />
-         {eloLeaderboard.data && numPages != null && (
+         {numPages != null && (
             <div className="flex justify-end items-baseline gap-4">
                <Button
                   onClick={() =>

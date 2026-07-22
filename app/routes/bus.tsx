@@ -67,12 +67,12 @@ function formatExpectedArrival(iso: string): string {
 function ArrivalRow({ arrival }: { arrival: BusArrival }): JSX.Element {
    const timeToStation = formatTimeToStation(arrival.timeToStation);
    return (
-      <li className="col-span-full grid grid-cols-subgrid items-center border-b border-gray-100 py-0.5 last:border-b-0">
+      <li className="col-span-full grid grid-cols-subgrid items-center border-b border-gray-400/50 py-0.5 last:border-b-0">
          <span className="inline-flex min-w-8 justify-center rounded bg-red-600 px-1 py-0.5 font-bold leading-none text-white">
             {arrival.lineName}
          </span>
          <span className="truncate font-medium">{arrival.destinationName}</span>
-         <span className="tabular-nums text-gray-500">
+         <span className="tabular-nums text-gray-600">
             {formatExpectedArrival(arrival.expectedArrival)}
          </span>
          <span
@@ -103,14 +103,12 @@ function StationInfo({
       <section className="contents">
          <h2 className="col-span-full mt-4 flex items-baseline gap-2 font-semibold">
             {busStopNames[result.station]}
-            {isUpdating && (
-               <span className="font-normal text-gray-400">updating…</span>
-            )}
+            {isUpdating && <span className="font-normal text-gray-400">updating…</span>}
          </h2>
          {result.error != null ? (
             <div className="col-span-full text-red-700">{result.error}</div>
          ) : sorted.length === 0 ? (
-            <div className="col-span-full text-gray-500">No arrivals</div>
+            <div className="col-span-full text-gray-600">No arrivals</div>
          ) : (
             <ul className="contents">
                {sorted.map((arrival) => (

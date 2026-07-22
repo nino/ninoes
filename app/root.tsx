@@ -122,8 +122,10 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps): ReactNode {
       stack = error.stack;
    }
 
+   // Renders outside the aqua window, directly on the dark desktop
+   // background, so it needs its own light text color.
    return (
-      <main className="pt-16 p-4 container mx-auto">
+      <main className="pt-16 p-4 container mx-auto text-gray-100">
          <h1>{message}</h1>
          <p>{details}</p>
          {stack != null && (

@@ -31,8 +31,8 @@ export default function Vote(): ReactNode {
 
    if (isLoading || !names || teamsQuery.isPending) {
       return (
-         <div className="flex justify-center items-center min-h-screen">
-            <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" />
+         <div className="flex min-h-64 items-center justify-center">
+            <div className="aqua-spinner" role="status" aria-label="Loading" />
          </div>
       );
    }
@@ -78,7 +78,7 @@ export default function Vote(): ReactNode {
       <div className="flex flex-col items-center gap-8 p-8">
          <h1 className="text-2xl font-bold">Choose a name</h1>
          <div className="text-sm -mt-4">(it should be much more difficult now)</div>
-         <div className="flex gap-4">
+         <div className="flex w-full flex-wrap justify-center gap-4">
             {names.map((name, index) => (
                <Button
                   key={name.id}

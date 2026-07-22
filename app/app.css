@@ -9,12 +9,11 @@
    --breakpoint-2xl: 1536px;
 
    --font-sans:
-      ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
-      "Segoe UI Symbol", "Noto Color Emoji";
+      "Lucida Grande", "Lucida Sans Unicode", "Helvetica Neue", Helvetica, Arial,
+      "Segoe UI", sans-serif;
 
    --animate-wiggle:
-      wiggle-rotate 0.37s linear infinite,
-      wiggle-translate 0.53s linear infinite;
+      wiggle-rotate 0.37s linear infinite, wiggle-translate 0.53s linear infinite;
    @keyframes wiggle-rotate {
       0% {
          rotate: -7deg;
@@ -69,11 +68,442 @@
    }
 }
 
+/* ------------------------------------------------------------------ *
+ *  Aqua / brushed-metal theme
+ *  A recreation of the classic Mac OS X window look.
+ * ------------------------------------------------------------------ */
+
+:root {
+   /* The Aqua theme is a single, deliberately light look. */
+   color-scheme: light;
+
+   --aqua-font: var(--font-sans);
+
+   --metal-mid: #d8d8d8;
+   --metal-line: #9a9a9a;
+   --window-frame: #6a6a6a;
+   --ink: #1a1a1a;
+}
+
 html,
 body {
-   @apply bg-white dark:bg-gray-950;
+   font-family: var(--aqua-font);
+   color: var(--ink);
+   /* The Mac "desktop" behind the window. */
+   background:
+      radial-gradient(140% 120% at 50% -10%, #6d7681 0%, #565d66 45%, #40454c 100%),
+      #40454c;
+   min-height: 100vh;
+   -webkit-font-smoothing: antialiased;
+}
 
-   @media (prefers-color-scheme: dark) {
-      color-scheme: dark;
+/*
+ * All theme classes live in the `components` layer so plain Tailwind
+ * utilities (e.g. `sm:hidden`, `flex-wrap`) can still override them.
+ */
+@layer components {
+   /* ---- Window chrome ------------------------------------------------ */
+
+   .aqua-window {
+      border: 1px solid var(--window-frame);
+      border-radius: 10px;
+      overflow: hidden;
+      background: var(--metal-mid);
+      box-shadow:
+         0 1px 0 rgba(255, 255, 255, 0.5) inset,
+         0 22px 60px rgba(0, 0, 0, 0.55),
+         0 3px 10px rgba(0, 0, 0, 0.35);
+   }
+
+   .aqua-titlebar {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      height: 44px;
+      padding: 0 14px;
+      border-bottom: 1px solid var(--metal-line);
+      background:
+         repeating-linear-gradient(
+            0deg,
+            rgba(255, 255, 255, 0.28) 0,
+            rgba(255, 255, 255, 0.28) 1px,
+            rgba(0, 0, 0, 0.02) 1px,
+            rgba(0, 0, 0, 0.02) 2px
+         ),
+         linear-gradient(to bottom, #fbfbfb 0%, #e0e0e0 50%, #cfcfcf 100%);
+   }
+
+   .aqua-title {
+      position: absolute;
+      /* Keep clear of the traffic lights / menu button on narrow screens. */
+      left: 76px;
+      right: 76px;
+      text-align: center;
+      font-size: 13px;
+      font-weight: 700;
+      color: #2c2c2c;
+      text-shadow: 0 1px 0 rgba(255, 255, 255, 0.8);
+      pointer-events: none;
+      letter-spacing: 0.2px;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+   }
+
+   /* Traffic-light window controls */
+   .aqua-lights {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      z-index: 1;
+   }
+   .aqua-light {
+      width: 13px;
+      height: 13px;
+      border-radius: 50%;
+      box-shadow:
+         0 0 0 0.5px rgba(0, 0, 0, 0.35),
+         0 1px 1px rgba(0, 0, 0, 0.25),
+         inset 0 5px 3px -3px rgba(255, 255, 255, 0.9);
+   }
+   .aqua-light--close {
+      background: radial-gradient(circle at 50% 30%, #ff9a8b, #ec6a5e 70%);
+   }
+   .aqua-light--min {
+      background: radial-gradient(circle at 50% 30%, #ffd479, #f0b52e 70%);
+   }
+   .aqua-light--max {
+      background: radial-gradient(circle at 50% 30%, #a6ec7a, #55b83b 70%);
+   }
+
+   /* Toolbar strip below the titlebar that holds the nav. */
+   .aqua-toolbar {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 12px;
+      border-bottom: 1px solid var(--metal-line);
+      background:
+         repeating-linear-gradient(
+            0deg,
+            rgba(255, 255, 255, 0.22) 0,
+            rgba(255, 255, 255, 0.22) 1px,
+            rgba(0, 0, 0, 0.02) 1px,
+            rgba(0, 0, 0, 0.02) 2px
+         ),
+         linear-gradient(to bottom, #eaeaea 0%, #d2d2d2 100%);
+   }
+
+   .aqua-body {
+      padding: 20px;
+      background:
+         repeating-linear-gradient(
+            0deg,
+            rgba(255, 255, 255, 0.18) 0,
+            rgba(255, 255, 255, 0.18) 1px,
+            rgba(0, 0, 0, 0.015) 1px,
+            rgba(0, 0, 0, 0.015) 2px
+         ),
+         linear-gradient(to bottom, #dcdcdc 0%, #c9c9c9 100%);
+      min-height: 320px;
+   }
+
+   /* ---- Panels (grouped content cards) ------------------------------- */
+
+   .aqua-panel {
+      border: 1px solid #adadad;
+      border-radius: 8px;
+      background: linear-gradient(to bottom, #fdfdfd 0%, #eef0f2 100%);
+      box-shadow:
+         0 1px 0 rgba(255, 255, 255, 0.9) inset,
+         0 1px 3px rgba(0, 0, 0, 0.18);
+      overflow: hidden;
+   }
+
+   /* ---- Aqua buttons ------------------------------------------------- */
+
+   .aqua-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      position: relative;
+      padding: 4px 16px;
+      min-height: 24px;
+      border-radius: 7px;
+      border: 1px solid #8f8f8f;
+      font-family: var(--aqua-font);
+      font-size: 13px;
+      font-weight: 500;
+      line-height: 1.2;
+      color: #1e1e1e;
+      cursor: pointer;
+      text-shadow: 0 1px 0 rgba(255, 255, 255, 0.7);
+      background:
+         linear-gradient(
+            to bottom,
+            rgba(255, 255, 255, 0.85) 0%,
+            rgba(255, 255, 255, 0.15) 48%,
+            rgba(255, 255, 255, 0) 49%
+         ),
+         linear-gradient(to bottom, #fdfdfd 0%, #ededed 50%, #dcdcdc 100%);
+      box-shadow:
+         0 1px 0 rgba(255, 255, 255, 0.9) inset,
+         0 1px 2px rgba(0, 0, 0, 0.22);
+      transition:
+         filter 0.08s ease,
+         box-shadow 0.08s ease;
+      white-space: nowrap;
+      -webkit-user-select: none;
+      user-select: none;
+   }
+   .aqua-btn:hover {
+      filter: brightness(1.03);
+   }
+   .aqua-btn:active {
+      box-shadow:
+         0 1px 3px rgba(0, 0, 0, 0.3) inset,
+         0 1px 0 rgba(255, 255, 255, 0.6);
+      filter: brightness(0.96);
+   }
+   .aqua-btn:focus-visible {
+      outline: none;
+      box-shadow:
+         0 1px 0 rgba(255, 255, 255, 0.9) inset,
+         0 0 0 3px rgba(74, 144, 226, 0.55);
+   }
+   .aqua-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      filter: none;
+   }
+   .aqua-btn--big {
+      font-size: 17px;
+      padding: 10px 26px;
+      min-height: 40px;
+      border-radius: 9px;
+      /* Long candidate names must wrap rather than overflow the window. */
+      white-space: normal;
+      max-width: 100%;
+   }
+
+   /* Hide the label under the spinner. `color: transparent` alone leaves the
+      text-shadow visible, so the shadow must be cleared too. */
+   .aqua-btn.is-loading,
+   .aqua-btn.is-loading:hover {
+      color: transparent;
+      text-shadow: none;
+   }
+
+   /* Default (blue "aqua") button */
+   .aqua-btn--blue {
+      border-color: #4a82bd;
+      color: #000000;
+      text-shadow: 0 1px 0 rgba(255, 255, 255, 0.45);
+      background:
+         linear-gradient(
+            to bottom,
+            rgba(255, 255, 255, 0.75) 0%,
+            rgba(255, 255, 255, 0.12) 48%,
+            rgba(255, 255, 255, 0) 49%
+         ),
+         linear-gradient(to bottom, #a8cdf5 0%, #85b7f0 50%, #5d9ce2 100%);
+   }
+
+   /* Red (danger) button */
+   .aqua-btn--red {
+      border-color: #a4342b;
+      color: #ffffff;
+      text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.35);
+      background:
+         linear-gradient(
+            to bottom,
+            rgba(255, 255, 255, 0.7) 0%,
+            rgba(255, 255, 255, 0.12) 48%,
+            rgba(255, 255, 255, 0) 49%
+         ),
+         linear-gradient(to bottom, #f08a80 0%, #e35a4e 50%, #c8382c 100%);
+   }
+
+   /* Ghost / flat button */
+   .aqua-btn--ghost {
+      border-color: #b3b3b3;
+      background: linear-gradient(to bottom, #fbfbfb 0%, #ececec 100%);
+      box-shadow: 0 1px 0 rgba(255, 255, 255, 0.8) inset;
+   }
+
+   .aqua-btn__spinner {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+   }
+   .aqua-btn__spinner::after {
+      content: "";
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      border: 2px solid currentColor;
+      border-top-color: transparent;
+      animation: aqua-spin 0.7s linear infinite;
+   }
+   /* Own name to avoid colliding with Tailwind's `spin` keyframes. */
+   @keyframes aqua-spin {
+      to {
+         rotate: 360deg;
+      }
+   }
+
+   /* ---- Toolbar nav tabs --------------------------------------------- */
+
+   .aqua-tab {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 14px;
+      min-height: 24px;
+      border-radius: 7px;
+      border: 1px solid #8f8f8f;
+      font-size: 12.5px;
+      font-weight: 600;
+      color: #2a2a2a;
+      text-decoration: none;
+      text-shadow: 0 1px 0 rgba(255, 255, 255, 0.7);
+      background: linear-gradient(to bottom, #fcfcfc 0%, #e6e6e6 50%, #d6d6d6 100%);
+      box-shadow:
+         0 1px 0 rgba(255, 255, 255, 0.9) inset,
+         0 1px 1px rgba(0, 0, 0, 0.18);
+      transition: filter 0.08s ease;
+   }
+   .aqua-tab:hover {
+      filter: brightness(1.03);
+   }
+   .aqua-tab--active {
+      color: #ffffff;
+      text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.3);
+      border-color: #6f6f6f;
+      background: linear-gradient(to bottom, #8a8a8a 0%, #6f6f6f 50%, #5f5f5f 100%);
+      box-shadow:
+         0 1px 2px rgba(0, 0, 0, 0.35) inset,
+         0 1px 0 rgba(255, 255, 255, 0.5);
+   }
+
+   /* ---- Inputs ------------------------------------------------------- */
+
+   .aqua-label {
+      display: block;
+      font-size: 12px;
+      font-weight: 700;
+      color: #3d3d3d;
+      text-shadow: 0 1px 0 rgba(255, 255, 255, 0.7);
+   }
+
+   .aqua-input {
+      width: 100%;
+      padding: 5px 9px;
+      border-radius: 6px;
+      border: 1px solid #a2a2a2;
+      background: #ffffff;
+      font-family: var(--aqua-font);
+      font-size: 13px;
+      color: #1a1a1a;
+      box-shadow:
+         0 1px 2px rgba(0, 0, 0, 0.14) inset,
+         0 1px 0 rgba(255, 255, 255, 0.7);
+   }
+   .aqua-input::placeholder {
+      color: #9a9a9a;
+   }
+   .aqua-input:focus {
+      outline: none;
+      border-color: #4a90e2;
+      box-shadow:
+         0 1px 2px rgba(0, 0, 0, 0.12) inset,
+         0 0 0 3px rgba(74, 144, 226, 0.4);
+   }
+   .aqua-input--error {
+      border-color: #d0433a;
+      box-shadow:
+         0 1px 2px rgba(0, 0, 0, 0.12) inset,
+         0 0 0 3px rgba(208, 67, 58, 0.28);
+   }
+
+   /* ---- List / table ------------------------------------------------- */
+
+   .aqua-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      font-size: 13px;
+   }
+   .aqua-table thead th {
+      text-align: left;
+      padding: 5px 12px;
+      font-size: 11px;
+      font-weight: 700;
+      color: #4a4a4a;
+      text-shadow: 0 1px 0 rgba(255, 255, 255, 0.8);
+      border-right: 1px solid #cfcfcf;
+      border-bottom: 1px solid #a9a9a9;
+      background: linear-gradient(to bottom, #f6f6f6 0%, #e0e0e0 100%);
+      white-space: nowrap;
+      user-select: none;
+   }
+   .aqua-table thead th:last-child {
+      border-right: none;
+   }
+   .aqua-table thead th.is-sortable {
+      cursor: pointer;
+   }
+   .aqua-table thead th.is-sortable:hover {
+      background: linear-gradient(to bottom, #ffffff 0%, #e7e7e7 100%);
+   }
+   .aqua-table tbody td {
+      padding: 5px 12px;
+      color: #1e1e1e;
+      border-bottom: 1px solid #e6e6e6;
+      white-space: nowrap;
+   }
+   /* Classic alternating blue/white list rows. */
+   .aqua-table tbody tr:nth-child(odd) {
+      background: #ffffff;
+   }
+   .aqua-table tbody tr:nth-child(even) {
+      background: #eef3fb;
+   }
+   .aqua-table tbody tr.is-clickable {
+      cursor: pointer;
+   }
+   .aqua-table tbody tr.is-clickable:hover {
+      background: #d3e3fb;
+   }
+
+   /* ---- Headings and links on metal ---------------------------------- */
+
+   .aqua-body h1,
+   .aqua-body h2,
+   .aqua-body h3 {
+      color: #2b2b2b;
+      text-shadow: 0 1px 0 rgba(255, 255, 255, 0.75);
+   }
+
+   .aqua-body a:not(.aqua-btn):not(.aqua-tab) {
+      color: #2262a8;
+      text-decoration: underline;
+   }
+   .aqua-body a:not(.aqua-btn):not(.aqua-tab):hover {
+      color: #14497f;
+   }
+
+   /* ---- Spinner ------------------------------------------------------ */
+
+   .aqua-spinner {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      border: 3px solid rgba(0, 0, 0, 0.2);
+      border-top-color: #4a90e2;
+      animation: aqua-spin 0.7s linear infinite;
    }
 }

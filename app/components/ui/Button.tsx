@@ -17,42 +17,31 @@ export function Button({
    big,
    ...props
 }: ButtonProps): ReactNode {
-   const baseStyles =
-      "px-3 py-1 w-full rounded-[0.75rem] shadow-lg font-medium transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 active:rotate-15";
-
    const variantStyles: Record<ButtonVariant, string> = {
-      primary:
-         "bg-linear-[20deg] from-sky-50 to-emerald-50 dark:from-sky-900 dark:to-emerald-900 text-black dark:text-white hover:bg-blue-700 focus:ring-blue-500",
-      secondary:
-         "bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100 hover:bg-gray-300 dark:hover:bg-gray-600 focus:ring-gray-500",
-      danger: "bg-red-600 text-white hover:bg-red-700 focus:ring-red-500",
-      ghost: "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 focus:ring-gray-500",
+      primary: "aqua-btn--blue",
+      secondary: "",
+      danger: "aqua-btn--red",
+      ghost: "aqua-btn--ghost",
    };
 
-   const disabledStyles = "opacity-50 cursor-not-allowed";
-   const loadingStyles = "relative text-transparent hover:text-transparent";
-
    return (
-      <div className="p-1 bg-linear-to-tr from-red-200 to-pink-400 dark:from-red-800 dark:to-pink-600 rounded-[1rem] shadow-xl">
-         <button
-            className={`
-        ${baseStyles}
+      <button
+         className={`
+        aqua-btn
         ${variantStyles[variant]}
-        ${disabled || isLoading ? disabledStyles : ""}
-        ${isLoading ? loadingStyles : ""}
+        ${big ? "aqua-btn--big" : ""}
+        ${isLoading ? "is-loading" : ""}
         ${className}
-        ${big ? "text-lg" : ""}
       `}
-            disabled={disabled ?? isLoading}
-            {...props}
-         >
-            {children}
-            {isLoading && (
-               <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin" />
-               </div>
-            )}
-         </button>
-      </div>
+         disabled={(disabled ?? false) || isLoading}
+         {...props}
+      >
+         {children}
+         {isLoading && (
+            <div className="aqua-btn__spinner text-gray-600">
+               <span className="sr-only">Loading</span>
+            </div>
+         )}
+      </button>
    );
 }

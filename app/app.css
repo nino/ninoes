@@ -229,8 +229,8 @@ body {
       justify-content: center;
       gap: 6px;
       position: relative;
-      padding: 4px 16px;
-      min-height: 24px;
+      padding: 6px 20px;
+      min-height: 30px;
       border-radius: 9999px;
       border: 1px solid #8f8f8f;
       font-family: var(--aqua-font);
@@ -360,8 +360,8 @@ body {
    .aqua-tab {
       display: inline-flex;
       align-items: center;
-      padding: 4px 14px;
-      min-height: 24px;
+      padding: 5px 16px;
+      min-height: 28px;
       border-radius: 9999px;
       border: 1px solid #8f8f8f;
       font-size: 12.5px;

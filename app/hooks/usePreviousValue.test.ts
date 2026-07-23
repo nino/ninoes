@@ -1,11 +1,11 @@
 // @vitest-environment jsdom
 import { expect, test } from "vitest";
 import { renderHook } from "@testing-library/react";
-import { useLastKnown } from "./useLastKnown";
+import { usePreviousValue } from "./usePreviousValue";
 
 test("returns the current value while it is present", () => {
    const { result, rerender } = renderHook(
-      ({ value }: { value: number | undefined }) => useLastKnown(value),
+      ({ value }: { value: number | undefined }) => usePreviousValue(value),
       { initialProps: { value: 42 as number | undefined } },
    );
    expect(result.current).toBe(42);
@@ -16,7 +16,7 @@ test("returns the current value while it is present", () => {
 
 test("keeps the last known value while the current one is nullish", () => {
    const { result, rerender } = renderHook(
-      ({ value }: { value: number | undefined }) => useLastKnown(value),
+      ({ value }: { value: number | undefined }) => usePreviousValue(value),
       { initialProps: { value: 42 as number | undefined } },
    );
 
@@ -28,6 +28,6 @@ test("keeps the last known value while the current one is nullish", () => {
 });
 
 test("returns null when no value has ever been present", () => {
-   const { result } = renderHook(() => useLastKnown<number>(undefined));
+   const { result } = renderHook(() => usePreviousValue<number>(undefined));
    expect(result.current).toBeNull();
 });

@@ -22,7 +22,7 @@ import React from "react";
  *   anything reaches the DOM and re-renders synchronously with the new
  *   state. One commit, no stale frame.
  */
-export function useLastKnown<T>(value: T | null | undefined): T | null {
+export function usePreviousValue<T>(value: T | null | undefined): T | null {
    const [last, setLast] = React.useState<T | null>(null);
    if (value != null && value !== last) {
       setLast(value);

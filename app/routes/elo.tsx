@@ -1,5 +1,5 @@
 import { useEloLeaderboard, useTeams } from "~/hooks/useSupabase";
-import { useLastKnown } from "~/hooks/useLastKnown";
+import { usePreviousValue } from "~/hooks/usePreviousValue";
 import React from "react";
 import type { TeamEloWithName } from "~/model/types";
 import { Table } from "~/components/ui/Table";
@@ -26,7 +26,7 @@ export default function Leaderboard(): React.ReactNode {
 
    // Remember the last known total so the pager doesn't disappear (and the
    // page doesn't jump) while the next page is being fetched.
-   const total = useLastKnown(eloLeaderboard.data?.total);
+   const total = usePreviousValue(eloLeaderboard.data?.total);
    const numPages = total == null ? null : Math.ceil(total / pagination.pageSize);
 
    const columns: Array<ColumnDef<TeamEloWithName>> = [

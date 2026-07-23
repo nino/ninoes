@@ -123,15 +123,21 @@ body {
       height: 44px;
       padding: 0 14px;
       border-bottom: 1px solid var(--metal-line);
-      background:
-         repeating-linear-gradient(
-            0deg,
+      /* Pinstripes as an explicit 2px tile so their density never scales
+         with the container; only the color wash beneath stretches. */
+      background-image:
+         linear-gradient(
+            to bottom,
             rgba(255, 255, 255, 0.28) 0,
             rgba(255, 255, 255, 0.28) 1px,
             rgba(0, 0, 0, 0.02) 1px,
             rgba(0, 0, 0, 0.02) 2px
          ),
          linear-gradient(to bottom, #fbfbfb 0%, #e0e0e0 50%, #cfcfcf 100%);
+      background-size:
+         100% 2px,
+         100% 100%;
+      background-repeat: repeat, no-repeat;
    }
 
    .aqua-title {
@@ -184,28 +190,36 @@ body {
       gap: 6px;
       padding: 8px 12px;
       border-bottom: 1px solid var(--metal-line);
-      background:
-         repeating-linear-gradient(
-            0deg,
+      background-image:
+         linear-gradient(
+            to bottom,
             rgba(255, 255, 255, 0.22) 0,
             rgba(255, 255, 255, 0.22) 1px,
             rgba(0, 0, 0, 0.02) 1px,
             rgba(0, 0, 0, 0.02) 2px
          ),
          linear-gradient(to bottom, #eaeaea 0%, #d2d2d2 100%);
+      background-size:
+         100% 2px,
+         100% 100%;
+      background-repeat: repeat, no-repeat;
    }
 
    .aqua-body {
       padding: 20px;
-      background:
-         repeating-linear-gradient(
-            0deg,
+      background-image:
+         linear-gradient(
+            to bottom,
             rgba(255, 255, 255, 0.18) 0,
             rgba(255, 255, 255, 0.18) 1px,
             rgba(0, 0, 0, 0.015) 1px,
             rgba(0, 0, 0, 0.015) 2px
          ),
          linear-gradient(to bottom, #dcdcdc 0%, #c9c9c9 100%);
+      background-size:
+         100% 2px,
+         100% 100%;
+      background-repeat: repeat, no-repeat;
       min-height: 320px;
    }
 

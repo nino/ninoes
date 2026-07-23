@@ -3,7 +3,6 @@ import type { NameScore } from "~/hooks/useSupabase";
 import { type ReactNode, useState } from "react";
 import { Table } from "~/components/ui/Table";
 import type { ColumnDef } from "@tanstack/react-table";
-import { Spinner } from "~/components/ui/Spinner";
 
 export default function Leaderboard(): ReactNode {
    const [pagination, setPagination] = useState({
@@ -17,7 +16,7 @@ export default function Leaderboard(): ReactNode {
       },
    ]);
 
-   const { data: scores, isLoading } = useNameScores({
+   const { data: scores, isFetching } = useNameScores({
       limit: pagination.pageSize,
       offset: pagination.pageIndex * pagination.pageSize,
       orderBy: sorting[0]?.id ?? "score",
@@ -59,17 +58,15 @@ export default function Leaderboard(): ReactNode {
    return (
       <div className="space-y-8">
          <h1 className="text-2xl font-bold">Name Leaderboard</h1>
-         {isLoading && <Spinner />}
-         {scores?.data && (
-            <Table
-               data={scores.data}
-               columns={columns}
-               sorting={sorting}
-               setSorting={setSorting}
-               pagination={pagination}
-               setPagination={setPagination}
-            />
-         )}
+         <Table
+            data={scores?.data ?? []}
+            columns={columns}
+            sorting={sorting}
+            setSorting={setSorting}
+            pagination={pagination}
+            setPagination={setPagination}
+            isLoading={isFetching}
+         />
       </div>
    );
 }

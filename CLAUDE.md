@@ -14,7 +14,7 @@ Ninoes is a name voting/ranking app. Users vote on names (up/down and ELO-style 
 - `pnpm lint` / `pnpm lint:fix` — ESLint
 - `pnpm format` — Prettier formatting
 
-- `pnpm test` — Vitest (jsdom + Testing Library); test files live next to their subject as `*.test.tsx`
+- `pnpm test` — Vitest (jsdom + Testing Library); test files live next to their subject as `*.test.{ts,tsx}`
 
 ## Architecture
 

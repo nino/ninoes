@@ -52,7 +52,7 @@ export default function Leaderboard(): React.ReactNode {
             setSorting={setSorting}
             isLoading={eloLeaderboard.isFetching}
          />
-         {numPages != null && (
+         {numPages != null && numPages > 0 && !eloLeaderboard.isError && (
             <div className="flex justify-end items-baseline gap-4">
                <Button
                   onClick={() =>

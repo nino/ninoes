@@ -5,6 +5,9 @@ export default defineConfig({
    test: {
       environment: "jsdom",
       include: ["app/**/*.test.{ts,tsx}"],
+      // Expose afterEach etc. as globals so Testing Library's automatic
+      // cleanup-between-tests registers itself.
+      globals: true,
    },
    resolve: {
       alias: {

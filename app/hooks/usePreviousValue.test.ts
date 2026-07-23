@@ -1,4 +1,3 @@
-// @vitest-environment jsdom
 import { expect, test } from "vitest";
 import { renderHook } from "@testing-library/react";
 import { usePreviousValue } from "./usePreviousValue";

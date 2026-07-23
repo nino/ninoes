@@ -22,9 +22,15 @@ import React from "react";
  *   anything reaches the DOM and re-renders synchronously with the new
  *   state. One commit, no stale frame.
  */
-export function usePreviousValue<T>(value: T | null | undefined): T | null {
+export function usePreviousValue<T extends string | number | boolean | bigint>(
+   value: T | null | undefined,
+): T | null {
    const [last, setLast] = React.useState<T | null>(null);
-   if (value != null && value !== last) {
+   // T is constrained to primitives because this guard compares by identity:
+   // an object or array recreated on each render would never compare equal,
+   // and the render-time setState would loop forever. (Object.is rather than
+   // !== so that NaN converges too.)
+   if (value != null && !Object.is(value, last)) {
       setLast(value);
    }
    return value ?? last;

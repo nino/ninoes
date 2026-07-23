@@ -8,6 +8,10 @@ on:
 permissions:
    contents: read
 
+concurrency:
+   group: ci-${{ github.workflow }}-${{ github.ref }}
+   cancel-in-progress: true
+
 jobs:
    checks:
       runs-on: ubuntu-latest
@@ -22,3 +26,4 @@ jobs:
          - run: pnpm typecheck
          - run: pnpm lint
          - run: pnpm test
+         - run: pnpm build

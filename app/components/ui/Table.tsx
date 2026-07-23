@@ -9,6 +9,7 @@ import {
    useReactTable,
 } from "@tanstack/react-table";
 import React from "react";
+import { Spinner } from "./Spinner";
 
 interface TableProps<TData> {
    data: Array<TData>;
@@ -33,6 +34,7 @@ export function Table<TData>({
 }: TableProps<TData>): React.ReactNode {
    const tbodyRef = React.useRef<HTMLTableSectionElement>(null);
    const [lastBodyHeight, setLastBodyHeight] = React.useState<number | null>(null);
+   const [lastRowCount, setLastRowCount] = React.useState<number | null>(null);
 
    // Remember the body height while rows are shown, so the loading
    // placeholder can hold the same height and the table doesn't collapse
@@ -40,10 +42,21 @@ export function Table<TData>({
    React.useLayoutEffect(() => {
       if (data.length > 0 && tbodyRef.current) {
          setLastBodyHeight(tbodyRef.current.getBoundingClientRect().height);
+         setLastRowCount(data.length);
       }
    }, [data]);
 
    const showPlaceholder = isLoading && data.length === 0;
+
+   // Expect the incoming page to be pageSize rows tall. If the last page we
+   // measured was shorter (e.g. the final page), scale its per-row height up
+   // so the placeholder matches the page that's about to arrive.
+   const placeholderHeight =
+      lastBodyHeight == null || lastRowCount == null || lastRowCount === 0
+         ? undefined
+         : pagination != null && pagination.pageSize !== lastRowCount
+           ? (lastBodyHeight / lastRowCount) * pagination.pageSize
+           : lastBodyHeight;
    const table = useReactTable({
       data,
       columns,
@@ -86,19 +99,19 @@ export function Table<TData>({
             {showPlaceholder ? (
                <tbody>
                   <tr>
-                     <td colSpan={columns.length} className="border-b-0 p-0">
+                     <td
+                        colSpan={table.getVisibleLeafColumns().length}
+                        className="border-b-0 p-0"
+                     >
                         <div
                            className="flex items-center justify-center"
+                           data-testid="table-loading-placeholder"
                            style={{
-                              height: lastBodyHeight ?? undefined,
+                              height: placeholderHeight,
                               minHeight: 80,
                            }}
                         >
-                           <div
-                              className="aqua-spinner"
-                              role="status"
-                              aria-label="Loading"
-                           />
+                           <Spinner />
                         </div>
                      </td>
                   </tr>

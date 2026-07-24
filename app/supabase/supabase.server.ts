@@ -19,9 +19,7 @@ export const getSupabaseServerClient = (
       {
          cookies: {
             getAll() {
-               return parseCookieHeader(request.headers.get("Cookie") ?? "").map(
-                  ({ name, value }) => ({ name, value: value ?? "" }),
-               );
+               return parseCookieHeader(request.headers.get("Cookie") ?? "");
             },
             setAll(cookiesToSet) {
                for (const { name, value, options } of cookiesToSet) {

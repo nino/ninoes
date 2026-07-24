@@ -17,8 +17,8 @@
     "@headlessui/react": "^2.2.10",
     "@hookform/resolvers": "^5.4.0",
     "@js-temporal/polyfill": "^0.5.1",
-    "@react-router/node": "^7.16.0",
-    "@react-router/serve": "^7.16.0",
+    "@react-router/node": "^7.18.1",
+    "@react-router/serve": "^7.18.1",
     "@sentry/react": "^10.66.0",
     "@sentry/vite-plugin": "^5.4.0",
     "@supabase/ssr": "^0.12.0",
@@ -31,13 +31,13 @@
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
     "react-hook-form": "^7.82.0",
-    "react-router": "^7.16.0",
+    "react-router": "^7.18.1",
     "sonner": "^2.0.7",
     "zod": "^4.4.3"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.5",
-    "@react-router/dev": "^7.16.0",
+    "@react-router/dev": "^7.18.1",
     "@tailwindcss/vite": "^4.3.3",
     "@testing-library/dom": "^10.4.1",
     "@testing-library/react": "^16.3.2",
@@ -63,6 +63,10 @@
     "onlyBuiltDependencies": [
       "@sentry/cli",
       "esbuild"
-    ]
+    ],
+    "overrides": {
+      "qs": "^6.15.2",
+      "uuid": "^11.1.1"
+    }
   }
 }

@@ -1,10 +1,10 @@
-FROM node:22-alpine AS development-dependencies-env
+FROM node:26-alpine AS development-dependencies-env
 RUN corepack enable pnpm
 COPY package.json pnpm-lock.yaml /app/
 WORKDIR /app
 RUN pnpm install
 
-FROM node:22-alpine AS build-env
+FROM node:26-alpine AS build-env
 RUN corepack enable pnpm
 # Define build arguments
 ARG VITE_SUPABASE_URL
@@ -17,7 +17,7 @@ COPY --from=development-dependencies-env /app/node_modules /app/node_modules
 WORKDIR /app
 RUN pnpm build
 
-FROM node:22-alpine
+FROM node:26-alpine
 RUN corepack enable pnpm
 ENV NODE_ENV=production
 # Define build arguments again for the final stage

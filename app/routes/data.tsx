@@ -199,7 +199,7 @@ function XAxis({
          const axis = d3
             .axisBottom(scale)
             .tickValues(ticks)
-            .tickFormat((d) => `${d}°E`);
+            .tickFormat((d) => `${Number(d)}°E`);
          d3.select(ref.current).call(axis);
       }
    }, [scale]);
@@ -227,7 +227,7 @@ function YAxis({
          const axis = d3
             .axisLeft(scale)
             .tickValues(tickValues ?? ticks)
-            .tickFormat(tickFormat ?? ((d) => `${d}°N`));
+            .tickFormat(tickFormat ?? ((d) => `${Number(d)}°N`));
          d3.select(ref.current).call(axis);
       }
    }, [scale, tickFormat, tickValues]);
@@ -359,7 +359,7 @@ export default function Data(): ReactNode {
                <YAxis
                   scale={tempYScale}
                   transform={`translate(0,${dimensions.tempHeight})`}
-                  tickFormat={(d) => `${d}°C`}
+                  tickFormat={(d) => `${Number(d)}°C`}
                />
             </g>
          </svg>

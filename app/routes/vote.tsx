@@ -58,12 +58,12 @@ export default function Vote(): ReactNode {
    const handleBan = async (nameIndexes: Array<number>): Promise<void> => {
       try {
          await Promise.all(
-            nameIndexes.map((index) => {
-               createVote.mutate({
+            nameIndexes.map((index) =>
+               createVote.mutateAsync({
                   nameId: names[index].id,
                   voteType: VoteType.BAN,
-               });
-            }),
+               }),
+            ),
          );
 
          showToast("success", "Ban votes recorded successfully!");

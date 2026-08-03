@@ -11,7 +11,7 @@ Ninoes is a name voting/ranking app. Users vote on names (up/down and ELO-style 
 - `pnpm dev` — start dev server with HMR
 - `pnpm build` — production build (client + server)
 - `pnpm typecheck` — TypeScript type checking
-- `pnpm lint` / `pnpm lint:fix` — ESLint
+- `pnpm lint` / `pnpm lint:fix` — oxlint (type-aware; config in `.oxlintrc.json`)
 - `pnpm format` — Prettier formatting
 
 - `pnpm test` — Vitest (jsdom + Testing Library); test files live next to their subject as `*.test.{ts,tsx}`
@@ -30,9 +30,9 @@ Ninoes is a name voting/ranking app. Users vote on names (up/down and ELO-style 
 ## Code Style
 
 - **Prettier**: tabWidth 3, printWidth 89, trailingComma "all"
-- **Array types**: Use `Array<T>` not `T[]` (ESLint-enforced)
+- **Array types**: Use `Array<T>` not `T[]` (oxlint-enforced)
 - **Return types**: All functions must have explicit return type annotations
 - **React APIs**: Use `React.useState`, `React.useEffect`, etc. — import React as a namespace, not individual hooks
-- **No `any`**: Enforced by ESLint
-- **Nullish**: Use `??` and `?.` (ESLint-enforced). Don't use `!!x`.
+- **No `any`**: Enforced by oxlint
+- **Nullish**: Use `??` and `?.` (oxlint-enforced). Don't use `!!x`.
 - **Curly quotes in JSX**: Use HTML entities `&ldquo;` `&rdquo;` `&lsquo;` `&rsquo;` — never raw curly quotes

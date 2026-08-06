@@ -9,9 +9,5 @@ export default defineConfig({
       // cleanup-between-tests registers itself.
       globals: true,
    },
-   resolve: {
-      alias: {
-         "~": fileURLToPath(new URL("./app", import.meta.url)),
-      },
-   },
+   resolve: { alias: { "~": fileURLToPath(new URL("./app", import.meta.url)) } },
 });

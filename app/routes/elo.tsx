@@ -7,10 +7,7 @@ import { type SortingState, type ColumnDef } from "@tanstack/react-table";
 import { Button } from "~/components/ui/Button";
 
 export default function Leaderboard(): React.ReactNode {
-   const [pagination, setPagination] = React.useState({
-      pageIndex: 0,
-      pageSize: 10,
-   });
+   const [pagination, setPagination] = React.useState({ pageIndex: 0, pageSize: 10 });
    const [sorting, setSorting] = React.useState<SortingState>([]);
 
    const teamsQuery = useTeams({ page: 0, pageSize: 10 });
@@ -30,14 +27,8 @@ export default function Leaderboard(): React.ReactNode {
    const numPages = total == null ? null : Math.ceil(total / pagination.pageSize);
 
    const columns: Array<ColumnDef<TeamEloWithName>> = [
-      {
-         accessorKey: "elo",
-         header: "ELO",
-      },
-      {
-         accessorKey: "name.name",
-         header: "Name",
-      },
+      { accessorKey: "elo", header: "ELO" },
+      { accessorKey: "name.name", header: "Name" },
    ];
 
    return (

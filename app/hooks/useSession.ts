@@ -43,11 +43,7 @@ export function useSession(): UseSessionReturn {
    }, [supabase]);
 
    return React.useMemo(
-      () => ({
-         session,
-         isLoading,
-         supabase,
-      }),
+      () => ({ session, isLoading, supabase }),
       [isLoading, session, supabase],
    );
 }

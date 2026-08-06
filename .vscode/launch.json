@@ -10,9 +10,7 @@
          "name": "Debug React App",
          "url": "http://localhost:5173",
          "webRoot": "${workspaceFolder}",
-         "sourceMapPathOverrides": {
-            "/*": "${webRoot}/*"
-         }
+         "sourceMapPathOverrides": { "/*": "${webRoot}/*" }
       }
    ]
 }

@@ -64,10 +64,7 @@ export function Table<TData>({
       getSortedRowModel: getSortedRowModel(),
       onSortingChange: setSorting,
       onPaginationChange: setPagination,
-      state: {
-         sorting,
-         pagination,
-      },
+      state: { sorting, pagination },
       manualPagination: true,
    });
 
@@ -87,10 +84,9 @@ export function Table<TData>({
                               header.column.columnDef.header,
                               header.getContext(),
                            )}
-                           {{
-                              asc: " ▲",
-                              desc: " ▼",
-                           }[header.column.getIsSorted() as string] ?? null}
+                           {{ asc: " ▲", desc: " ▼" }[
+                              header.column.getIsSorted() as string
+                           ] ?? null}
                         </th>
                      ))}
                   </tr>
@@ -106,10 +102,7 @@ export function Table<TData>({
                         <div
                            className="flex items-center justify-center"
                            data-testid="table-loading-placeholder"
-                           style={{
-                              height: placeholderHeight,
-                              minHeight: 80,
-                           }}
+                           style={{ height: placeholderHeight, minHeight: 80 }}
                         >
                            <Spinner />
                         </div>

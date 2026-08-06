@@ -2,11 +2,7 @@ import { z } from "zod";
 
 export type Enum<T> = T[keyof T];
 
-export const VoteType = {
-   UP: "up",
-   DOWN: "down",
-   BAN: "ban",
-} as const;
+export const VoteType = { UP: "up", DOWN: "down", BAN: "ban" } as const;
 
 export const NameSchema = z.object({
    id: z.uuid(),
@@ -25,12 +21,8 @@ export const VoteSchema = z.object({
 export type Vote = z.infer<typeof VoteSchema>;
 
 export const VoteWithExtrasSchema = VoteSchema.extend({
-   name: z.object({
-      name: z.string().min(1),
-   }),
-   user: z.object({
-      name: z.string().min(1),
-   }),
+   name: z.object({ name: z.string().min(1) }),
+   user: z.object({ name: z.string().min(1) }),
 });
 export type VoteWithExtras = z.infer<typeof VoteWithExtrasSchema>;
 

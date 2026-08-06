@@ -2,13 +2,8 @@
    "$schema": "./node_modules/oxlint/configuration_schema.json",
    "ignorePatterns": ["**/.react-router/**", "build/**"],
    "plugins": ["typescript", "unicorn", "oxc", "react"],
-   "categories": {
-      "correctness": "error"
-   },
-   "env": {
-      "browser": true,
-      "es2024": true
-   },
+   "categories": { "correctness": "error" },
+   "env": { "browser": true, "es2024": true },
    "rules": {
       "eqeqeq": ["error", "always", { "null": "ignore" }],
       "no-empty-pattern": "off",

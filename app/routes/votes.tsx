@@ -32,18 +32,9 @@ export default function Votes(): ReactNode {
    };
 
    const voteColumns: Array<ColumnDef<VoteWithExtras>> = [
-      {
-         accessorKey: "name.name",
-         header: "Name",
-      },
-      {
-         accessorKey: "user.name",
-         header: "User ID",
-      },
-      {
-         accessorKey: "vote_type",
-         header: "Vote Type",
-      },
+      { accessorKey: "name.name", header: "Name" },
+      { accessorKey: "user.name", header: "User ID" },
+      { accessorKey: "vote_type", header: "Vote Type" },
       {
          accessorKey: "created_at",
          header: "Created At",

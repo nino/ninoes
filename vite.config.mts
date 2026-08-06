@@ -7,23 +7,14 @@ export default defineConfig({
    plugins: [
       tailwindcss(),
       reactRouter(),
-      sentryVitePlugin({
-         org: "none-9or",
-         project: "ninoes",
-      }),
+      sentryVitePlugin({ org: "none-9or", project: "ninoes" }),
    ],
 
-   resolve: {
-      tsconfigPaths: true,
-   },
+   resolve: { tsconfigPaths: true },
 
    build: {
       sourcemap: true,
       cssCodeSplit: false,
-      rollupOptions: {
-         output: {
-            assetFileNames: "app.css",
-         },
-      },
+      rollupOptions: { output: { assetFileNames: "app.css" } },
    },
 });

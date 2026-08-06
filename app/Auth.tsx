@@ -17,9 +17,7 @@ type LoginForm = z.infer<typeof loginSchema>;
 export function Auth(): ReactNode {
    const [loading, setLoading] = useState(false);
    const { showToast } = useToast();
-   const form = useForm<LoginForm>({
-      resolver: zodResolver(loginSchema),
-   });
+   const form = useForm<LoginForm>({ resolver: zodResolver(loginSchema) });
 
    const handleLogin = async (data: LoginForm): Promise<void> => {
       try {

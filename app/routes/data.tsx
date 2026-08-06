@@ -4,13 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import React from "react";
 import type { GeoPermissibleObjects, GeoSphere } from "d3";
 
-type Troop = {
-   LATP: number;
-   LONP: number;
-   SURV: number;
-   DIR: "A" | "R";
-   DIV: number;
-};
+type Troop = { LATP: number; LONP: number; SURV: number; DIR: "A" | "R"; DIV: number };
 
 type Temperature = {
    LONT: number;
@@ -306,10 +300,7 @@ function GeoBackground(): ReactNode {
 }
 
 export default function Data(): ReactNode {
-   const { data: troops } = useQuery({
-      queryKey: ["troops"],
-      queryFn: fetchTroops,
-   });
+   const { data: troops } = useQuery({ queryKey: ["troops"], queryFn: fetchTroops });
 
    const { data: temperatures } = useQuery({
       queryKey: ["temperatures"],

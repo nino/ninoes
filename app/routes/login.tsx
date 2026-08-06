@@ -14,10 +14,7 @@ import { Button } from "~/components/ui/Button";
 import { Input } from "~/components/ui/Input";
 import { useToast } from "~/components/ui/Toast";
 
-const LoginSchema = z.object({
-   email: z.email(),
-   password: z.string().min(8),
-});
+const LoginSchema = z.object({ email: z.email(), password: z.string().min(8) });
 
 type LoginFormData = z.infer<typeof LoginSchema>;
 
@@ -51,9 +48,7 @@ export default function LoginPage(): ReactNode {
       register,
       handleSubmit,
       formState: { errors },
-   } = useForm<LoginFormData>({
-      resolver: zodResolver(LoginSchema),
-   });
+   } = useForm<LoginFormData>({ resolver: zodResolver(LoginSchema) });
 
    const onSubmit = (values: LoginFormData): void => {
       const formData = new FormData();

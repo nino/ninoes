@@ -21,10 +21,7 @@ export function NamesRanking(): ReactNode {
    });
 
    const nameColumns: Array<ColumnDef<Name>> = [
-      {
-         accessorKey: "name",
-         header: "Name",
-      },
+      { accessorKey: "name", header: "Name" },
       {
          accessorKey: "created_at",
          header: "Created At",
@@ -33,18 +30,9 @@ export function NamesRanking(): ReactNode {
    ];
 
    const voteColumns: Array<ColumnDef<VoteWithExtras>> = [
-      {
-         accessorKey: "name.name",
-         header: "Name",
-      },
-      {
-         accessorKey: "user.name",
-         header: "User ID",
-      },
-      {
-         accessorKey: "vote_type",
-         header: "Vote Type",
-      },
+      { accessorKey: "name.name", header: "Name" },
+      { accessorKey: "user.name", header: "User ID" },
+      { accessorKey: "vote_type", header: "Vote Type" },
       {
          accessorKey: "created_at",
          header: "Created At",

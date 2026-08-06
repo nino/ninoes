@@ -5,16 +5,8 @@ import { Table } from "~/components/ui/Table";
 import type { ColumnDef } from "@tanstack/react-table";
 
 export default function Leaderboard(): ReactNode {
-   const [pagination, setPagination] = useState({
-      pageIndex: 0,
-      pageSize: 50,
-   });
-   const [sorting, setSorting] = useState([
-      {
-         id: "score",
-         desc: true,
-      },
-   ]);
+   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 50 });
+   const [sorting, setSorting] = useState([{ id: "score", desc: true }]);
 
    const { data: scores, isFetching } = useNameScores({
       limit: pagination.pageSize,
@@ -24,10 +16,7 @@ export default function Leaderboard(): ReactNode {
    });
 
    const columns: Array<ColumnDef<NameScore>> = [
-      {
-         accessorKey: "name",
-         header: "Name",
-      },
+      { accessorKey: "name", header: "Name" },
       {
          accessorKey: "score",
          header: "Score",

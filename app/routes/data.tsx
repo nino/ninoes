@@ -199,7 +199,7 @@ function XAxis({
          const axis = d3
             .axisBottom(scale)
             .tickValues(ticks)
-            .tickFormat((d) => `${d}°E`);
+            .tickFormat((d) => `${Number(d)}°E`);
          d3.select(ref.current).call(axis);
       }
    }, [scale]);
@@ -222,12 +222,15 @@ function YAxis({
 
    React.useEffect(() => {
       if (ref.current) {
-         // Create geographic ticks
-         const ticks = d3.range(50, 60, 2);
-         const axis = d3
-            .axisLeft(scale)
-            .tickValues(tickValues ?? ticks)
-            .tickFormat(tickFormat ?? ((d) => `${d}°N`));
+         // Fall back to d3's own ticks for the scale's domain; a hardcoded
+         // default here would silently render out-of-domain labels.
+         const axis = d3.axisLeft(scale);
+         if (tickValues) {
+            axis.tickValues(tickValues);
+         }
+         if (tickFormat) {
+            axis.tickFormat(tickFormat);
+         }
          d3.select(ref.current).call(axis);
       }
    }, [scale, tickFormat, tickValues]);
@@ -359,7 +362,7 @@ export default function Data(): ReactNode {
                <YAxis
                   scale={tempYScale}
                   transform={`translate(0,${dimensions.tempHeight})`}
-                  tickFormat={(d) => `${d}°C`}
+                  tickFormat={(d) => `${Number(d)}°C`}
                />
             </g>
          </svg>

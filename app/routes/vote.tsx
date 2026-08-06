@@ -58,19 +58,22 @@ export default function Vote(): ReactNode {
    const handleBan = async (nameIndexes: Array<number>): Promise<void> => {
       try {
          await Promise.all(
-            nameIndexes.map((index) => {
-               createVote.mutate({
+            nameIndexes.map((index) =>
+               createVote.mutateAsync({
                   nameId: names[index].id,
                   voteType: VoteType.BAN,
-               });
-            }),
+               }),
+            ),
          );
 
          showToast("success", "Ban votes recorded successfully!");
-         void refetch();
       } catch (error) {
          showToast("error", "Failed to record ban votes");
          console.error(error);
+      } finally {
+         // Banning two names issues two mutations; one can land while the
+         // other fails, so resync regardless of the aggregate outcome.
+         void refetch();
       }
    };
 
@@ -83,7 +86,7 @@ export default function Vote(): ReactNode {
                <Button
                   key={name.id}
                   onClick={() => handleVote(index)}
-                  isLoading={createVote.isPending || isFetching}
+                  isLoading={vote.isPending || isFetching}
                   big
                >
                   {name.name}

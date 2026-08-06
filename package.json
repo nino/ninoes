@@ -1,72 +1,66 @@
 {
-  "name": "ninoes",
-  "private": true,
-  "type": "module",
-  "packageManager": "pnpm@10.33.0",
-  "scripts": {
-    "build": "react-router build",
-    "dev": "react-router dev",
-    "start": "react-router-serve ./build/server/index.js",
-    "typecheck": "react-router typegen && tsc",
-    "test": "vitest run",
-    "lint": "eslint .",
-    "lint:fix": "eslint . --fix",
-    "format": "prettier --write ."
-  },
-  "dependencies": {
-    "@headlessui/react": "^2.2.10",
-    "@hookform/resolvers": "^5.5.7",
-    "@js-temporal/polyfill": "^0.5.1",
-    "@react-router/node": "^8.3.0",
-    "@react-router/serve": "^8.3.0",
-    "@sentry/react": "^10.69.0",
-    "@sentry/vite-plugin": "^5.4.0",
-    "@supabase/ssr": "^0.12.3",
-    "@supabase/supabase-js": "^2.111.0",
-    "@tanstack/react-query": "^5.101.4",
-    "@tanstack/react-table": "^8.21.3",
-    "d3": "^7.9.0",
-    "date-fns": "^4.4.0",
-    "isbot": "^5.2.1",
-    "react": "^19.2.8",
-    "react-dom": "^19.2.8",
-    "react-hook-form": "^7.83.0",
-    "react-router": "^8.3.0",
-    "sonner": "^2.0.7",
-    "zod": "^4.4.3"
-  },
-  "devDependencies": {
-    "@eslint/js": "^9.39.5",
-    "@react-router/dev": "^8.3.0",
-    "@tailwindcss/vite": "^4.3.3",
-    "@testing-library/dom": "^10.4.1",
-    "@testing-library/react": "^16.3.2",
-    "@types/d3": "^7.4.3",
-    "@types/node": "^26.1.2",
-    "@types/react": "^19.2.17",
-    "@types/react-dom": "^19.2.3",
-    "@typescript-eslint/eslint-plugin": "^8.65.0",
-    "@typescript-eslint/parser": "^8.65.0",
-    "eslint": "^9.39.0",
-    "eslint-plugin-react": "^7.37.5",
-    "eslint-plugin-react-hooks": "^7.1.1",
-    "eslint-plugin-react-router": "^0.0.1",
-    "globals": "^17.8.0",
-    "jsdom": "^30.0.1",
-    "react-router-devtools": "^6.2.3",
-    "tailwindcss": "^4.3.3",
-    "typescript": "^6.0.3",
-    "vite": "^8.2.0",
-    "vitest": "^4.1.10"
-  },
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "@sentry/cli",
-      "esbuild"
-    ],
-    "overrides": {
-      "qs": "^6.15.2",
-      "uuid": "^11.1.1"
-    }
-  }
+   "name": "ninoes",
+   "private": true,
+   "type": "module",
+   "packageManager": "pnpm@10.33.0",
+   "scripts": {
+      "build": "react-router build",
+      "dev": "react-router dev",
+      "start": "react-router-serve ./build/server/index.js",
+      "typecheck": "react-router typegen && tsc",
+      "test": "vitest run",
+      "lint": "oxlint --type-aware",
+      "lint:fix": "oxlint --type-aware --fix",
+      "format": "prettier --write ."
+   },
+   "dependencies": {
+      "@headlessui/react": "^2.2.10",
+      "@hookform/resolvers": "^5.5.7",
+      "@js-temporal/polyfill": "^0.5.1",
+      "@react-router/node": "^8.3.0",
+      "@react-router/serve": "^8.3.0",
+      "@sentry/react": "^10.69.0",
+      "@sentry/vite-plugin": "^5.4.0",
+      "@supabase/ssr": "^0.12.3",
+      "@supabase/supabase-js": "^2.111.0",
+      "@tanstack/react-query": "^5.101.4",
+      "@tanstack/react-table": "^8.21.3",
+      "d3": "^7.9.0",
+      "date-fns": "^4.4.0",
+      "isbot": "^5.2.1",
+      "react": "^19.2.8",
+      "react-dom": "^19.2.8",
+      "react-hook-form": "^7.83.0",
+      "react-router": "^8.3.0",
+      "sonner": "^2.0.7",
+      "zod": "^4.4.3"
+   },
+   "devDependencies": {
+      "@react-router/dev": "^8.3.0",
+      "@tailwindcss/vite": "^4.3.3",
+      "@testing-library/dom": "^10.4.1",
+      "@testing-library/react": "^16.3.2",
+      "@types/d3": "^7.4.3",
+      "@types/node": "^26.1.2",
+      "@types/react": "^19.2.17",
+      "@types/react-dom": "^19.2.3",
+      "jsdom": "^30.0.1",
+      "oxlint": "^1.77.0",
+      "oxlint-tsgolint": "^7.0.2001",
+      "react-router-devtools": "^6.2.3",
+      "tailwindcss": "^4.3.3",
+      "typescript": "^6.0.3",
+      "vite": "^8.2.0",
+      "vitest": "^4.1.10"
+   },
+   "pnpm": {
+      "onlyBuiltDependencies": [
+         "@sentry/cli",
+         "esbuild"
+      ],
+      "overrides": {
+         "qs": "^6.15.2",
+         "uuid": "^11.1.1"
+      }
+   }
 }

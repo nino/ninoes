@@ -4,26 +4,26 @@ import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "vite";
 
 export default defineConfig({
-  plugins: [
-    tailwindcss(),
-    reactRouter(),
-    sentryVitePlugin({
-      org: "none-9or",
-      project: "ninoes",
-    }),
-  ],
+   plugins: [
+      tailwindcss(),
+      reactRouter(),
+      sentryVitePlugin({
+         org: "none-9or",
+         project: "ninoes",
+      }),
+   ],
 
-  resolve: {
-    tsconfigPaths: true,
-  },
+   resolve: {
+      tsconfigPaths: true,
+   },
 
-  build: {
-    sourcemap: true,
-    cssCodeSplit: false,
-    rollupOptions: {
-      output: {
-        assetFileNames: "app.css",
+   build: {
+      sourcemap: true,
+      cssCodeSplit: false,
+      rollupOptions: {
+         output: {
+            assetFileNames: "app.css",
+         },
       },
-    },
-  },
+   },
 });

@@ -14,7 +14,7 @@ export function useResizeObserver(
          return;
       }
 
-      const observer = new ResizeObserver(onResizeRef.current);
+      const observer = new ResizeObserver((entries) => onResizeRef.current(entries));
       observer.observe(element);
 
       return () => observer.disconnect();

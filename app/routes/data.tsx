@@ -222,12 +222,15 @@ function YAxis({
 
    React.useEffect(() => {
       if (ref.current) {
-         // Create geographic ticks
-         const ticks = d3.range(50, 60, 2);
-         const axis = d3
-            .axisLeft(scale)
-            .tickValues(tickValues ?? ticks)
-            .tickFormat(tickFormat ?? ((d) => `${Number(d)}°N`));
+         // Fall back to d3's own ticks for the scale's domain; a hardcoded
+         // default here would silently render out-of-domain labels.
+         const axis = d3.axisLeft(scale);
+         if (tickValues) {
+            axis.tickValues(tickValues);
+         }
+         if (tickFormat) {
+            axis.tickFormat(tickFormat);
+         }
          d3.select(ref.current).call(axis);
       }
    }, [scale, tickFormat, tickValues]);

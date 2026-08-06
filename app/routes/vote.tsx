@@ -67,10 +67,13 @@ export default function Vote(): ReactNode {
          );
 
          showToast("success", "Ban votes recorded successfully!");
-         void refetch();
       } catch (error) {
          showToast("error", "Failed to record ban votes");
          console.error(error);
+      } finally {
+         // Banning two names issues two mutations; one can land while the
+         // other fails, so resync regardless of the aggregate outcome.
+         void refetch();
       }
    };
 
@@ -83,7 +86,7 @@ export default function Vote(): ReactNode {
                <Button
                   key={name.id}
                   onClick={() => handleVote(index)}
-                  isLoading={createVote.isPending || isFetching}
+                  isLoading={vote.isPending || isFetching}
                   big
                >
                   {name.name}

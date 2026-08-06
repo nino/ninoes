@@ -1,0 +1,6 @@
+# pnpm rewrites this on every install; formatting it just causes churn.
+pnpm-lock.yaml
+
+# Build output and generated types.
+build/
+.react-router/

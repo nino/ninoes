@@ -1,8 +1,7 @@
 import { useNameScores } from "~/hooks/useSupabase";
 import type { NameScore } from "~/hooks/useSupabase";
 import { type ReactNode, useState } from "react";
-import { Table } from "~/components/ui/Table";
-import type { ColumnDef } from "@tanstack/react-table";
+import { Table, type TableColumnDef } from "~/components/ui/Table";
 
 export default function Leaderboard(): ReactNode {
    const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 50 });
@@ -15,7 +14,7 @@ export default function Leaderboard(): ReactNode {
       orderDirection: sorting[0]?.desc !== false ? "desc" : "asc",
    });
 
-   const columns: Array<ColumnDef<NameScore>> = [
+   const columns: Array<TableColumnDef<NameScore>> = [
       { accessorKey: "name", header: "Name" },
       {
          accessorKey: "score",

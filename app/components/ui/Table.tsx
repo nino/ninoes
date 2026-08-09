@@ -1,19 +1,37 @@
 import {
    type ColumnDef,
+   columnVisibilityFeature,
+   createSortedRowModel,
    flexRender,
-   getCoreRowModel,
-   getSortedRowModel,
    type OnChangeFn,
    type PaginationState,
+   type RowData,
+   rowPaginationFeature,
+   rowSortingFeature,
    type SortingState,
-   useReactTable,
+   tableFeatures,
+   useTable,
 } from "@tanstack/react-table";
 import React from "react";
 import { Spinner } from "./Spinner";
 
-interface TableProps<TData> {
+// v9 needs every feature to be registered. These are the ones this table uses:
+// column visibility for getVisibleLeafColumns/getVisibleCells, sorting for the
+// clickable headers, and pagination for the externally held page state.
+const features = tableFeatures({
+   columnVisibilityFeature,
+   rowPaginationFeature,
+   rowSortingFeature,
+   sortedRowModel: createSortedRowModel(),
+});
+
+// v9 makes ColumnDef generic over the feature set. Call sites all use this
+// table, so they import this alias and don't name the features themselves.
+export type TableColumnDef<TData extends RowData> = ColumnDef<typeof features, TData>;
+
+interface TableProps<TData extends RowData> {
    data: Array<TData>;
-   columns: Array<ColumnDef<TData>>;
+   columns: Array<TableColumnDef<TData>>;
    onRowClick?: (row: TData) => void;
    sorting?: SortingState;
    setSorting?: OnChangeFn<SortingState>;
@@ -22,7 +40,7 @@ interface TableProps<TData> {
    isLoading?: boolean;
 }
 
-export function Table<TData>({
+export function Table<TData extends RowData>({
    data,
    columns,
    onRowClick,
@@ -57,11 +75,11 @@ export function Table<TData>({
          : pagination != null && pagination.pageSize !== lastRowCount
            ? (lastBodyHeight / lastRowCount) * pagination.pageSize
            : lastBodyHeight;
-   const table = useReactTable({
+   // The core row model is built automatically in v9, so it is no longer passed.
+   const table = useTable({
+      features,
       data,
       columns,
-      getCoreRowModel: getCoreRowModel(),
-      getSortedRowModel: getSortedRowModel(),
       onSortingChange: setSorting,
       onPaginationChange: setPagination,
       state: { sorting, pagination },

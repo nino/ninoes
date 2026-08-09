@@ -1,11 +1,10 @@
 import { afterEach, beforeEach, expect, test, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
-import type { ColumnDef } from "@tanstack/react-table";
-import { Table } from "./Table";
+import { Table, type TableColumnDef } from "./Table";
 
 type Row = { name: string; elo: number };
 
-const columns: Array<ColumnDef<Row>> = [
+const columns: Array<TableColumnDef<Row>> = [
    { accessorKey: "elo", header: "ELO" },
    { accessorKey: "name", header: "Name" },
 ];

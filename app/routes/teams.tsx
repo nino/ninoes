@@ -17,9 +17,8 @@ import type { User } from "@supabase/supabase-js";
 import { requireUser } from "~/server/guards.server";
 import { Button } from "~/components/ui/Button";
 import { Input } from "~/components/ui/Input";
-import { Table } from "~/components/ui/Table";
+import { Table, type TableColumnDef } from "~/components/ui/Table";
 import { useToast } from "~/components/ui/Toast";
-import type { ColumnDef } from "@tanstack/react-table";
 import { Spinner } from "~/components/ui/Spinner";
 
 const createTeamSchema = z.object({ name: z.string().min(1, "Team name is required") });
@@ -60,7 +59,7 @@ export default function Teams(): React.ReactNode {
       resolver: zodResolver(joinTeamSchema),
    });
 
-   const columns: Array<ColumnDef<Team>> = [
+   const columns: Array<TableColumnDef<Team>> = [
       { accessorKey: "name", header: "Name" },
       {
          accessorKey: "created_at",
@@ -108,7 +107,7 @@ export default function Teams(): React.ReactNode {
       },
    ];
 
-   const membershipColumns: Array<ColumnDef<TeamMembershipWithTeam>> = [
+   const membershipColumns: Array<TableColumnDef<TeamMembershipWithTeam>> = [
       { accessorKey: "team.name", header: "Team Name" },
       {
          accessorKey: "team.created_at",

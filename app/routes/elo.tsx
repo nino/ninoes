@@ -2,8 +2,8 @@ import { useEloLeaderboard, useTeams } from "~/hooks/useSupabase";
 import { usePreviousValue } from "~/hooks/usePreviousValue";
 import React from "react";
 import type { TeamEloWithName } from "~/model/types";
-import { Table } from "~/components/ui/Table";
-import { type SortingState, type ColumnDef } from "@tanstack/react-table";
+import { Table, type TableColumnDef } from "~/components/ui/Table";
+import { type SortingState } from "@tanstack/react-table";
 import { Button } from "~/components/ui/Button";
 
 export default function Leaderboard(): React.ReactNode {
@@ -26,7 +26,7 @@ export default function Leaderboard(): React.ReactNode {
    const total = usePreviousValue(eloLeaderboard.data?.total);
    const numPages = total == null ? null : Math.ceil(total / pagination.pageSize);
 
-   const columns: Array<ColumnDef<TeamEloWithName>> = [
+   const columns: Array<TableColumnDef<TeamEloWithName>> = [
       { accessorKey: "elo", header: "ELO" },
       { accessorKey: "name.name", header: "Name" },
    ];

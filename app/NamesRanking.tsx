@@ -1,8 +1,7 @@
 import { useNames, useVotes } from "./hooks/useSupabase";
 import type { Name, VoteWithExtras } from "./model/types";
 import { type ReactNode } from "react";
-import { Table } from "~/components/ui/Table";
-import type { ColumnDef } from "@tanstack/react-table";
+import { Table, type TableColumnDef } from "~/components/ui/Table";
 import { Spinner } from "./components/ui/Spinner";
 
 export function NamesRanking(): ReactNode {
@@ -20,7 +19,7 @@ export function NamesRanking(): ReactNode {
       orderDirection: "desc",
    });
 
-   const nameColumns: Array<ColumnDef<Name>> = [
+   const nameColumns: Array<TableColumnDef<Name>> = [
       { accessorKey: "name", header: "Name" },
       {
          accessorKey: "created_at",
@@ -29,7 +28,7 @@ export function NamesRanking(): ReactNode {
       },
    ];
 
-   const voteColumns: Array<ColumnDef<VoteWithExtras>> = [
+   const voteColumns: Array<TableColumnDef<VoteWithExtras>> = [
       { accessorKey: "name.name", header: "Name" },
       { accessorKey: "user.name", header: "User ID" },
       { accessorKey: "vote_type", header: "Vote Type" },

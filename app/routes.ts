@@ -13,4 +13,5 @@ export default [
    route("/control", "routes/control.tsx"),
    route("/bus", "routes/bus.tsx"),
    route("/startrek", "routes/startrek.tsx"),
+   route("/startrek.ics", "routes/startrek-ics.ts"),
 ] satisfies RouteConfig;

@@ -77,14 +77,28 @@ interface SeriesTab {
    episodeCount: number;
 }
 
+interface CalendarFeed {
+   /** webcal:// address, which calendar apps treat as a subscription. */
+   subscribeUrl: string;
+   /** The same feed over https, for clients that want a plain URL. */
+   downloadUrl: string;
+}
+
 /** The two shapes the page renders: the cross-series view, or one series. */
-type LoaderData = { tabs: Array<SeriesTab> } & (
+type LoaderData = { tabs: Array<SeriesTab>; feed: CalendarFeed } & (
    { view: "fresh"; fresh: FreshView } | { view: "series"; schedule: Schedule }
 );
 
 export const loader = ({ request }: LoaderFunctionArgs): LoaderData => {
    const today = todayOnSchedule();
-   const selected = findSeries(new URL(request.url).searchParams.get("series"));
+   const url = new URL(request.url);
+   const selected = findSeries(url.searchParams.get("series"));
+   const query = selected === null ? "" : `?series=${selected.id}`;
+   const feed = {
+      // webcal: makes calendar apps offer to subscribe rather than download.
+      subscribeUrl: `webcal://${url.host}/startrek.ics${query}`,
+      downloadUrl: `${url.origin}/startrek.ics${query}`,
+   };
    const tabs = allSeries.map((series): SeriesTab => {
       const summary = buildSchedule(series, today);
       return {
@@ -97,8 +111,8 @@ export const loader = ({ request }: LoaderFunctionArgs): LoaderData => {
 
    // No series selected (or an unknown one) means the cross-series view.
    return selected === null
-      ? { tabs, view: "fresh", fresh: buildFreshView(today) }
-      : { tabs, view: "series", schedule: buildSchedule(selected, today) };
+      ? { tabs, feed, view: "fresh", fresh: buildFreshView(today) }
+      : { tabs, feed, view: "series", schedule: buildSchedule(selected, today) };
 };
 
 function ProgressBar({ value, max }: { value: number; max: number }): JSX.Element {
@@ -328,6 +342,35 @@ function FreshPanel({ fresh }: { fresh: FreshView }): JSX.Element {
    );
 }
 
+function SubscribePanel({
+   feed,
+   label,
+}: {
+   feed: CalendarFeed;
+   label: string;
+}): JSX.Element {
+   return (
+      <div className="aqua-panel flex flex-wrap items-center gap-x-4 gap-y-3 p-4">
+         <div className="min-w-56 grow">
+            <h2 className="font-bold">Subscribe</h2>
+            <p className="text-sm text-gray-600">
+               Put {label} in your calendar — one all-day entry per episode, on the day
+               it comes out.
+            </p>
+         </div>
+         <a className="aqua-btn aqua-btn--blue" href={feed.subscribeUrl}>
+            Add to calendar
+         </a>
+         <a className="aqua-btn" href={feed.downloadUrl}>
+            Download .ics
+         </a>
+         <p className="w-full text-xs break-all text-gray-500">
+            Or paste this into your calendar app: {feed.downloadUrl}
+         </p>
+      </div>
+   );
+}
+
 function SeasonSection({
    group,
    latestKey,
@@ -444,6 +487,11 @@ export default function StarTrek(): JSX.Element {
                </Link>
             ))}
          </nav>
+
+         <SubscribePanel
+            feed={data.feed}
+            label={data.view === "fresh" ? "all five series" : data.schedule.fullName}
+         />
 
          {data.view === "fresh" ? (
             <FreshPanel fresh={data.fresh} />

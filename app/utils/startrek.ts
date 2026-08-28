@@ -114,6 +114,14 @@ export function daysBetween(from: string, to: string): number {
    return (toUtcMs(to) - toUtcMs(from)) / msPerDay;
 }
 
+/** The calendar date `days` after `date`, as `YYYY-MM-DD`. */
+export function addDays(date: string, days: number): string {
+   const shifted = new Date(toUtcMs(date) + days * msPerDay);
+   const month = String(shifted.getUTCMonth() + 1).padStart(2, "0");
+   const day = String(shifted.getUTCDate()).padStart(2, "0");
+   return `${shifted.getUTCFullYear()}-${month}-${day}`;
+}
+
 /**
  * The date an episode airs on the delayed schedule: the original broadcast date
  * with the series' delay added to the year. Done on the string so the calendar

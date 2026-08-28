@@ -1,6 +1,7 @@
 import type { LoaderFunctionArgs } from "react-router";
 import { buildCalendar } from "~/utils/startrek-ical";
 import { findSeries } from "~/utils/startrek";
+import { externalOrigin } from "~/utils/request";
 
 /**
  * The delayed schedule as a subscribable calendar feed. `?series=tng` narrows
@@ -9,7 +10,8 @@ import { findSeries } from "~/utils/startrek";
 export const loader = ({ request }: LoaderFunctionArgs): Response => {
    const url = new URL(request.url);
    const series = findSeries(url.searchParams.get("series"));
-   const body = buildCalendar(series, url.origin);
+   const { origin } = externalOrigin(request);
+   const body = buildCalendar(series, origin);
 
    return new Response(body, {
       headers: {

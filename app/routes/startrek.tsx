@@ -6,6 +6,7 @@ import {
    useRevalidator,
 } from "react-router";
 import { useInterval } from "~/hooks/useInterval";
+import { externalOrigin } from "~/utils/request";
 import {
    allSeries,
    buildFreshView,
@@ -94,10 +95,11 @@ export const loader = ({ request }: LoaderFunctionArgs): LoaderData => {
    const url = new URL(request.url);
    const selected = findSeries(url.searchParams.get("series"));
    const query = selected === null ? "" : `?series=${selected.id}`;
+   const { origin, host } = externalOrigin(request);
    const feed = {
       // webcal: makes calendar apps offer to subscribe rather than download.
-      subscribeUrl: `webcal://${url.host}/startrek.ics${query}`,
-      downloadUrl: `${url.origin}/startrek.ics${query}`,
+      subscribeUrl: `webcal://${host}/startrek.ics${query}`,
+      downloadUrl: `${origin}/startrek.ics${query}`,
    };
    const tabs = allSeries.map((series): SeriesTab => {
       const summary = buildSchedule(series, today);

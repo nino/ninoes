@@ -1,13 +1,23 @@
 import React, { type JSX } from "react";
-import { useLoaderData, useRevalidator } from "react-router";
+import {
+   Link,
+   type LoaderFunctionArgs,
+   useLoaderData,
+   useRevalidator,
+} from "react-router";
 import { useInterval } from "~/hooks/useInterval";
 import {
+   allSeries,
+   buildFreshView,
    buildSchedule,
-   delayYears,
+   episodeCode,
+   findSeries,
+   type FreshView,
    groupBySeason,
    type Schedule,
    type ScheduledEpisode,
    type SeasonGroup,
+   type SeriesSummary,
    todayOnSchedule,
 } from "~/utils/startrek";
 import type { Route } from "./+types/startrek";
@@ -17,7 +27,8 @@ export function meta({}: Route.MetaArgs): ReturnType<Route.MetaFunction> {
       { title: "Star Trek in real time" },
       {
          name: "description",
-         content: `Star Trek: The Original Series, ${delayYears} years late — which episodes are out so far.`,
+         content:
+            "Five Star Trek series on a delayed schedule — which episodes are out so far.",
       },
    ];
 }
@@ -59,20 +70,36 @@ function formatGap(daysUntilAir: number): string {
    return relativeFormat.format(Math.round(daysUntilAir / 365.25), "year");
 }
 
-/** The season's original NBC run, e.g. "1966–67". */
-function originalRunYears(group: SeasonGroup): string {
-   const first = group.episodes[0].originalAirDate;
-   const last = group.episodes[group.episodes.length - 1].originalAirDate;
-   return `${first.slice(0, 4)}–${last.slice(2, 4)}`;
+interface SeriesTab {
+   id: string;
+   shortName: string;
+   airedCount: number;
+   episodeCount: number;
 }
 
-function episodeCode(episode: ScheduledEpisode): string {
-   return `S${episode.season}E${String(episode.episode).padStart(2, "0")}`;
-}
+/** The two shapes the page renders: the cross-series view, or one series. */
+type LoaderData = { tabs: Array<SeriesTab> } & (
+   { view: "fresh"; fresh: FreshView } | { view: "series"; schedule: Schedule }
+);
 
-export const loader = (): { schedule: Schedule } => ({
-   schedule: buildSchedule(todayOnSchedule()),
-});
+export const loader = ({ request }: LoaderFunctionArgs): LoaderData => {
+   const today = todayOnSchedule();
+   const selected = findSeries(new URL(request.url).searchParams.get("series"));
+   const tabs = allSeries.map((series): SeriesTab => {
+      const summary = buildSchedule(series, today);
+      return {
+         id: series.id,
+         shortName: series.shortName,
+         airedCount: summary.airedCount,
+         episodeCount: summary.episodeCount,
+      };
+   });
+
+   // No series selected (or an unknown one) means the cross-series view.
+   return selected === null
+      ? { tabs, view: "fresh", fresh: buildFreshView(today) }
+      : { tabs, view: "series", schedule: buildSchedule(selected, today) };
+};
 
 function ProgressBar({ value, max }: { value: number; max: number }): JSX.Element {
    return (
@@ -92,25 +119,38 @@ function ProgressBar({ value, max }: { value: number; max: number }): JSX.Elemen
    );
 }
 
+function SeriesBadge({ shortName }: { shortName: string }): JSX.Element {
+   return (
+      <span className="inline-block min-w-[2.6rem] rounded bg-[#5b6470] px-1.5 py-px text-center text-[10px] font-bold tracking-wide text-white">
+         {shortName}
+      </span>
+   );
+}
+
 function HeroSlot({
    label,
    episode,
    emptyMessage,
+   showSeries = false,
 }: {
    label: string;
    episode: ScheduledEpisode | null;
    emptyMessage: string;
+   showSeries?: boolean;
 }): JSX.Element {
    return (
       <div className="rounded-md border border-gray-300 bg-white/60 p-3">
-         <h2 className="text-[11px] font-bold tracking-wide text-gray-500 uppercase">
+         <h3 className="text-[11px] font-bold tracking-wide text-gray-500 uppercase">
             {label}
-         </h2>
+         </h3>
          {episode == null ? (
             <p className="mt-1 text-gray-600">{emptyMessage}</p>
          ) : (
             <>
-               <p className="mt-1 leading-tight font-semibold">{episode.title}</p>
+               <p className="mt-1 flex items-baseline gap-2 leading-tight font-semibold">
+                  {showSeries && <SeriesBadge shortName={episode.seriesShortName} />}
+                  <span>{episode.title}</span>
+               </p>
                <p className="mt-1 text-gray-600">
                   <span className="tabular-nums">{episodeCode(episode)}</span> ·{" "}
                   {formatDate(airDateFormat, episode.airDate)}
@@ -128,10 +168,12 @@ function EpisodeRow({
    episode,
    isLatest,
    isNext,
+   showSeries = false,
 }: {
    episode: ScheduledEpisode;
    isLatest: boolean;
    isNext: boolean;
+   showSeries?: boolean;
 }): JSX.Element {
    const highlight = isLatest
       ? "bg-[#dbe8fb]"
@@ -154,7 +196,8 @@ function EpisodeRow({
                }`}
                aria-hidden="true"
             />
-            <span className="text-xs">{episodeCode(episode)}</span>
+            {showSeries && <SeriesBadge shortName={episode.seriesShortName} />}
+            <span className="text-xs whitespace-nowrap">{episodeCode(episode)}</span>
          </span>
 
          <span>
@@ -193,37 +236,148 @@ function EpisodeRow({
    );
 }
 
-export default function StarTrek(): JSX.Element {
-   const { schedule } = useLoaderData<typeof loader>();
-   const { revalidate } = useRevalidator();
+function EpisodeList({
+   episodes,
+   showSeries = false,
+   latestKey,
+   nextKey,
+}: {
+   episodes: Array<ScheduledEpisode>;
+   showSeries?: boolean;
+   latestKey?: string;
+   nextKey?: string;
+}): JSX.Element {
+   return (
+      <ul className="grid grid-cols-[auto_1fr] gap-x-3 rounded-md border border-gray-300 bg-white/50 p-1 sm:grid-cols-[auto_1fr_auto]">
+         {episodes.map((episode) => (
+            <EpisodeRow
+               key={episode.key}
+               episode={episode}
+               showSeries={showSeries}
+               isLatest={episode.key === latestKey}
+               isNext={episode.key === nextKey}
+            />
+         ))}
+      </ul>
+   );
+}
 
-   useInterval(() => void revalidate(), refreshIntervalMs);
+function SeriesCard({ summary }: { summary: SeriesSummary }): JSX.Element {
+   const headline =
+      summary.status === "upcoming"
+         ? summary.next
+            ? `Premieres ${formatGap(summary.next.daysUntilAir)}`
+            : ""
+         : summary.status === "finished"
+           ? "Complete"
+           : `${summary.airedCount} of ${summary.episodeCount} out`;
 
+   return (
+      <Link
+         to={`/startrek?series=${summary.id}`}
+         className="rounded-md border border-gray-300 bg-white/60 p-3 no-underline transition-colors hover:bg-white"
+      >
+         <span className="flex items-baseline gap-2">
+            <SeriesBadge shortName={summary.shortName} />
+            <span className="font-semibold">{summary.name}</span>
+         </span>
+         <span className="mt-1 block text-xs text-gray-500">
+            {summary.originalRunYears} · {summary.delayYears} years delayed
+         </span>
+         <span className="mt-1 block text-sm text-gray-700">{headline}</span>
+         <ProgressBar value={summary.airedCount} max={summary.episodeCount} />
+      </Link>
+   );
+}
+
+function FreshPanel({ fresh }: { fresh: FreshView }): JSX.Element {
+   const outNow = fresh.series.filter((series) => series.status === "running").length;
+
+   return (
+      <div className="space-y-8">
+         <div className="aqua-panel p-4 sm:p-5">
+            <h2 className="text-lg font-bold">Where everything stands</h2>
+            <p className="text-sm text-gray-600">
+               {outNow === 0
+                  ? "Nothing is on the air yet."
+                  : `${outNow} ${outNow === 1 ? "series is" : "series are"} on the air right now.`}
+            </p>
+            <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+               {fresh.series.map((summary) => (
+                  <SeriesCard key={summary.id} summary={summary} />
+               ))}
+            </div>
+         </div>
+
+         <section className="space-y-2">
+            <h2 className="text-lg font-bold">Just out</h2>
+            {fresh.recent.length === 0 ? (
+               <p className="text-gray-600">
+                  Nothing has aired yet. The first episode is below.
+               </p>
+            ) : (
+               <EpisodeList episodes={fresh.recent} showSeries />
+            )}
+         </section>
+
+         <section className="space-y-2">
+            <h2 className="text-lg font-bold">Coming up</h2>
+            <EpisodeList episodes={fresh.upcoming} showSeries />
+         </section>
+      </div>
+   );
+}
+
+function SeasonSection({
+   group,
+   latestKey,
+   nextKey,
+}: {
+   group: SeasonGroup;
+   latestKey?: string;
+   nextKey?: string;
+}): JSX.Element {
+   return (
+      <section className="space-y-2">
+         <h2 className="flex flex-wrap items-baseline gap-x-3">
+            <span className="text-lg font-bold">Season {group.season}</span>
+            <span className="text-xs tabular-nums text-gray-500">
+               {group.originalRunYears} · {group.episodeCount} episodes ·{" "}
+               {group.airedCount} out
+            </span>
+         </h2>
+         <EpisodeList
+            episodes={group.episodes}
+            latestKey={latestKey}
+            nextKey={nextKey}
+         />
+      </section>
+   );
+}
+
+function SeriesPanel({ schedule }: { schedule: Schedule }): JSX.Element {
    const seasons = React.useMemo(
       () => groupBySeason(schedule.episodes),
       [schedule.episodes],
    );
-   const total = schedule.episodes.length;
 
    return (
       <div className="space-y-8">
-         <header className="space-y-2">
-            <h1 className="text-2xl font-bold">Star Trek, {delayYears} years late</h1>
-            <p className="max-w-2xl text-gray-600">
-               The Original Series as it went out on NBC between 1966 and 1969, shifted
-               forward by exactly {delayYears} years. An episode counts as out once its{" "}
-               {delayYears}th anniversary has come round.
-            </p>
-         </header>
-
          <div className="aqua-panel p-4 sm:p-5">
-            <p className="flex flex-wrap items-baseline gap-x-2">
+            <h2 className="text-lg font-bold">{schedule.fullName}</h2>
+            <p className="text-sm text-gray-600">
+               {schedule.originalRunYears} · {schedule.delayYears} years delayed
+            </p>
+
+            <p className="mt-3 flex flex-wrap items-baseline gap-x-2">
                <span className="text-3xl font-bold tabular-nums">
                   {schedule.airedCount}
                </span>
-               <span className="text-gray-600">of {total} episodes are out</span>
+               <span className="text-gray-600">
+                  of {schedule.episodeCount} episodes are out
+               </span>
             </p>
-            <ProgressBar value={schedule.airedCount} max={total} />
+            <ProgressBar value={schedule.airedCount} max={schedule.episodeCount} />
 
             <div className="mt-4 grid gap-3 sm:grid-cols-2">
                <HeroSlot
@@ -234,32 +388,68 @@ export default function StarTrek(): JSX.Element {
                <HeroSlot
                   label="Next episode"
                   episode={schedule.next}
-                  emptyMessage="That's the lot. Three seasons, all watched."
+                  emptyMessage="That's the lot. Every episode watched."
                />
             </div>
          </div>
 
          {seasons.map((group) => (
-            <section key={group.season} className="space-y-2">
-               <h2 className="flex flex-wrap items-baseline gap-x-3">
-                  <span className="text-lg font-bold">Season {group.season}</span>
-                  <span className="text-xs tabular-nums text-gray-500">
-                     {originalRunYears(group)} · {group.episodes.length} episodes ·{" "}
-                     {group.airedCount} out
-                  </span>
-               </h2>
-               <ul className="grid grid-cols-[auto_1fr] gap-x-3 rounded-md border border-gray-300 bg-white/50 p-1 sm:grid-cols-[auto_1fr_auto]">
-                  {group.episodes.map((episode) => (
-                     <EpisodeRow
-                        key={`${episode.season}-${episode.episode}`}
-                        episode={episode}
-                        isLatest={schedule.latest?.airDate === episode.airDate}
-                        isNext={schedule.next?.airDate === episode.airDate}
-                     />
-                  ))}
-               </ul>
-            </section>
+            <SeasonSection
+               key={group.season}
+               group={group}
+               latestKey={schedule.latest?.key}
+               nextKey={schedule.next?.key}
+            />
          ))}
+      </div>
+   );
+}
+
+export default function StarTrek(): JSX.Element {
+   const data = useLoaderData<typeof loader>();
+   const { revalidate } = useRevalidator();
+
+   useInterval(() => void revalidate(), refreshIntervalMs);
+
+   const selectedId = data.view === "series" ? data.schedule.id : null;
+
+   return (
+      <div className="space-y-8">
+         <header className="space-y-2">
+            <h1 className="text-2xl font-bold">Star Trek, in real time</h1>
+            <p className="max-w-2xl text-gray-600">
+               TOS 60 years delayed, everything else 45 years delayed
+            </p>
+         </header>
+
+         <nav className="aqua-toolbar flex-wrap rounded-md" aria-label="Series">
+            <Link
+               to="/startrek"
+               className={`aqua-tab ${selectedId === null ? "aqua-tab--active" : ""}`}
+               aria-current={selectedId === null ? "page" : undefined}
+            >
+               Fresh
+            </Link>
+            {data.tabs.map((tab) => (
+               <Link
+                  key={tab.id}
+                  to={`/startrek?series=${tab.id}`}
+                  className={`aqua-tab ${tab.id === selectedId ? "aqua-tab--active" : ""}`}
+                  aria-current={tab.id === selectedId ? "page" : undefined}
+               >
+                  {tab.shortName}
+                  <span className="ml-1.5 text-xs tabular-nums opacity-70">
+                     {tab.airedCount}/{tab.episodeCount}
+                  </span>
+               </Link>
+            ))}
+         </nav>
+
+         {data.view === "fresh" ? (
+            <FreshPanel fresh={data.fresh} />
+         ) : (
+            <SeriesPanel schedule={data.schedule} />
+         )}
       </div>
    );
 }

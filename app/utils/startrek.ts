@@ -1,10 +1,10 @@
 /**
- * Star Trek: The Original Series, on a 60-years-delayed schedule — every
- * episode "airs" on the 60th anniversary of its original NBC broadcast.
+ * Star Trek on a delayed schedule — every episode "airs" on the anniversary of
+ * its original broadcast, a fixed number of years delayed. The Original Series
+ * is 60 years delayed; everything from The Next Generation on is 45 years
+ * delayed, which keeps the later shows overlapping exactly as they first did.
  */
-
-/** How far behind the original 1966–69 run we are watching. */
-export const delayYears = 60;
+import { type SeriesData, seriesData } from "./startrek-data";
 
 /**
  * The calendar the schedule is read against. Pinning it keeps "today" the same
@@ -14,115 +14,90 @@ export const delayYears = 60;
 export const scheduleTimeZone = "Europe/London";
 
 export interface Episode {
+   /** Stable identity, unique across every series. */
+   key: string;
+   seriesId: string;
    season: number;
-   /** Position within the season, 1-based. */
+   /** First episode slot this broadcast filled, 1-based within the season. */
    episode: number;
+   /** Last slot filled — the same as `episode` unless it was double-length. */
+   episodeEnd: number;
    title: string;
-   /** Original NBC broadcast date, as a plain calendar date (`YYYY-MM-DD`). */
+   /** Original broadcast date, as a plain calendar date (`YYYY-MM-DD`). */
    originalAirDate: string;
 }
 
-/**
- * Original US broadcast dates, in order, grouped by season. NBC skipped weeks
- * fairly often, so the gaps between episodes are uneven on purpose.
- */
-const seasons: Array<Array<[originalAirDate: string, title: string]>> = [
-   [
-      ["1966-09-08", "The Man Trap"],
-      ["1966-09-15", "Charlie X"],
-      ["1966-09-22", "Where No Man Has Gone Before"],
-      ["1966-09-29", "The Naked Time"],
-      ["1966-10-06", "The Enemy Within"],
-      ["1966-10-13", "Mudd's Women"],
-      ["1966-10-20", "What Are Little Girls Made Of?"],
-      ["1966-10-27", "Miri"],
-      ["1966-11-03", "Dagger of the Mind"],
-      ["1966-11-10", "The Corbomite Maneuver"],
-      ["1966-11-17", "The Menagerie, Part I"],
-      ["1966-11-24", "The Menagerie, Part II"],
-      ["1966-12-08", "The Conscience of the King"],
-      ["1966-12-15", "Balance of Terror"],
-      ["1966-12-29", "Shore Leave"],
-      ["1967-01-05", "The Galileo Seven"],
-      ["1967-01-12", "The Squire of Gothos"],
-      ["1967-01-19", "Arena"],
-      ["1967-01-26", "Tomorrow Is Yesterday"],
-      ["1967-02-02", "Court Martial"],
-      ["1967-02-09", "The Return of the Archons"],
-      ["1967-02-16", "Space Seed"],
-      ["1967-02-23", "A Taste of Armageddon"],
-      ["1967-03-02", "This Side of Paradise"],
-      ["1967-03-09", "The Devil in the Dark"],
-      ["1967-03-23", "Errand of Mercy"],
-      ["1967-03-30", "The Alternative Factor"],
-      ["1967-04-06", "The City on the Edge of Forever"],
-      ["1967-04-13", "Operation — Annihilate!"],
-   ],
-   [
-      ["1967-09-15", "Amok Time"],
-      ["1967-09-22", "Who Mourns for Adonais?"],
-      ["1967-09-29", "The Changeling"],
-      ["1967-10-06", "Mirror, Mirror"],
-      ["1967-10-13", "The Apple"],
-      ["1967-10-20", "The Doomsday Machine"],
-      ["1967-10-27", "Catspaw"],
-      ["1967-11-03", "I, Mudd"],
-      ["1967-11-10", "Metamorphosis"],
-      ["1967-11-17", "Journey to Babel"],
-      ["1967-12-01", "Friday's Child"],
-      ["1967-12-08", "The Deadly Years"],
-      ["1967-12-15", "Obsession"],
-      ["1967-12-22", "Wolf in the Fold"],
-      ["1967-12-29", "The Trouble with Tribbles"],
-      ["1968-01-05", "The Gamesters of Triskelion"],
-      ["1968-01-12", "A Piece of the Action"],
-      ["1968-01-19", "The Immunity Syndrome"],
-      ["1968-02-02", "A Private Little War"],
-      ["1968-02-09", "Return to Tomorrow"],
-      ["1968-02-16", "Patterns of Force"],
-      ["1968-02-23", "By Any Other Name"],
-      ["1968-03-01", "The Omega Glory"],
-      ["1968-03-08", "The Ultimate Computer"],
-      ["1968-03-15", "Bread and Circuses"],
-      ["1968-03-29", "Assignment: Earth"],
-   ],
-   [
-      ["1968-09-20", "Spock's Brain"],
-      ["1968-09-27", "The Enterprise Incident"],
-      ["1968-10-04", "The Paradise Syndrome"],
-      ["1968-10-11", "And the Children Shall Lead"],
-      ["1968-10-18", "Is There in Truth No Beauty?"],
-      ["1968-10-25", "Spectre of the Gun"],
-      ["1968-11-01", "Day of the Dove"],
-      ["1968-11-08", "For the World Is Hollow and I Have Touched the Sky"],
-      ["1968-11-15", "The Tholian Web"],
-      ["1968-11-22", "Plato's Stepchildren"],
-      ["1968-11-29", "Wink of an Eye"],
-      ["1968-12-06", "The Empath"],
-      ["1968-12-20", "Elaan of Troyius"],
-      ["1969-01-03", "Whom Gods Destroy"],
-      ["1969-01-10", "Let That Be Your Last Battlefield"],
-      ["1969-01-17", "The Mark of Gideon"],
-      ["1969-01-24", "That Which Survives"],
-      ["1969-01-31", "The Lights of Zetar"],
-      ["1969-02-14", "Requiem for Methuselah"],
-      ["1969-02-21", "The Way to Eden"],
-      ["1969-02-28", "The Cloud Minders"],
-      ["1969-03-07", "The Savage Curtain"],
-      ["1969-03-14", "All Our Yesterdays"],
-      ["1969-06-03", "Turnabout Intruder"],
-   ],
-];
+export interface Series {
+   id: string;
+   shortName: string;
+   name: string;
+   fullName: string;
+   delayYears: number;
+   episodes: Array<Episode>;
+   /** Episode slots, so a feature-length broadcast counts as two. */
+   episodeCount: number;
+   /** Years of the original run, e.g. "1966–69". */
+   originalRunYears: string;
+}
 
-/** All 79 episodes, in original broadcast order. */
-export const episodes: Array<Episode> = seasons.flatMap((season, seasonIndex) =>
-   season.map(([originalAirDate, title], episodeIndex): Episode => ({
-      season: seasonIndex + 1,
-      episode: episodeIndex + 1,
-      title,
-      originalAirDate,
-   })),
-);
+/**
+ * "1966–69" for a run inside one century, "1995–2001" across one, and just
+ * "1989" when it sits inside a single year.
+ */
+function runYears(firstDate: string, lastDate: string): string {
+   const first = firstDate.slice(0, 4);
+   const last = lastDate.slice(0, 4);
+   if (first === last) return first;
+   return `${first}–${first.slice(0, 2) === last.slice(0, 2) ? last.slice(2) : last}`;
+}
+
+function buildSeries(data: SeriesData): Series {
+   const episodes = data.seasons.flatMap((season, seasonIndex) => {
+      let slot = 1;
+      return season.map(([originalAirDate, title, episodeSlots = 1]): Episode => {
+         const episode = slot;
+         slot += episodeSlots;
+         return {
+            key: `${data.id}-${seasonIndex + 1}-${episode}`,
+            seriesId: data.id,
+            season: seasonIndex + 1,
+            episode,
+            episodeEnd: slot - 1,
+            title,
+            originalAirDate,
+         };
+      });
+   });
+
+   return {
+      id: data.id,
+      shortName: data.shortName,
+      name: data.name,
+      fullName: data.fullName,
+      delayYears: data.delayYears,
+      episodes,
+      episodeCount: episodes.reduce(
+         (total, episode) => total + episodeSlots(episode),
+         0,
+      ),
+      originalRunYears: runYears(
+         episodes[0].originalAirDate,
+         episodes[episodes.length - 1].originalAirDate,
+      ),
+   };
+}
+
+/** How many episode slots one broadcast filled. */
+export function episodeSlots(episode: Episode): number {
+   return episode.episodeEnd - episode.episode + 1;
+}
+
+export const allSeries: Array<Series> = seriesData.map(buildSeries);
+
+/** Looks a series up by id, or null when the id is unknown or missing. */
+export function findSeries(id: string | null): Series | null {
+   return allSeries.find((series) => series.id === id) ?? null;
+}
 
 const msPerDay = 86_400_000;
 
@@ -141,10 +116,10 @@ export function daysBetween(from: string, to: string): number {
 
 /**
  * The date an episode airs on the delayed schedule: the original broadcast date
- * with `delayYears` added to the year. Done on the string so the calendar date
- * survives exactly, with no timezone involved.
+ * with the series' delay added to the year. Done on the string so the calendar
+ * date survives exactly, with no timezone involved.
  */
-export function delayedAirDate(originalAirDate: string): string {
+export function delayedAirDate(originalAirDate: string, delayYears: number): string {
    const year = Number(originalAirDate.slice(0, 4));
    return `${year + delayYears}${originalAirDate.slice(4)}`;
 }
@@ -163,43 +138,130 @@ export function todayOnSchedule(now: Date = new Date()): string {
 }
 
 export interface ScheduledEpisode extends Episode {
-   /** The original air date shifted by `delayYears` (`YYYY-MM-DD`). */
+   seriesShortName: string;
+   seriesName: string;
+   /** The original air date shifted by the series' delay (`YYYY-MM-DD`). */
    airDate: string;
    hasAired: boolean;
    /** Days until it airs: 0 today, negative once it is out. */
    daysUntilAir: number;
 }
 
-export interface Schedule {
-   today: string;
-   episodes: Array<ScheduledEpisode>;
+/** Where a series has got to on the delayed schedule. */
+export type SeriesStatus = "upcoming" | "running" | "finished";
+
+export interface SeriesSummary {
+   id: string;
+   shortName: string;
+   name: string;
+   fullName: string;
+   delayYears: number;
+   originalRunYears: string;
    airedCount: number;
+   episodeCount: number;
+   status: SeriesStatus;
    /** The most recently aired episode, or null before the premiere. */
    latest: ScheduledEpisode | null;
    /** The next episode still to air, or null once the run is over. */
    next: ScheduledEpisode | null;
 }
 
-/**
- * Places every episode against `today` (a `YYYY-MM-DD` calendar date). An
- * episode airing today counts as aired.
- */
-export function buildSchedule(today: string): Schedule {
-   const scheduled = episodes.map((episode): ScheduledEpisode => {
-      const airDate = delayedAirDate(episode.originalAirDate);
-      const daysUntilAir = daysBetween(today, airDate);
-      return { ...episode, airDate, daysUntilAir, hasAired: daysUntilAir <= 0 };
-   });
+export interface Schedule extends SeriesSummary {
+   today: string;
+   episodes: Array<ScheduledEpisode>;
+}
 
+function schedule(series: Series, today: string): Array<ScheduledEpisode> {
+   return series.episodes.map((episode): ScheduledEpisode => {
+      const airDate = delayedAirDate(episode.originalAirDate, series.delayYears);
+      const daysUntilAir = daysBetween(today, airDate);
+      return {
+         ...episode,
+         seriesShortName: series.shortName,
+         seriesName: series.name,
+         airDate,
+         daysUntilAir,
+         hasAired: daysUntilAir <= 0,
+      };
+   });
+}
+
+function summarise(series: Series, scheduled: Array<ScheduledEpisode>): SeriesSummary {
    // The list is in broadcast order, so the last aired one is the newest and
    // the first unaired one is next up.
    const aired = scheduled.filter((episode) => episode.hasAired);
+   const latest = aired.at(-1) ?? null;
+   const next = scheduled.find((episode) => !episode.hasAired) ?? null;
+   return {
+      id: series.id,
+      shortName: series.shortName,
+      name: series.name,
+      fullName: series.fullName,
+      delayYears: series.delayYears,
+      originalRunYears: series.originalRunYears,
+      airedCount: aired.reduce((total, episode) => total + episodeSlots(episode), 0),
+      episodeCount: series.episodeCount,
+      status: latest === null ? "upcoming" : next === null ? "finished" : "running",
+      latest,
+      next,
+   };
+}
+
+/**
+ * Places every episode of `series` against `today` (a `YYYY-MM-DD` calendar
+ * date). An episode airing today counts as aired.
+ */
+export function buildSchedule(series: Series, today: string): Schedule {
+   const scheduled = schedule(series, today);
+   return { ...summarise(series, scheduled), today, episodes: scheduled };
+}
+
+export interface FreshView {
+   today: string;
+   /** Every series' progress, in display order. */
+   series: Array<SeriesSummary>;
+   /** Episodes already out across all series, newest first. */
+   recent: Array<ScheduledEpisode>;
+   /** Episodes still to come across all series, soonest first. */
+   upcoming: Array<ScheduledEpisode>;
+}
+
+/**
+ * The cross-series view: what has just landed and what is due next, merged into
+ * one timeline. With the later shows overlapping, this is the "what can we
+ * watch tonight" answer that no single series page gives.
+ */
+export function buildFreshView(today: string, limit = 12): FreshView {
+   const scheduled = allSeries.map((series, seriesIndex) => ({
+      series,
+      seriesIndex,
+      episodes: schedule(series, today),
+   }));
+
+   // Broadcast order across every series: by date, then by series, then by
+   // position — so the second half of a double bill sorts after the first.
+   const order = new Map(scheduled.map((entry) => [entry.series.id, entry.seriesIndex]));
+   const inAirOrder = (a: ScheduledEpisode, b: ScheduledEpisode): number => {
+      if (a.airDate !== b.airDate) return a.airDate < b.airDate ? -1 : 1;
+      const seriesGap = (order.get(a.seriesId) ?? 0) - (order.get(b.seriesId) ?? 0);
+      if (seriesGap !== 0) return seriesGap;
+      if (a.season !== b.season) return a.season - b.season;
+      return a.episode - b.episode;
+   };
+
+   const all = scheduled.flatMap((entry) => entry.episodes);
    return {
       today,
-      episodes: scheduled,
-      airedCount: aired.length,
-      latest: aired.at(-1) ?? null,
-      next: scheduled.find((episode) => !episode.hasAired) ?? null,
+      series: scheduled.map((entry) => summarise(entry.series, entry.episodes)),
+      recent: all
+         .filter((episode) => episode.hasAired)
+         .toSorted(inAirOrder)
+         .toReversed()
+         .slice(0, limit),
+      upcoming: all
+         .filter((episode) => !episode.hasAired)
+         .toSorted(inAirOrder)
+         .slice(0, limit),
    };
 }
 
@@ -207,23 +269,43 @@ export interface SeasonGroup {
    season: number;
    episodes: Array<ScheduledEpisode>;
    airedCount: number;
+   episodeCount: number;
+   /** Years of the season's original run, e.g. "1966–67". */
+   originalRunYears: string;
 }
 
 /** Regroups a flat schedule into its seasons, keeping broadcast order. */
 export function groupBySeason(scheduled: Array<ScheduledEpisode>): Array<SeasonGroup> {
    const groups: Array<SeasonGroup> = [];
    for (const episode of scheduled) {
+      const slots = episodeSlots(episode);
       const group = groups.at(-1);
       if (group?.season === episode.season) {
          group.episodes.push(episode);
-         if (episode.hasAired) group.airedCount += 1;
+         group.episodeCount += slots;
+         if (episode.hasAired) group.airedCount += slots;
       } else {
          groups.push({
             season: episode.season,
             episodes: [episode],
-            airedCount: episode.hasAired ? 1 : 0,
+            episodeCount: slots,
+            airedCount: episode.hasAired ? slots : 0,
+            originalRunYears: "",
          });
       }
    }
+   for (const group of groups) {
+      group.originalRunYears = runYears(
+         group.episodes[0].originalAirDate,
+         group.episodes[group.episodes.length - 1].originalAirDate,
+      );
+   }
    return groups;
+}
+
+/** "S1E01", or "S1E01–02" for a broadcast that filled two slots. */
+export function episodeCode(episode: Episode): string {
+   const start = String(episode.episode).padStart(2, "0");
+   if (episode.episodeEnd === episode.episode) return `S${episode.season}E${start}`;
+   return `S${episode.season}E${start}–${String(episode.episodeEnd).padStart(2, "0")}`;
 }

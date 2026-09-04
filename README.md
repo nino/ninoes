@@ -42,6 +42,20 @@ Create a production build:
 yarn build
 ```
 
+## Database backups
+
+`.github/workflows/supabase-backup.yml` runs every Sunday (and on manual dispatch). It takes a full `pg_dump` of the Supabase database in custom format and uploads it, with a SHA-256 checksum, to a Backblaze B2 bucket.
+
+Required repository secrets:
+
+- `SUPABASE_DB_URL` – session-mode pooler connection string (port 5432) from the Supabase dashboard
+- `B2_APPLICATION_KEY_ID` / `B2_APPLICATION_KEY` – Backblaze application key with write access to the bucket
+- `B2_BUCKET_NAME` – destination bucket
+
+Optional repository variable `B2_BACKUP_PREFIX` sets the folder inside the bucket (default `supabase`).
+
+Restore with `pg_restore --no-owner --no-privileges -d "$TARGET_DB_URL" supabase-<timestamp>.dump`.
+
 ## Deployment
 
 ### Docker Deployment

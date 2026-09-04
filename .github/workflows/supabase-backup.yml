@@ -1,0 +1,101 @@
+# Weekly full database backup: pg_dump of the Supabase Postgres database,
+# uploaded to a Backblaze B2 bucket.
+#
+# Required repository secrets:
+#   SUPABASE_DB_URL       Postgres connection string. Use the session-mode
+#                         pooler URL (port 5432) from the Supabase dashboard:
+#                         Connect -> Session pooler. GitHub runners are IPv4
+#                         only, so the direct (IPv6) host will not work unless
+#                         the project has the IPv4 add-on.
+#   B2_APPLICATION_KEY_ID Backblaze application key ID.
+#   B2_APPLICATION_KEY    Backblaze application key. Needs listBuckets,
+#                         writeFiles and listFiles on the bucket below.
+#   B2_BUCKET_NAME        Name of the destination bucket.
+#
+# Optional repository variable:
+#   B2_BACKUP_PREFIX      Folder prefix inside the bucket (default: supabase).
+
+name: Supabase Backup
+
+on:
+   schedule:
+      # Every Sunday at 03:17 UTC.
+      - cron: "17 3 * * 0"
+   workflow_dispatch:
+
+permissions:
+   contents: read
+
+concurrency:
+   group: supabase-backup
+   cancel-in-progress: false
+
+jobs:
+   backup:
+      name: Dump database and upload to B2
+      runs-on: ubuntu-latest
+      timeout-minutes: 60
+      env:
+         PG_MAJOR: "17"
+      steps:
+         - name: Install PostgreSQL client
+           run: |
+              sudo apt-get update -qq
+              sudo apt-get install -y -qq postgresql-common
+              sudo /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh -y
+              sudo apt-get install -y -qq "postgresql-client-${PG_MAJOR}"
+              pg_dump --version
+
+         - name: Install Backblaze B2 CLI
+           run: |
+              pipx install b2
+              b2 version
+
+         - name: Dump database
+           env:
+              SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+           run: |
+              set -euo pipefail
+              if [ -z "${SUPABASE_DB_URL}" ]; then
+                 echo "::error::SUPABASE_DB_URL secret is not set"
+                 exit 1
+              fi
+              STAMP="$(date -u +%Y-%m-%dT%H%M%SZ)"
+              FILE="supabase-${STAMP}.dump"
+              echo "DUMP_FILE=${FILE}" >> "$GITHUB_ENV"
+              pg_dump "${SUPABASE_DB_URL}" \
+                 --format=custom \
+                 --compress=zstd \
+                 --no-owner \
+                 --no-privileges \
+                 --file="${FILE}"
+              # Sanity check that the archive is readable before uploading it.
+              pg_restore --list "${FILE}" > /dev/null
+              sha256sum "${FILE}" > "${FILE}.sha256"
+              ls -lh "${FILE}" "${FILE}.sha256"
+
+         - name: Upload to B2
+           env:
+              B2_APPLICATION_KEY_ID: ${{ secrets.B2_APPLICATION_KEY_ID }}
+              B2_APPLICATION_KEY: ${{ secrets.B2_APPLICATION_KEY }}
+              B2_BUCKET_NAME: ${{ secrets.B2_BUCKET_NAME }}
+              B2_BACKUP_PREFIX: ${{ vars.B2_BACKUP_PREFIX || 'supabase' }}
+           run: |
+              set -euo pipefail
+              for name in B2_APPLICATION_KEY_ID B2_APPLICATION_KEY B2_BUCKET_NAME; do
+                 if [ -z "${!name}" ]; then
+                    echo "::error::${name} secret is not set"
+                    exit 1
+                 fi
+              done
+              # The CLI reads B2_APPLICATION_KEY_ID / B2_APPLICATION_KEY from the environment.
+              b2 account authorize
+              b2 file upload --no-progress \
+                 "${B2_BUCKET_NAME}" "${DUMP_FILE}" "${B2_BACKUP_PREFIX}/${DUMP_FILE}"
+              b2 file upload --no-progress \
+                 "${B2_BUCKET_NAME}" "${DUMP_FILE}.sha256" "${B2_BACKUP_PREFIX}/${DUMP_FILE}.sha256"
+              echo "Uploaded ${B2_BACKUP_PREFIX}/${DUMP_FILE} to bucket ${B2_BUCKET_NAME}"
+
+         - name: Clear B2 credentials from runner
+           if: always()
+           run: b2 account clear || true

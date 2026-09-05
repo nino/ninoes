@@ -7,6 +7,7 @@ import {
 } from "react-router";
 import { useInterval } from "~/hooks/useInterval";
 import { externalOrigin } from "~/utils/request";
+import { formatAirDate, formatGap, formatShortDate } from "~/utils/startrek-format";
 import {
    allSeries,
    buildFreshView,
@@ -37,39 +38,6 @@ export function meta({}: Route.MetaArgs): ReturnType<Route.MetaFunction> {
 // The page only changes when the date does, but an hourly refresh means a tab
 // left open overnight rolls over on its own.
 const refreshIntervalMs = 60 * 60 * 1000;
-
-// Locales are pinned so the server and the browser format dates identically and
-// hydration stays quiet. The dates are UTC midnights (see `utils/startrek`).
-const airDateFormat = new Intl.DateTimeFormat("en-GB", {
-   weekday: "short",
-   day: "numeric",
-   month: "short",
-   year: "numeric",
-   timeZone: "UTC",
-});
-
-const originalDateFormat = new Intl.DateTimeFormat("en-GB", {
-   day: "numeric",
-   month: "short",
-   year: "numeric",
-   timeZone: "UTC",
-});
-
-const relativeFormat = new Intl.RelativeTimeFormat("en-GB", { numeric: "auto" });
-
-function formatDate(format: Intl.DateTimeFormat, date: string): string {
-   return format.format(new Date(`${date}T00:00:00Z`));
-}
-
-/** "tomorrow", "3 days ago", "in 2 months" — coarser as the gap grows. */
-function formatGap(daysUntilAir: number): string {
-   const days = Math.abs(daysUntilAir);
-   if (days < 14) return relativeFormat.format(daysUntilAir, "day");
-   if (days < 60) return relativeFormat.format(Math.round(daysUntilAir / 7), "week");
-   if (days < 365)
-      return relativeFormat.format(Math.round(daysUntilAir / 30.44), "month");
-   return relativeFormat.format(Math.round(daysUntilAir / 365.25), "year");
-}
 
 interface SeriesTab {
    id: string;
@@ -169,7 +137,7 @@ function HeroSlot({
                </p>
                <p className="mt-1 text-gray-600">
                   <span className="tabular-nums">{episodeCode(episode)}</span> ·{" "}
-                  {formatDate(airDateFormat, episode.airDate)}
+                  {formatAirDate(episode.airDate)}
                </p>
                <p className="mt-0.5 font-medium text-[#2f6fd0]">
                   {formatGap(episode.daysUntilAir)}
@@ -231,7 +199,7 @@ function EpisodeRow({
                </span>
             )}
             <span className="block text-xs text-gray-500">
-               originally {formatDate(originalDateFormat, episode.originalAirDate)}
+               originally {formatShortDate(episode.originalAirDate)}
                <span className="sr-only">
                   {episode.hasAired ? " — already aired" : " — not out yet"}
                </span>
@@ -242,7 +210,7 @@ function EpisodeRow({
              own line beneath it on narrow ones, so titles aren't squeezed. */}
          <span className="col-start-2 flex flex-row items-baseline gap-x-2 sm:col-start-3 sm:flex-col sm:items-end sm:gap-x-0">
             <span className="whitespace-nowrap tabular-nums">
-               {formatDate(airDateFormat, episode.airDate)}
+               {formatAirDate(episode.airDate)}
             </span>
             <span className="text-xs whitespace-nowrap text-gray-500">
                {formatGap(episode.daysUntilAir)}

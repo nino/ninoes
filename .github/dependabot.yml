@@ -6,9 +6,6 @@ updates:
         interval: "weekly"
      open-pull-requests-limit: 10
      versioning-strategy: "auto"
-     labels:
-        - "dependencies"
-        - "automerge"
      commit-message:
         prefix: "chore"
         prefix-development: "chore"
@@ -19,10 +16,6 @@ updates:
      schedule:
         interval: "weekly"
      open-pull-requests-limit: 10
-     labels:
-        - "dependencies"
-        - "github_actions"
-        - "automerge"
      commit-message:
         prefix: "chore"
         include: "scope"

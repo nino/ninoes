@@ -37,6 +37,20 @@ test("rejects bad values", () => {
    ).toBe(false);
 });
 
+test("rejects values that would produce dates outside four-digit years", () => {
+   const query = (startDate: string, interval: string): string =>
+      `title=x&start_date=${startDate}&interval=${interval}`;
+   expect(parseCalendarParams(params(query("2024-02-01", "1e9")))).toEqual({
+      ok: false,
+      error: "interval must be at most 3650",
+   });
+   expect(parseCalendarParams(params(query("0001-01-01", "1")))).toEqual({
+      ok: false,
+      error: "start_date must be between 1000 and 2999",
+   });
+   expect(parseCalendarParams(params(query("2999-12-31", "3650"))).ok).toBe(true);
+});
+
 test("builds 101 all-day events, one per interval", () => {
    const ics = buildDaysSinceCalendar(
       { title: "Moving in", start_date: "2024-02-01", interval: 7 },

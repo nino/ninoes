@@ -12,13 +12,27 @@ const intervalCount = 100;
 
 const domain = "days-since.ninoes";
 
+/**
+ * Bounds that keep every event a four-digit year: `addDays` goes through
+ * `Date.UTC`, which reads years 0–99 as 1900–1999, and iCalendar dates are
+ * exactly eight digits. 100 intervals of ten years from 2999 still ends before
+ * 10000.
+ */
+const maxInterval = 3650;
+const minYear = 1000;
+const maxYear = 2999;
+
 export const calendarParamsSchema = z.object({
    title: z.string().trim().min(1, "title can't be blank"),
-   start_date: z.iso.date("start_date must be a date like 2024-01-31"),
+   start_date: z.iso.date("start_date must be a date like 2024-01-31").refine((date) => {
+      const year = Number(date.slice(0, 4));
+      return year >= minYear && year <= maxYear;
+   }, `start_date must be between ${minYear} and ${maxYear}`),
    interval: z.coerce
       .number("interval must be a number")
       .int("interval must be a whole number")
-      .min(1, "interval must be at least 1"),
+      .min(1, "interval must be at least 1")
+      .max(maxInterval, `interval must be at most ${maxInterval}`),
 });
 
 export type CalendarParams = z.infer<typeof calendarParamsSchema>;

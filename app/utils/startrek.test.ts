@@ -12,6 +12,7 @@ import {
    type Series,
    todayOnSchedule,
 } from "./startrek";
+import { episodeSummaries } from "./startrek-summaries";
 
 function series(id: string): Series {
    const found = findSeries(id);
@@ -229,4 +230,17 @@ test("writes a run's years compactly, but not across a century", () => {
    expect(ds9.originalRunYears).toBe("1993–99");
    expect(voy.originalRunYears).toBe("1995–2001");
    expect(ent.originalRunYears).toBe("2001–05");
+});
+
+test("has a summary for every episode, and none for episodes that don't exist", () => {
+   for (const s of allSeries) {
+      const missing = s.episodes.filter((episode) => episode.summary === "");
+      expect(missing.map((episode) => episode.title)).toStrictEqual([]);
+
+      const titles = new Set(s.episodes.map((episode) => episode.title));
+      const orphans = Object.keys(episodeSummaries[s.id] ?? {}).filter(
+         (title) => !titles.has(title),
+      );
+      expect(orphans).toStrictEqual([]);
+   }
 });

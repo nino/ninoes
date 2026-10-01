@@ -5,6 +5,7 @@
  * delayed, which keeps the later shows overlapping exactly as they first did.
  */
 import { type SeriesData, seriesData } from "./startrek-data";
+import { episodeSummaries } from "./startrek-summaries";
 
 /**
  * The calendar the schedule is read against. Pinning it keeps "today" the same
@@ -25,6 +26,8 @@ export interface Episode {
    title: string;
    /** Original broadcast date, as a plain calendar date (`YYYY-MM-DD`). */
    originalAirDate: string;
+   /** A short plot summary, or an empty string when there is none. */
+   summary: string;
 }
 
 export interface Series {
@@ -52,6 +55,7 @@ function runYears(firstDate: string, lastDate: string): string {
 }
 
 function buildSeries(data: SeriesData): Series {
+   const summaries = episodeSummaries[data.id] ?? {};
    const episodes = data.seasons.flatMap((season, seasonIndex) => {
       let slot = 1;
       return season.map(([originalAirDate, title, episodeSlots = 1]): Episode => {
@@ -65,6 +69,7 @@ function buildSeries(data: SeriesData): Series {
             episodeEnd: slot - 1,
             title,
             originalAirDate,
+            summary: summaries[title] ?? "",
          };
       });
    });

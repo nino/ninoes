@@ -55,7 +55,8 @@ interface CalendarFeed {
 
 /** The two shapes the page renders: the cross-series view, or one series. */
 type LoaderData = { tabs: Array<SeriesTab>; feed: CalendarFeed } & (
-   { view: "fresh"; fresh: FreshView } | { view: "series"; schedule: Schedule }
+   | { view: "fresh"; fresh: FreshView }
+   | { view: "series"; schedule: Schedule }
 );
 
 export const loader = ({ request }: LoaderFunctionArgs): LoaderData => {
@@ -139,6 +140,9 @@ function HeroSlot({
                   <span className="tabular-nums">{episodeCode(episode)}</span> ·{" "}
                   {formatAirDate(episode.airDate)}
                </p>
+               {episode.summary !== "" && (
+                  <p className="mt-1 text-sm text-gray-700">{episode.summary}</p>
+               )}
                <p className="mt-0.5 font-medium text-[#2f6fd0]">
                   {formatGap(episode.daysUntilAir)}
                </p>
@@ -196,6 +200,11 @@ function EpisodeRow({
             {isNext && (
                <span className="ml-2 rounded border border-[#2f6fd0]/50 px-1.5 py-px text-[10px] font-bold tracking-wide text-[#2f6fd0] uppercase">
                   Next
+               </span>
+            )}
+            {episode.summary !== "" && (
+               <span className="mt-0.5 block text-sm text-gray-700">
+                  {episode.summary}
                </span>
             )}
             <span className="block text-xs text-gray-500">

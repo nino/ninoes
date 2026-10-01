@@ -78,9 +78,12 @@ function events(series: Series, dtstamp: string, pageUrl: string): Array<string>
          new Date(`${episode.originalAirDate}T00:00:00Z`),
       );
       const description = [
+         episode.summary,
          `${series.fullName}, season ${episode.season}.`,
          `Originally broadcast ${original}, ${series.delayYears} years earlier.`,
-      ].join(" ");
+      ]
+         .filter((part) => part !== "")
+         .join(" ");
 
       return [
          "BEGIN:VEVENT",

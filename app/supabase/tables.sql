@@ -72,3 +72,11 @@ CREATE TABLE public.wishes (
   claimed_at timestamp WITH time zone NULL,
   CONSTRAINT wishes_pkey PRIMARY KEY (id)
 ) TABLESPACE pg_default;
+
+-- 2026-10-04-translate-wishes.sql
+ALTER TABLE public.wishes
+  ADD COLUMN language text NULL CHECK (language IN ('en', 'de')),
+  ADD COLUMN translated_title text NULL,
+  ADD COLUMN translated_description text NULL,
+  ADD CONSTRAINT wishes_title_length CHECK (length(title) <= 200),
+  ADD CONSTRAINT wishes_description_length CHECK (length(description) <= 2000);

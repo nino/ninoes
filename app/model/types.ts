@@ -71,6 +71,10 @@ export const WishSchema = z.object({
    // numeric columns arrive as numbers or strings depending on size.
    price: z.coerce.number().nullable(),
    link: z.string().nullable(),
+   // Detected source language; null until the translate action has run.
+   language: z.enum(["en", "de"]).nullable(),
+   translated_title: z.string().nullable(),
+   translated_description: z.string().nullable(),
    // Left out of the select entirely in no-spoilers mode.
    claimed_by: z.string().nullable().optional(),
 });

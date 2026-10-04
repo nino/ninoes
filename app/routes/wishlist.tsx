@@ -5,6 +5,7 @@ import {
    useAddWish,
    useDeleteWish,
    useSetWishClaim,
+   useTranslateWishes,
    useUpdateWish,
    useWishes,
 } from "~/hooks/useSupabase";
@@ -14,6 +15,7 @@ import {
    isSpoilerFreeName,
    type Language,
    linkLabel,
+   localizedWish,
    normalizeLink,
    parsePrice,
    sameName,
@@ -266,6 +268,7 @@ function WishList({
    const t = strings[language];
    const spoilerFree = isSpoilerFreeName(name);
    const wishes = useWishes({ spoilerFree });
+   useTranslatePending(wishes.data);
 
    const summary = wishes.data
       ? t.summary(
@@ -338,6 +341,30 @@ function WishList({
    );
 }
 
+/**
+ * Asks the server to translate whatever is still untranslated: new wishes,
+ * edited ones, and any a previous attempt missed. If a run fails or gets
+ * nowhere, it waits until the set of pending wishes changes before trying
+ * again, so a wish that can't be translated doesn't cause a request loop.
+ */
+function useTranslatePending(wishes: Array<Wish> | undefined): void {
+   const { mutate, isPending } = useTranslateWishes();
+   const pendingCount = wishes?.filter((w) => w.language == null).length ?? 0;
+   const stalledAt = React.useRef<number | null>(null);
+
+   React.useEffect(() => {
+      if (pendingCount === 0 || isPending || stalledAt.current === pendingCount) return;
+      mutate(undefined, {
+         onSuccess: ({ translated }) => {
+            stalledAt.current = translated === 0 ? pendingCount : null;
+         },
+         onError: () => {
+            stalledAt.current = pendingCount;
+         },
+      });
+   }, [pendingCount, isPending, mutate]);
+}
+
 function WishCard({
    wish,
    name,
@@ -382,6 +409,7 @@ function WishCard({
    }
 
    const claimedBy = wish.claimed_by ?? null;
+   const shown = localizedWish(wish, language);
    const editButton = (
       <button
          type="button"
@@ -400,16 +428,22 @@ function WishCard({
       <li className={cardClass}>
          <div className="flex flex-col gap-1.5 p-5">
             <div className="flex items-start justify-between gap-4">
-               <h2 className="text-base leading-snug font-semibold">{wish.title}</h2>
+               <h2 className="text-base leading-snug font-semibold">{shown.title}</h2>
                {wish.price != null && (
                   <span className="shrink-0 text-base font-semibold tabular-nums">
                      {formatPrice(wish.price, language)}
                   </span>
                )}
             </div>
-            {wish.description != null && (
+            {shown.description != null && (
                <p className="text-sm leading-relaxed whitespace-pre-line text-wl-muted-fg">
-                  {wish.description}
+                  {shown.description}
+               </p>
+            )}
+            {shown.translatedFrom != null && (
+               <p className="flex items-center gap-1.5 text-xs text-wl-muted-fg">
+                  <Icon name="languages" className="size-3.5" />
+                  {t.translatedFrom(shown.translatedFrom)}
                </p>
             )}
             {(wish.link != null || spoilerFree) && (
@@ -728,7 +762,7 @@ function Field({
    );
 }
 
-// Lucide icon paths, inlined to avoid a dependency for seven icons.
+// Lucide icon paths, inlined to avoid a dependency for eight icons.
 const iconPaths = {
    gift: [
       "M3 9a1 1 0 0 1 1-1h16a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z",
@@ -737,6 +771,14 @@ const iconPaths = {
       "M7.5 8a2.5 2.5 0 0 1 0-5A4.8 8 0 0 1 12 8a4.8 8 0 0 1 4.5-5 2.5 2.5 0 0 1 0 5",
    ],
    check: ["M20 6 9 17l-5-5"],
+   languages: [
+      "m5 8 6 6",
+      "m4 14 6-6 2-3",
+      "M2 5h12",
+      "M7 2h1",
+      "m22 22-5-10-5 10",
+      "M14 18h6",
+   ],
    pencil: [
       "M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z",
       "m15 5 4 4",

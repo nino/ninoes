@@ -17,4 +17,5 @@ export default [
    route("/calendar", "routes/calendar-ics.ts"),
    route("/last-year", "routes/last-year.ts"),
    route("/wishlist", "routes/wishlist.tsx"),
+   route("/wishlist/translate", "routes/wishlist-translate.ts"),
 ] satisfies RouteConfig;

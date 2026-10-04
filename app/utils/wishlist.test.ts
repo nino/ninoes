@@ -3,6 +3,7 @@ import {
    formatPrice,
    isSpoilerFreeName,
    linkLabel,
+   localizedWish,
    normalizeLink,
    parsePrice,
    sameName,
@@ -86,5 +87,42 @@ describe("normalizeLink", () => {
 describe("linkLabel", () => {
    it("shows the host without www", () => {
       expect(linkLabel("https://www.lecreuset.de/de_DE/p/123")).toBe("lecreuset.de");
+   });
+});
+
+describe("localizedWish", () => {
+   const wish = {
+      title: "Gusseisenbräter",
+      description: "Jede Farbe außer Orange.",
+      language: "de" as const,
+      translated_title: "Cast-iron casserole",
+      translated_description: "Any colour except orange.",
+   };
+
+   it("shows the translation to readers of the other language", () => {
+      expect(localizedWish(wish, "en")).toEqual({
+         title: "Cast-iron casserole",
+         description: "Any colour except orange.",
+         translatedFrom: "de",
+      });
+   });
+
+   it("shows the original to readers of the same language", () => {
+      expect(localizedWish(wish, "de")).toEqual({
+         title: "Gusseisenbräter",
+         description: "Jede Farbe außer Orange.",
+         translatedFrom: null,
+      });
+   });
+
+   it("shows the original while a translation is pending", () => {
+      const pending = {
+         ...wish,
+         language: null,
+         translated_title: null,
+         translated_description: null,
+      };
+      expect(localizedWish(pending, "en").title).toBe("Gusseisenbräter");
+      expect(localizedWish(pending, "en").translatedFrom).toBeNull();
    });
 });

@@ -66,6 +66,34 @@ export function linkLabel(link: string): string {
    }
 }
 
+/**
+ * The title and description to show a viewer: the original if it's already in
+ * their language (or not translated yet), otherwise the translation.
+ */
+export function localizedWish(
+   wish: {
+      title: string;
+      description: string | null;
+      language: Language | null;
+      translated_title: string | null;
+      translated_description: string | null;
+   },
+   viewer: Language,
+): { title: string; description: string | null; translatedFrom: Language | null } {
+   if (
+      wish.language == null ||
+      wish.language === viewer ||
+      wish.translated_title == null
+   ) {
+      return { title: wish.title, description: wish.description, translatedFrom: null };
+   }
+   return {
+      title: wish.translated_title,
+      description: wish.translated_description ?? wish.description,
+      translatedFrom: wish.language,
+   };
+}
+
 export interface WishlistStrings {
    couple: string;
    date: string;
@@ -103,6 +131,7 @@ export interface WishlistStrings {
    invalidLink: string;
    alreadyClaimed: string;
    somethingWentWrong: string;
+   translatedFrom: (language: Language) => string;
 }
 
 export const strings: Record<Language, WishlistStrings> = {
@@ -147,6 +176,8 @@ export const strings: Record<Language, WishlistStrings> = {
       invalidLink: "That doesn’t look like a web address.",
       alreadyClaimed: "Someone else just claimed this one.",
       somethingWentWrong: "Something went wrong. Please try again.",
+      translatedFrom: (language) =>
+         `Machine-translated from ${language === "de" ? "German" : "English"}`,
    },
    de: {
       couple: "Katherine & Nino",
@@ -189,5 +220,7 @@ export const strings: Record<Language, WishlistStrings> = {
       invalidLink: "Das sieht nicht nach einer Webadresse aus.",
       alreadyClaimed: "Das hat gerade jemand anderes reserviert.",
       somethingWentWrong: "Etwas ist schiefgelaufen. Bitte versuch es noch einmal.",
+      translatedFrom: (language) =>
+         `Maschinell übersetzt aus dem ${language === "de" ? "Deutschen" : "Englischen"}`,
    },
 };

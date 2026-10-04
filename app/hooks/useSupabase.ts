@@ -540,7 +540,8 @@ export function useEloLeaderboard({
 
 // Wishlist. Unauthenticated: everything goes through the anon client.
 
-const wishColumns = "id, created_at, title, description, price, link";
+const wishColumns =
+   "id, created_at, title, description, price, link, language, translated_title, translated_description";
 
 export function useWishes({
    spoilerFree,
@@ -634,5 +635,30 @@ export function useSetWishClaim(): UseMutationResult<
          return z.boolean().parse(data);
       },
       onSettled: () => queryClient.invalidateQueries({ queryKey: ["wishes"] }),
+   });
+}
+
+/**
+ * Runs the server action that machine-translates wishes still waiting for a
+ * translation. Resolves to how many it managed.
+ */
+export function useTranslateWishes(): UseMutationResult<
+   { translated: number; failed: number },
+   Error,
+   void
+> {
+   const queryClient = useQueryClient();
+   return useMutation({
+      mutationFn: async () => {
+         const response = await fetch("/wishlist/translate", { method: "POST" });
+         if (!response.ok) throw new Error(`Translation failed: ${response.status}`);
+         return z
+            .object({ translated: z.number(), failed: z.number() })
+            .parse(await response.json());
+      },
+      onSuccess: ({ translated }) =>
+         translated > 0
+            ? queryClient.invalidateQueries({ queryKey: ["wishes"] })
+            : undefined,
    });
 }

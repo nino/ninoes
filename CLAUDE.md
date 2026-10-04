@@ -27,6 +27,12 @@ Ninoes is a name voting/ranking app. Users vote on names (up/down and ELO-style 
 - **Styling**: Tailwind CSS v4
 - **Error tracking**: Sentry (production only)
 
+## Database migrations
+
+- Migrations are hand-written SQL files in `app/supabase/migrations/`, named `YYYY-MM-DD-description.sql`. Update `app/supabase/tables.sql` (a hand-kept schema reference) alongside each migration.
+- There is one shared production database and no staging, so a full backup is taken before every change.
+- The backup and apply procedure is in the `supabase-migration` skill (`.claude/skills/supabase-migration/SKILL.md`).
+
 ## Code Style
 
 - **Prettier**: tabWidth 3, printWidth 89, trailingComma "all"

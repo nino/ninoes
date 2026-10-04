@@ -39,6 +39,11 @@ function mintFlyIdentityToken(): Promise<string> {
             });
          },
       );
+      // The machine API is local and answers in milliseconds; don't let a
+      // stuck socket hold up every translate request behind it.
+      request.setTimeout(10_000, () => {
+         request.destroy(new Error("Fly OIDC token request timed out"));
+      });
       request.on("error", reject);
       request.end(JSON.stringify({ aud: federation.audience }));
    });

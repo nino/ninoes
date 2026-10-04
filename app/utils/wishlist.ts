@@ -1,5 +1,10 @@
 export type Language = "en" | "de";
 
+// The same limits are check constraints on public.wishes (and in claim_wish).
+export const maxTitleLength = 200;
+export const maxDescriptionLength = 2000;
+export const maxNameLength = 80;
+
 const hostNames = new Set(["nino", "katherine"]);
 
 /** The couple see the list without who has claimed what. */
@@ -130,6 +135,7 @@ export interface WishlistStrings {
    invalidPrice: string;
    invalidLink: string;
    alreadyClaimed: string;
+   claimAfterAddFailed: string;
    somethingWentWrong: string;
    translatedFrom: (language: Language) => string;
 }
@@ -175,6 +181,8 @@ export const strings: Record<Language, WishlistStrings> = {
       invalidPrice: "That doesn’t look like a price.",
       invalidLink: "That doesn’t look like a web address.",
       alreadyClaimed: "Someone else just claimed this one.",
+      claimAfterAddFailed:
+         "Your wish was added, but claiming it didn’t work. Use “I’ll give this” on it instead.",
       somethingWentWrong: "Something went wrong. Please try again.",
       translatedFrom: (language) =>
          `Machine-translated from ${language === "de" ? "German" : "English"}`,
@@ -219,6 +227,8 @@ export const strings: Record<Language, WishlistStrings> = {
       invalidPrice: "Das sieht nicht nach einem Preis aus.",
       invalidLink: "Das sieht nicht nach einer Webadresse aus.",
       alreadyClaimed: "Das hat gerade jemand anderes reserviert.",
+      claimAfterAddFailed:
+         "Dein Wunsch ist eingetragen, aber das Reservieren hat nicht geklappt. Nutze dort „Das schenke ich“.",
       somethingWentWrong: "Etwas ist schiefgelaufen. Bitte versuch es noch einmal.",
       translatedFrom: (language) =>
          `Maschinell übersetzt aus dem ${language === "de" ? "Deutschen" : "Englischen"}`,

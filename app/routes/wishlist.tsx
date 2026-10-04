@@ -595,14 +595,18 @@ function WishForm({
          </Field>
          <div className="grid grid-cols-2 gap-5">
             <Field label={`${t.fieldPrice} · ${t.optional}`} error={errors.price}>
-               <input
-                  value={price}
-                  onChange={(e) => setPrice(e.target.value)}
-                  inputMode="decimal"
-                  placeholder="£"
-                  aria-invalid={errors.price != null}
-                  className={fieldInput}
-               />
+               <span className="flex min-w-0 items-baseline gap-1.5 border-b border-wl-leader focus-within:border-wl-accent focus-within:shadow-[0_1px_0_0_var(--color-wl-accent)] has-aria-invalid:border-wl-danger">
+                  <span aria-hidden="true" className="text-wl-muted">
+                     £
+                  </span>
+                  <input
+                     value={price}
+                     onChange={(e) => setPrice(e.target.value)}
+                     inputMode="decimal"
+                     aria-invalid={errors.price != null}
+                     className="min-w-0 flex-1 bg-transparent py-2 text-wl-ink outline-none"
+                  />
+               </span>
             </Field>
             <Field label={`${t.fieldLink} · ${t.optional}`} error={errors.link}>
                <input

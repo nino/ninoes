@@ -38,7 +38,6 @@ Ninoes is a name voting/ranking app. Users vote on names (up/down and ELO-style 
 - **Prettier**: tabWidth 3, printWidth 89, trailingComma "all"
 - **Array types**: Use `Array<T>` not `T[]` (oxlint-enforced)
 - **Return types**: All functions must have explicit return type annotations
-- **React APIs**: Use `React.useState`, `React.useEffect`, etc. — import React as a namespace, not individual hooks
 - **No `any`**: Enforced by oxlint
 - **Nullish**: Use `??` and `?.` (oxlint-enforced). Don't use `!!x`.
 - **Curly quotes in JSX**: Use HTML entities `&ldquo;` `&rdquo;` `&lsquo;` `&rsquo;` — never raw curly quotes

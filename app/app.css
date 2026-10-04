@@ -624,6 +624,52 @@ html:has(.wishlist-page) body {
    corner-shape: squircle;
 }
 
+/* Loading placeholders. Every block shares one viewport-wide sweep (fixed
+   background), so the shine travels across the page as a single wave. */
+:root {
+   --wl-skeleton: oklch(0.93 0.016 228);
+   --wl-skeleton-shine: oklch(0.985 0.006 225);
+}
+
+.wl-skeleton {
+   background-color: var(--wl-skeleton);
+   background-image: linear-gradient(
+      100deg,
+      transparent 35%,
+      var(--wl-skeleton-shine) 50%,
+      transparent 65%
+   );
+   background-size: 200vw 100%;
+   background-repeat: no-repeat;
+   background-attachment: fixed;
+   animation: wl-shimmer 1.6s ease-in-out infinite;
+}
+
+@keyframes wl-shimmer {
+   /* The band sits mid-image, so this carries it from just off the left edge
+      of the viewport to just off the right. */
+   from {
+      background-position: -130vw 0;
+   }
+   to {
+      background-position: 30vw 0;
+   }
+}
+
+/* Without movement: a slow fade still says "loading". */
+@media (prefers-reduced-motion: reduce) {
+   .wl-skeleton {
+      background-image: none;
+      animation: wl-skeleton-fade 2s ease-in-out infinite;
+   }
+}
+
+@keyframes wl-skeleton-fade {
+   50% {
+      opacity: 0.55;
+   }
+}
+
 @media (prefers-color-scheme: dark) {
    :root {
       --color-wl-page: oklch(0.16 0.015 240);
@@ -640,5 +686,7 @@ html:has(.wishlist-page) body {
       --color-wl-primary-fg: oklch(0.22 0.03 240);
       --color-wl-danger: oklch(0.704 0.191 22.216);
       --color-wl-success: oklch(0.792 0.209 151.711);
+      --wl-skeleton: oklch(0.27 0.02 238);
+      --wl-skeleton-shine: oklch(0.36 0.024 235);
    }
 }

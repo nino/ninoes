@@ -142,7 +142,9 @@ export default function WishlistPage(): JSX.Element {
 
    return (
       <div className="wishlist-page min-h-screen bg-wl-page font-wl-body text-wl-fg antialiased">
-         {visitor && t && (
+         {visitor == null || t == null ? (
+            <PageSkeleton />
+         ) : (
             <>
                <header className="border-b border-wl-border bg-wl-card">
                   <div className="mx-auto flex h-14 max-w-2xl items-center justify-between gap-4 px-4">
@@ -326,7 +328,11 @@ function WishList({
       <main className="mx-auto flex max-w-2xl flex-col gap-6 px-4 py-8 sm:py-12">
          <div className="flex flex-col gap-1">
             <h1 className="mb-1 font-wl-title text-3xl">{t.title}</h1>
-            {summary != null && <p className="text-sm text-wl-muted-fg">{summary}</p>}
+            {wishes.isPending ? (
+               <Bone className="my-0.5 h-4 w-44" />
+            ) : (
+               summary != null && <p className="text-sm text-wl-muted-fg">{summary}</p>
+            )}
             <p className="text-sm text-wl-muted-fg">
                {t.signedAs} <span className="font-medium text-wl-fg">{name}</span> ·{" "}
                <button
@@ -351,10 +357,9 @@ function WishList({
          )}
 
          {wishes.isPending ? (
-            <div className="flex flex-col gap-3" aria-busy="true">
-               {[0, 1, 2].map((i) => (
-                  <div key={i} className="h-32 animate-pulse rounded-xl bg-wl-muted" />
-               ))}
+            <div role="status">
+               <span className="sr-only">{t.loading}</span>
+               <WishSkeletons spoilerFree={spoilerFree} />
             </div>
          ) : wishes.isError ? (
             <p className="rounded-lg border border-wl-danger/40 bg-wl-danger/5 px-4 py-3 text-sm text-wl-danger">
@@ -383,6 +388,75 @@ function WishList({
 
          <AddWish name={name} spoilerFree={spoilerFree} t={t} />
       </main>
+   );
+}
+
+/** A placeholder block that shimmers while content loads. */
+function Bone({ className }: { className: string }): JSX.Element {
+   return <div className={`wl-skeleton rounded-md ${className}`} />;
+}
+
+// Varied widths so the placeholders read as different wishes, not a grid.
+const skeletonWidths = [
+   { title: "w-1/2", line: "w-11/12", tail: "w-2/3" },
+   { title: "w-2/5", line: "w-full", tail: "w-1/3" },
+   { title: "w-3/5", line: "w-5/6", tail: "w-1/2" },
+];
+
+/** Card-shaped placeholders matching the WishCard layout. */
+function WishSkeletons({ spoilerFree }: { spoilerFree: boolean }): JSX.Element {
+   return (
+      <ul aria-hidden="true" className="flex flex-col gap-3">
+         {skeletonWidths.map((w, i) => (
+            <li key={i} className={cardClass}>
+               <div className="flex flex-col gap-2.5 p-5">
+                  <div className="flex items-center justify-between gap-4">
+                     <Bone className={`h-5 ${w.title}`} />
+                     <Bone className="h-5 w-14" />
+                  </div>
+                  <Bone className={`h-3.5 ${w.line}`} />
+                  <Bone className={`h-3.5 ${w.tail}`} />
+               </div>
+               {!spoilerFree && (
+                  <div className="flex min-h-14 items-center justify-between gap-3 border-t border-wl-border px-5 py-2.5">
+                     <Bone className="h-9 w-28" />
+                     <Bone className="h-9 w-16" />
+                  </div>
+               )}
+            </li>
+         ))}
+      </ul>
+   );
+}
+
+/**
+ * Shown until the browser has read the visitor's name and language from
+ * storage (and so during server rendering), in place of a blank page.
+ */
+function PageSkeleton(): JSX.Element {
+   return (
+      <div aria-busy="true">
+         <header className="border-b border-wl-border bg-wl-card">
+            <div className="mx-auto flex h-14 max-w-2xl items-center justify-between gap-4 px-4">
+               <div className="flex items-center gap-2.5">
+                  <Bone className="size-8" />
+                  <div className="flex flex-col gap-1.5">
+                     <Bone className="h-3.5 w-28" />
+                     <Bone className="h-3 w-20" />
+                  </div>
+               </div>
+               <Bone className="h-8 w-24 rounded-full" />
+            </div>
+         </header>
+         <main className="mx-auto flex max-w-2xl flex-col gap-6 px-4 py-8 sm:py-12">
+            <div className="flex flex-col gap-2">
+               <Bone className="mb-1 h-9 w-56" />
+               <Bone className="h-4 w-44" />
+               <Bone className="h-4 w-52" />
+            </div>
+            <WishSkeletons spoilerFree={false} />
+         </main>
+      </div>
    );
 }
 

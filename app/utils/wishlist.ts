@@ -132,6 +132,7 @@ export interface WishlistStrings {
    date: string;
    title: string;
    gateIntro: string;
+   giftNotice: string;
    nameLabel: string;
    openList: string;
    signedAs: string;
@@ -183,6 +184,8 @@ export const strings: Record<Language, WishlistStrings> = {
       date: "7 November 2026",
       title: "Wishlist",
       gateIntro: "Enter your name so everyone knows who is bringing what.",
+      giftNotice:
+         "We don’t expect any gifts, but if you wish to give us something, you can use this page to organise and get inspired.",
       nameLabel: "Your name",
       openList: "Continue",
       signedAs: "Signed in as",
@@ -239,6 +242,8 @@ export const strings: Record<Language, WishlistStrings> = {
       date: "7. November 2026",
       title: "Wunschliste",
       gateIntro: "Gib deinen Namen ein, damit alle wissen, wer was mitbringt.",
+      giftNotice:
+         "Wir erwarten keine Geschenke. Wenn du uns aber etwas schenken möchtest, kannst du diese Seite nutzen, um dich zu organisieren und dich inspirieren zu lassen.",
       nameLabel: "Dein Name",
       openList: "Weiter",
       signedAs: "Angemeldet als",

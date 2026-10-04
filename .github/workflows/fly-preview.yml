@@ -17,7 +17,6 @@ concurrency:
 
 env:
    FLY_API_TOKEN: ${{ secrets.FLY_PREVIEW_API_TOKEN }}
-   FLY_REGION: lhr
    APP_NAME: ninoes-pr-${{ github.event.number }}
 
 jobs:
@@ -73,7 +72,7 @@ jobs:
            if: steps.token.outputs.present == 'true'
            run: >-
               flyctl deploy --remote-only --ha=false
-              --config fly.preview.toml --app "$APP_NAME" --region "$FLY_REGION"
+              --config fly.preview.toml --app "$APP_NAME"
               --build-arg VITE_SUPABASE_URL="${{ secrets.VITE_SUPABASE_URL }}"
               --build-arg VITE_SUPABASE_ANON_KEY="${{ secrets.VITE_SUPABASE_ANON_KEY }}"
 

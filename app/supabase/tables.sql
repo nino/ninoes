@@ -85,3 +85,16 @@ ALTER TABLE public.wishes
 ALTER TABLE public.wishes
   ADD COLUMN translation_started_at timestamp WITH time zone NULL,
   ADD CONSTRAINT wishes_claimed_by_length CHECK (length(claimed_by) <= 80);
+
+-- 2026-10-04-wish-contributions.sql
+CREATE TABLE public.wish_contributions (
+  id uuid NOT NULL DEFAULT gen_random_uuid (),
+  created_at timestamp WITH time zone NOT NULL DEFAULT NOW(),
+  wish_id uuid NOT NULL,
+  name text NOT NULL CHECK (length(name) BETWEEN 1 AND 80),
+  amount numeric(10, 2) NULL CHECK (amount > 0),
+  complete boolean NOT NULL DEFAULT false,
+  CONSTRAINT wish_contributions_pkey PRIMARY KEY (id),
+  CONSTRAINT wish_contributions_wish_id_fkey FOREIGN KEY (wish_id)
+    REFERENCES public.wishes (id) ON UPDATE CASCADE ON DELETE CASCADE
+) TABLESPACE pg_default;

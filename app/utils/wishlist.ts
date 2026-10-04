@@ -1,6 +1,7 @@
 export type Language = "en" | "de";
 
-// The same limits are check constraints on public.wishes (and in claim_wish).
+// The same limits are check constraints on public.wishes and
+// public.wish_contributions.
 export const maxTitleLength = 200;
 export const maxDescriptionLength = 2000;
 export const maxNameLength = 80;
@@ -99,6 +100,33 @@ export function localizedWish(
    };
 }
 
+/** What a viewer sees and may do with a wish's contributions. */
+export function contributionState<
+   T extends { name: string; amount: number | null; complete: boolean },
+>(
+   contributions: Array<T>,
+   viewer: string,
+): {
+   /** Someone's "I'll give this", if any. */
+   whole: T | null;
+   mine: T | null;
+   /** Sum of the amounts people entered. */
+   total: number;
+   canGiveWhole: boolean;
+   canChipIn: boolean;
+} {
+   const whole = contributions.find((c) => c.complete) ?? null;
+   const mine = contributions.find((c) => sameName(c.name, viewer)) ?? null;
+   const others = contributions.filter((c) => c !== mine);
+   return {
+      whole,
+      mine,
+      total: contributions.reduce((sum, c) => sum + (c.amount ?? 0), 0),
+      canGiveWhole: others.length === 0 && mine?.complete !== true,
+      canChipIn: mine == null && whole == null,
+   };
+}
+
 export interface WishlistStrings {
    couple: string;
    date: string;
@@ -136,6 +164,14 @@ export interface WishlistStrings {
    invalidLink: string;
    alreadyClaimed: string;
    claimAfterAddFailed: string;
+   chipIn: string;
+   fieldShare: string;
+   covered: (total: string, price: string) => string;
+   you: string;
+   wholeGift: string;
+   contributionsLabel: string;
+   alreadyShared: string;
+   wishGone: string;
    somethingWentWrong: string;
    translatedFrom: (language: Language) => string;
 }
@@ -183,6 +219,15 @@ export const strings: Record<Language, WishlistStrings> = {
       alreadyClaimed: "Someone else just claimed this one.",
       claimAfterAddFailed:
          "Your wish was added, but claiming it didn’t work. Use “I’ll give this” on it instead.",
+      chipIn: "Chip in",
+      fieldShare: "Your share",
+      covered: (total, price) => `${total} of ${price}`,
+      you: "You",
+      wholeGift: "Whole gift",
+      contributionsLabel: "Contributions",
+      alreadyShared:
+         "Others are already chipping in, so this one can only be shared now.",
+      wishGone: "This wish has just been deleted.",
       somethingWentWrong: "Something went wrong. Please try again.",
       translatedFrom: (language) =>
          `Machine-translated from ${language === "de" ? "German" : "English"}`,
@@ -229,6 +274,14 @@ export const strings: Record<Language, WishlistStrings> = {
       alreadyClaimed: "Das hat gerade jemand anderes reserviert.",
       claimAfterAddFailed:
          "Dein Wunsch ist eingetragen, aber das Reservieren hat nicht geklappt. Nutze dort „Das schenke ich“.",
+      chipIn: "Mitschenken",
+      fieldShare: "Dein Anteil",
+      covered: (total, price) => `${total} von ${price}`,
+      you: "Du",
+      wholeGift: "Ganzes Geschenk",
+      contributionsLabel: "Beiträge",
+      alreadyShared: "Andere schenken schon mit, deshalb geht das nur noch gemeinsam.",
+      wishGone: "Dieser Wunsch wurde gerade gelöscht.",
       somethingWentWrong: "Etwas ist schiefgelaufen. Bitte versuch es noch einmal.",
       translatedFrom: (language) =>
          `Maschinell übersetzt aus dem ${language === "de" ? "Deutschen" : "Englischen"}`,

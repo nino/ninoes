@@ -175,14 +175,14 @@ export default function WishlistPage(): JSX.Element {
 }
 
 const buttonBase =
-   "inline-flex shrink-0 items-center justify-center gap-2 rounded-md text-sm font-medium whitespace-nowrap transition-colors outline-none focus-visible:ring-[3px] focus-visible:ring-wl-ring/50 disabled:pointer-events-none disabled:opacity-50 [&_svg]:size-4 [&_svg]:shrink-0";
+   "inline-flex shrink-0 items-center justify-center gap-2 rounded-md text-sm font-medium whitespace-nowrap transition-colors outline-none focus-visible:ring-[3px] focus-visible:ring-wl-ring/50 focus-visible:shadow-wl-glow disabled:pointer-events-none disabled:opacity-50 [&_svg]:size-4 [&_svg]:shrink-0";
 const primaryButton = `${buttonBase} h-10 px-4 bg-wl-primary text-wl-primary-fg shadow-xs hover:bg-wl-primary/90`;
 const outlineButton = `${buttonBase} h-10 px-4 border border-wl-border bg-wl-card shadow-xs hover:bg-wl-muted`;
 const ghostButton = `${buttonBase} h-9 px-3 text-wl-muted-fg hover:bg-wl-muted hover:text-wl-fg`;
 const dangerButton = `${buttonBase} h-10 px-4 bg-wl-danger text-white shadow-xs hover:bg-wl-danger/90`;
 const dangerGhostButton = `${buttonBase} h-10 px-3 text-wl-danger hover:bg-wl-danger/10`;
 const inputClass =
-   "w-full min-w-0 rounded-md border border-wl-input bg-wl-field px-3 text-base shadow-xs transition-[color,box-shadow] outline-none placeholder:text-wl-muted-fg focus-visible:border-wl-ring focus-visible:ring-[3px] focus-visible:ring-wl-ring/50 aria-invalid:border-wl-danger aria-invalid:ring-wl-danger/20 sm:text-sm";
+   "w-full min-w-0 rounded-md border border-wl-input bg-wl-field px-3 text-base shadow-xs transition-[color,box-shadow] outline-none placeholder:text-wl-muted-fg focus-visible:border-wl-ring focus-visible:ring-[3px] focus-visible:ring-wl-ring/50 focus-visible:shadow-wl-glow aria-invalid:border-wl-danger aria-invalid:ring-wl-danger/20 sm:text-sm";
 const cardClass = "rounded-xl border border-wl-border bg-wl-card shadow-xs";
 
 function LanguageToggle({
@@ -208,7 +208,7 @@ function LanguageToggle({
                lang={option}
                aria-pressed={option === language}
                onClick={() => onChange(option)}
-               className={`h-full rounded-md px-3 text-xs font-medium uppercase transition-colors outline-none focus-visible:ring-[3px] focus-visible:ring-wl-ring/50 ${
+               className={`h-full rounded-md px-3 text-xs font-medium uppercase transition-colors outline-none focus-visible:ring-[3px] focus-visible:ring-wl-ring/50 focus-visible:shadow-wl-glow ${
                   option === language
                      ? "bg-wl-card text-wl-fg shadow-xs"
                      : "text-wl-muted-fg hover:text-wl-fg"
@@ -307,7 +307,7 @@ function WishList({
                <button
                   type="button"
                   onClick={onSignOut}
-                  className="rounded-sm font-medium text-wl-fg underline underline-offset-4 outline-none focus-visible:ring-[3px] focus-visible:ring-wl-ring/50"
+                  className="rounded-sm font-medium text-wl-fg underline underline-offset-4 outline-none focus-visible:ring-[3px] focus-visible:ring-wl-ring/50 focus-visible:shadow-wl-glow"
                >
                   {t.notYou}
                </button>
@@ -473,7 +473,7 @@ function WishCard({
                         href={wish.link}
                         target="_blank"
                         rel="noopener noreferrer nofollow"
-                        className="inline-flex items-center gap-1.5 rounded-sm text-sm font-medium underline-offset-4 outline-none hover:underline focus-visible:ring-[3px] focus-visible:ring-wl-ring/50"
+                        className="inline-flex items-center gap-1.5 rounded-sm text-sm font-medium underline-offset-4 outline-none hover:underline focus-visible:ring-[3px] focus-visible:ring-wl-ring/50 focus-visible:shadow-wl-glow"
                      >
                         {linkLabel(wish.link)}
                         <Icon
@@ -863,7 +863,7 @@ function AddWish({
                         type="checkbox"
                         checked={claimNow}
                         onChange={(e) => setClaimNow(e.target.checked)}
-                        className="size-4 rounded-sm accent-wl-primary outline-none focus-visible:ring-[3px] focus-visible:ring-wl-ring/50"
+                        className="size-4 rounded-sm accent-wl-primary outline-none focus-visible:ring-[3px] focus-visible:ring-wl-ring/50 focus-visible:shadow-wl-glow"
                      />
                      {t.claimNow}
                   </label>

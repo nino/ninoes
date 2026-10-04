@@ -34,7 +34,7 @@ export const links: Route.LinksFunction = () => [
    { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
    {
       rel: "stylesheet",
-      href: "https://fonts.googleapis.com/css2?family=Caveat:wght@500&family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&display=swap",
+      href: "https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&display=swap",
    },
 ];
 
@@ -121,39 +121,55 @@ function useVisitor(): {
 
 export default function WishlistPage(): JSX.Element {
    const { visitor, setName, setLanguage } = useVisitor();
+   const t = visitor ? strings[visitor.language] : null;
 
    return (
-      <div className="wishlist-page min-h-screen bg-wl-paper font-caslon text-wl-ink">
-         <div className="mx-auto flex min-h-screen max-w-xl flex-col px-6 pt-2 pb-12">
-            {visitor && (
-               <>
-                  <LanguageToggle
-                     language={visitor.language}
-                     onChange={setLanguage}
-                     t={strings[visitor.language]}
-                  />
-                  {visitor.name == null ? (
-                     <NameGate t={strings[visitor.language]} onSubmit={setName} />
-                  ) : (
-                     <WishList
-                        name={visitor.name}
+      <div className="wishlist-page min-h-screen bg-wl-page font-geist text-wl-fg antialiased">
+         {visitor && t && (
+            <>
+               <header className="border-b border-wl-border bg-wl-card">
+                  <div className="mx-auto flex h-14 max-w-2xl items-center justify-between gap-4 px-4">
+                     <div className="flex items-center gap-2.5">
+                        <span className="flex size-8 items-center justify-center rounded-md bg-wl-primary text-wl-primary-fg">
+                           <Icon name="gift" className="size-4" />
+                        </span>
+                        <div className="flex flex-col leading-tight">
+                           <span className="text-sm font-semibold">{t.couple}</span>
+                           <span className="text-xs text-wl-muted-fg">{t.date}</span>
+                        </div>
+                     </div>
+                     <LanguageToggle
                         language={visitor.language}
-                        onSignOut={() => setName(null)}
+                        onChange={setLanguage}
+                        t={t}
                      />
-                  )}
-               </>
-            )}
-         </div>
+                  </div>
+               </header>
+               {visitor.name == null ? (
+                  <NameGate t={t} onSubmit={setName} />
+               ) : (
+                  <WishList
+                     name={visitor.name}
+                     language={visitor.language}
+                     onSignOut={() => setName(null)}
+                  />
+               )}
+            </>
+         )}
       </div>
    );
 }
 
-const focusRing =
-   "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-wl-accent";
-const smallCaps = "text-xs tracking-[0.16em] uppercase text-wl-muted";
-const primaryButton = `rounded-xs bg-wl-ink px-5 py-3.5 text-[15px] text-wl-paper disabled:opacity-60 ${focusRing}`;
-const outlineButton = `rounded-xs border border-wl-ink px-4 py-2.5 text-sm text-wl-ink disabled:opacity-60 ${focusRing}`;
-const textButton = `py-3 text-sm text-wl-muted underline underline-offset-3 hover:text-wl-ink disabled:opacity-60 ${focusRing}`;
+const buttonBase =
+   "inline-flex shrink-0 items-center justify-center gap-2 rounded-md text-sm font-medium whitespace-nowrap transition-colors outline-none focus-visible:ring-[3px] focus-visible:ring-wl-ring/50 disabled:pointer-events-none disabled:opacity-50 [&_svg]:size-4 [&_svg]:shrink-0";
+const primaryButton = `${buttonBase} h-10 px-4 bg-wl-primary text-wl-primary-fg shadow-xs hover:bg-wl-primary/90`;
+const outlineButton = `${buttonBase} h-10 px-4 border border-wl-border bg-wl-card shadow-xs hover:bg-wl-muted`;
+const ghostButton = `${buttonBase} h-9 px-3 text-wl-muted-fg hover:bg-wl-muted hover:text-wl-fg`;
+const dangerButton = `${buttonBase} h-10 px-4 bg-wl-danger text-white shadow-xs hover:bg-wl-danger/90`;
+const dangerGhostButton = `${buttonBase} h-10 px-3 text-wl-danger hover:bg-wl-danger/10`;
+const inputClass =
+   "w-full min-w-0 rounded-md border border-wl-input bg-wl-field px-3 text-base shadow-xs transition-[color,box-shadow] outline-none placeholder:text-wl-muted-fg focus-visible:border-wl-ring focus-visible:ring-[3px] focus-visible:ring-wl-ring/50 aria-invalid:border-wl-danger aria-invalid:ring-wl-danger/20 sm:text-sm";
+const cardClass = "rounded-xl border border-wl-border bg-wl-card shadow-xs";
 
 function LanguageToggle({
    language,
@@ -166,33 +182,28 @@ function LanguageToggle({
 }): JSX.Element {
    const options: Array<Language> = ["en", "de"];
    return (
-      <nav
+      <div
+         role="group"
          aria-label={t.languageNav}
-         className="flex items-center justify-end text-[13px]"
+         className="inline-flex h-9 items-center rounded-lg bg-wl-muted p-[3px]"
       >
-         {options.map((option, i) => (
-            <React.Fragment key={option}>
-               {i > 0 && (
-                  <span aria-hidden="true" className="text-wl-leader">
-                     /
-                  </span>
-               )}
-               <button
-                  type="button"
-                  lang={option}
-                  aria-pressed={option === language}
-                  onClick={() => onChange(option)}
-                  className={`px-1.5 py-3 uppercase ${focusRing} ${
-                     option === language
-                        ? "text-wl-ink underline underline-offset-4"
-                        : "text-wl-muted hover:text-wl-ink"
-                  }`}
-               >
-                  {option}
-               </button>
-            </React.Fragment>
+         {options.map((option) => (
+            <button
+               key={option}
+               type="button"
+               lang={option}
+               aria-pressed={option === language}
+               onClick={() => onChange(option)}
+               className={`h-full rounded-md px-3 text-xs font-medium uppercase transition-colors outline-none focus-visible:ring-[3px] focus-visible:ring-wl-ring/50 ${
+                  option === language
+                     ? "bg-wl-card text-wl-fg shadow-xs"
+                     : "text-wl-muted-fg hover:text-wl-fg"
+               }`}
+            >
+               {option}
+            </button>
          ))}
-      </nav>
+      </div>
    );
 }
 
@@ -206,37 +217,40 @@ function NameGate({
    const [name, setName] = React.useState("");
 
    return (
-      <div className="flex flex-1 flex-col pt-4">
-         <div className="flex flex-1 flex-col justify-center gap-10">
-            <div className="flex flex-col gap-3">
-               <div className={smallCaps}>{t.couple}</div>
-               <h1 className="text-[52px] leading-none italic">{t.title}</h1>
-               <p className="max-w-xs leading-relaxed text-wl-soft">{t.gateIntro}</p>
+      <main className="flex min-h-[calc(100vh-3.5rem)] items-center justify-center px-4 py-12">
+         <div className={`w-full max-w-sm ${cardClass}`}>
+            <div className="flex flex-col gap-1.5 p-6 pb-0">
+               <h1 className="text-2xl font-semibold tracking-tight">{t.title}</h1>
+               <p className="text-sm text-wl-muted-fg">{t.gateIntro}</p>
             </div>
             <form
-               className="flex flex-col gap-7"
+               className="flex flex-col gap-4 p-6"
                onSubmit={(e) => {
                   e.preventDefault();
                   if (name.trim() !== "") onSubmit(name.trim());
                }}
             >
-               <label className="flex flex-col gap-1.5">
-                  <span className={smallCaps}>{t.nameLabel}</span>
+               <label className="flex flex-col gap-2">
+                  <span className="text-sm font-medium">{t.nameLabel}</span>
                   <input
                      value={name}
                      onChange={(e) => setName(e.target.value)}
                      required
                      autoComplete="given-name"
                      autoFocus
-                     className="border-b border-wl-ink bg-transparent py-2 text-[26px] italic outline-none focus:border-wl-accent focus:shadow-[0_1px_0_0_var(--color-wl-accent)]"
+                     className={`h-10 ${inputClass}`}
                   />
                </label>
-               <button type="submit" className={`self-start ${primaryButton}`}>
+               <button
+                  type="submit"
+                  disabled={name.trim() === ""}
+                  className={`w-full ${primaryButton}`}
+               >
                   {t.openList}
                </button>
             </form>
          </div>
-      </div>
+      </main>
    );
 }
 
@@ -253,44 +267,62 @@ function WishList({
    const spoilerFree = isSpoilerFreeName(name);
    const wishes = useWishes({ spoilerFree });
 
+   const summary = wishes.data
+      ? t.summary(
+           wishes.data.length,
+           spoilerFree ? null : wishes.data.filter((w) => w.claimed_by == null).length,
+        )
+      : null;
+
    return (
-      <>
-         <header className="flex flex-col gap-2 border-b border-wl-ink pb-4">
-            <div className={smallCaps}>{t.couple}</div>
-            <h1 className="text-[40px] leading-none italic">{t.title}</h1>
-            <div className="text-sm text-wl-muted">
-               {t.signedAs} <span className="text-wl-ink">{name}</span> ·{" "}
+      <main className="mx-auto flex max-w-2xl flex-col gap-6 px-4 py-8 sm:py-12">
+         <div className="flex flex-col gap-1">
+            <h1 className="mb-1 text-3xl font-semibold tracking-tight">{t.title}</h1>
+            {summary != null && <p className="text-sm text-wl-muted-fg">{summary}</p>}
+            <p className="text-sm text-wl-muted-fg">
+               {t.signedAs} <span className="font-medium text-wl-fg">{name}</span> ·{" "}
                <button
                   type="button"
                   onClick={onSignOut}
-                  className={`text-wl-accent underline underline-offset-2 ${focusRing}`}
+                  className="rounded-sm font-medium text-wl-fg underline underline-offset-4 outline-none focus-visible:ring-[3px] focus-visible:ring-wl-ring/50"
                >
                   {t.notYou}
                </button>
-            </div>
-         </header>
+            </p>
+         </div>
 
          {spoilerFree && (
-            <aside className="mt-4 flex flex-col gap-1 rounded-xs border border-wl-rule px-4 py-3.5">
-               <div className="text-[11px] tracking-[0.16em] text-wl-accent uppercase">
-                  {t.spoilerFreeLabel}
-               </div>
-               <p className="text-sm leading-normal text-wl-soft">
-                  {t.spoilerFreeText(name)}
-               </p>
-            </aside>
+            <div
+               role="note"
+               className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-0.5 rounded-lg border border-wl-border bg-wl-card px-4 py-3 text-sm"
+            >
+               <Icon name="eyeOff" className="row-span-2 mt-0.5 size-4" />
+               <div className="font-medium">{t.spoilerFreeLabel}</div>
+               <p className="text-wl-muted-fg">{t.spoilerFreeText(name)}</p>
+            </div>
          )}
 
          {wishes.isPending ? (
-            <p className="py-8 text-wl-muted italic">{t.loading}</p>
+            <div className="flex flex-col gap-3" aria-busy="true">
+               {[0, 1, 2].map((i) => (
+                  <div key={i} className="h-32 animate-pulse rounded-xl bg-wl-muted" />
+               ))}
+            </div>
          ) : wishes.isError ? (
-            <p className="py-8 text-wl-muted italic">{t.loadError}</p>
+            <p className="rounded-lg border border-wl-danger/40 bg-wl-danger/5 px-4 py-3 text-sm text-wl-danger">
+               {t.loadError}
+            </p>
          ) : wishes.data.length === 0 ? (
-            <p className="py-8 text-wl-muted italic">{t.empty}</p>
+            <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed border-wl-border px-6 py-12 text-center">
+               <span className="flex size-10 items-center justify-center rounded-full bg-wl-muted">
+                  <Icon name="gift" className="size-5 text-wl-muted-fg" />
+               </span>
+               <p className="text-sm text-wl-muted-fg">{t.empty}</p>
+            </div>
          ) : (
-            <ul>
+            <ul className="flex flex-col gap-3">
                {wishes.data.map((wish) => (
-                  <WishRow
+                  <WishCard
                      key={wish.id}
                      wish={wish}
                      name={name}
@@ -302,11 +334,11 @@ function WishList({
          )}
 
          <AddWish name={name} spoilerFree={spoilerFree} t={t} />
-      </>
+      </main>
    );
 }
 
-function WishRow({
+function WishCard({
    wish,
    name,
    spoilerFree,
@@ -324,7 +356,7 @@ function WishRow({
 
    if (editing) {
       return (
-         <li className="border-b border-wl-rule py-5">
+         <li className={`p-5 ${cardClass}`}>
             <WishForm
                t={t}
                initial={wish}
@@ -350,57 +382,65 @@ function WishRow({
    }
 
    const claimedBy = wish.claimed_by ?? null;
-   const dimmed = !spoilerFree && claimedBy != null;
+   const editButton = (
+      <button
+         type="button"
+         onClick={() => setEditing(true)}
+         aria-label={t.edit}
+         className={ghostButton}
+      >
+         <Icon name="pencil" />
+         <span aria-hidden="true" className="hidden sm:inline">
+            {t.edit}
+         </span>
+      </button>
+   );
 
    return (
-      <li className="flex flex-col gap-1.5 border-b border-wl-rule pt-4 pb-3">
-         <div className="flex items-baseline gap-2">
-            <h2 className={`text-[19px] ${dimmed ? "text-wl-muted" : ""}`}>
-               {wish.title}
-            </h2>
-            {wish.price != null && (
-               <>
-                  <span
-                     aria-hidden="true"
-                     className="min-w-4 flex-1 border-b border-dotted border-wl-leader"
-                  />
-                  <span
-                     className={`shrink-0 [font-variant-numeric:oldstyle-nums] ${dimmed ? "text-wl-muted" : ""}`}
-                  >
+      <li className={cardClass}>
+         <div className="flex flex-col gap-1.5 p-5">
+            <div className="flex items-start justify-between gap-4">
+               <h2 className="text-base leading-snug font-semibold">{wish.title}</h2>
+               {wish.price != null && (
+                  <span className="shrink-0 text-base font-semibold tabular-nums">
                      {formatPrice(wish.price, language)}
                   </span>
-               </>
+               )}
+            </div>
+            {wish.description != null && (
+               <p className="text-sm leading-relaxed whitespace-pre-line text-wl-muted-fg">
+                  {wish.description}
+               </p>
+            )}
+            {(wish.link != null || spoilerFree) && (
+               <div className="-mb-2 flex min-h-9 items-center justify-between gap-3">
+                  {wish.link == null ? (
+                     <span />
+                  ) : (
+                     <a
+                        href={wish.link}
+                        target="_blank"
+                        rel="noopener noreferrer nofollow"
+                        className="inline-flex items-center gap-1.5 rounded-sm text-sm font-medium underline-offset-4 outline-none hover:underline focus-visible:ring-[3px] focus-visible:ring-wl-ring/50"
+                     >
+                        {linkLabel(wish.link)}
+                        <Icon
+                           name="externalLink"
+                           className="size-3.5 text-wl-muted-fg"
+                        />
+                     </a>
+                  )}
+                  {/* The couple can't claim, so editing doesn't need a footer of its own. */}
+                  {spoilerFree && <span className="-mr-3">{editButton}</span>}
+               </div>
             )}
          </div>
-         {wish.description != null && (
-            <p className="text-sm leading-normal whitespace-pre-line text-wl-muted">
-               {wish.description}
-            </p>
-         )}
-         {wish.link != null && (
-            <a
-               href={wish.link}
-               target="_blank"
-               rel="noopener noreferrer nofollow"
-               className={`self-start text-[13px] text-wl-accent italic underline-offset-2 hover:underline ${focusRing}`}
-            >
-               {linkLabel(wish.link)}
-            </a>
-         )}
-         <div className="flex min-h-12 items-center justify-between gap-4">
-            {spoilerFree ? (
-               <span />
-            ) : (
+         {!spoilerFree && (
+            <div className="flex min-h-14 items-center justify-between gap-3 border-t border-wl-border px-5 py-2.5">
                <Claim wishId={wish.id} claimedBy={claimedBy} name={name} t={t} />
-            )}
-            <button
-               type="button"
-               onClick={() => setEditing(true)}
-               className={textButton}
-            >
-               {t.edit}
-            </button>
-         </div>
+               {editButton}
+            </div>
+         )}
       </li>
    );
 }
@@ -436,38 +476,37 @@ function Claim({
             type="button"
             disabled={setClaim.isPending}
             onClick={() => change(true)}
-            className={outlineButton}
+            className={primaryButton}
          >
+            <Icon name="gift" />
             {t.claim}
          </button>
       );
    }
 
-   const mine = sameName(claimedBy, name);
+   if (!sameName(claimedBy, name)) {
+      return (
+         <span className="inline-flex min-w-0 items-center gap-1.5 rounded-md bg-wl-muted px-2.5 py-1 text-sm font-medium text-wl-muted-fg">
+            <Icon name="check" className="size-4 shrink-0" />
+            <span className="truncate">{t.takenBy(claimedBy)}</span>
+         </span>
+      );
+   }
+
    return (
-      <div className="flex items-center gap-4">
-         <div className="flex items-center gap-3">
-            <span className="text-[11px] tracking-[0.16em] text-wl-muted uppercase">
-               {t.from}
-            </span>
-            <span
-               className={`inline-block -rotate-3 font-signature text-3xl leading-none ${
-                  mine ? "text-wl-accent" : "text-wl-muted"
-               }`}
-            >
-               {claimedBy}
-            </span>
-         </div>
-         {mine && (
-            <button
-               type="button"
-               disabled={setClaim.isPending}
-               onClick={() => change(false)}
-               className={textButton}
-            >
-               {t.takeBack}
-            </button>
-         )}
+      <div className="flex shrink-0 items-center gap-1">
+         <span className="inline-flex items-center gap-1.5 rounded-md bg-wl-success/10 px-2.5 py-1 text-sm font-medium text-wl-success">
+            <Icon name="check" className="size-4" />
+            {t.yours}
+         </span>
+         <button
+            type="button"
+            disabled={setClaim.isPending}
+            onClick={() => change(false)}
+            className={ghostButton}
+         >
+            {t.takeBack}
+         </button>
       </div>
    );
 }
@@ -499,30 +538,33 @@ function AddWish({
    };
 
    return (
-      <section className="mt-10 flex flex-col gap-3">
-         <h2 className="text-2xl italic">{t.addHeading}</h2>
-         {!spoilerFree && (
-            <p className="text-sm leading-normal text-wl-muted">{t.addIntro}</p>
-         )}
-         <WishForm
-            key={formKey}
-            t={t}
-            submitLabel={t.add}
-            pending={addWish.isPending || setClaim.isPending}
-            onSubmit={add}
-         >
-            {!spoilerFree && (
-               <label className="flex items-center gap-3 py-1 text-[15px]">
-                  <input
-                     type="checkbox"
-                     checked={claimNow}
-                     onChange={(e) => setClaimNow(e.target.checked)}
-                     className={`size-4 accent-wl-ink ${focusRing}`}
-                  />
-                  {t.claimNow}
-               </label>
-            )}
-         </WishForm>
+      <section className={`mt-4 ${cardClass}`}>
+         <div className="flex flex-col gap-1.5 p-5 pb-0 sm:p-6 sm:pb-0">
+            <h2 className="text-lg font-semibold tracking-tight">{t.addHeading}</h2>
+            {!spoilerFree && <p className="text-sm text-wl-muted-fg">{t.addIntro}</p>}
+         </div>
+         <div className="p-5 sm:p-6">
+            <WishForm
+               key={formKey}
+               t={t}
+               submitLabel={t.add}
+               submitIcon="plus"
+               pending={addWish.isPending || setClaim.isPending}
+               onSubmit={add}
+            >
+               {!spoilerFree && (
+                  <label className="flex items-center gap-2.5 text-sm font-medium">
+                     <input
+                        type="checkbox"
+                        checked={claimNow}
+                        onChange={(e) => setClaimNow(e.target.checked)}
+                        className="size-4 rounded-sm accent-wl-primary outline-none focus-visible:ring-[3px] focus-visible:ring-wl-ring/50"
+                     />
+                     {t.claimNow}
+                  </label>
+               )}
+            </WishForm>
+         </div>
       </section>
    );
 }
@@ -531,6 +573,7 @@ function WishForm({
    t,
    initial,
    submitLabel,
+   submitIcon,
    pending,
    onSubmit,
    onCancel,
@@ -540,6 +583,7 @@ function WishForm({
    t: WishlistStrings;
    initial?: Wish;
    submitLabel: string;
+   submitIcon?: IconName;
    pending: boolean;
    onSubmit: (input: WishInput) => Promise<void>;
    onCancel?: () => void;
@@ -555,7 +599,7 @@ function WishForm({
    const [errors, setErrors] = React.useState<{ price?: string; link?: string }>({});
    const [confirmingDelete, setConfirmingDelete] = React.useState(false);
 
-   const submit = (e: React.FormEvent): void => {
+   const submit = (e: React.SyntheticEvent): void => {
       e.preventDefault();
       const parsedPrice = parsePrice(price);
       const parsedLink = normalizeLink(link);
@@ -576,27 +620,30 @@ function WishForm({
    };
 
    return (
-      <form onSubmit={submit} className="flex flex-col gap-5" noValidate>
+      <form onSubmit={submit} className="flex flex-col gap-4" noValidate>
          <Field label={t.fieldTitle}>
             <input
                value={title}
                onChange={(e) => setTitle(e.target.value)}
                required
-               className={`text-lg ${fieldInput}`}
+               className={`h-10 ${inputClass}`}
             />
          </Field>
-         <Field label={`${t.fieldDescription} · ${t.optional}`}>
+         <Field label={t.fieldDescription} optional={t.optional}>
             <textarea
                value={description}
                onChange={(e) => setDescription(e.target.value)}
-               rows={2}
-               className={`resize-y ${fieldInput}`}
+               rows={3}
+               className={`min-h-20 resize-y py-2 ${inputClass}`}
             />
          </Field>
-         <div className="grid grid-cols-2 gap-5">
-            <Field label={`${t.fieldPrice} · ${t.optional}`} error={errors.price}>
-               <span className="flex min-w-0 items-baseline gap-1.5 border-b border-wl-leader focus-within:border-wl-accent focus-within:shadow-[0_1px_0_0_var(--color-wl-accent)] has-aria-invalid:border-wl-danger">
-                  <span aria-hidden="true" className="text-wl-muted">
+         <div className="grid gap-4 sm:grid-cols-[minmax(0,10rem)_minmax(0,1fr)]">
+            <Field label={t.fieldPrice} optional={t.optional} error={errors.price}>
+               <span className="relative">
+                  <span
+                     aria-hidden="true"
+                     className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-sm text-wl-muted-fg"
+                  >
                      £
                   </span>
                   <input
@@ -604,11 +651,11 @@ function WishForm({
                      onChange={(e) => setPrice(e.target.value)}
                      inputMode="decimal"
                      aria-invalid={errors.price != null}
-                     className="min-w-0 flex-1 bg-transparent py-2 text-wl-ink outline-none"
+                     className={`h-10 pl-7 tabular-nums ${inputClass}`}
                   />
                </span>
             </Field>
-            <Field label={`${t.fieldLink} · ${t.optional}`} error={errors.link}>
+            <Field label={t.fieldLink} optional={t.optional} error={errors.link}>
                <input
                   value={link}
                   onChange={(e) => setLink(e.target.value)}
@@ -616,24 +663,12 @@ function WishForm({
                   autoCapitalize="off"
                   placeholder="https://"
                   aria-invalid={errors.link != null}
-                  className={fieldInput}
+                  className={`h-10 ${inputClass}`}
                />
             </Field>
          </div>
          {children}
-         <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
-            <button
-               type="submit"
-               disabled={pending || title.trim() === ""}
-               className={primaryButton}
-            >
-               {submitLabel}
-            </button>
-            {onCancel && (
-               <button type="button" onClick={onCancel} className={textButton}>
-                  {t.cancel}
-               </button>
-            )}
+         <div className="flex flex-wrap items-center gap-2 pt-1">
             {onDelete && (
                <button
                   type="button"
@@ -642,37 +677,106 @@ function WishForm({
                      confirmingDelete ? onDelete() : setConfirmingDelete(true)
                   }
                   onBlur={() => setConfirmingDelete(false)}
-                  className={`ml-auto ${textButton} ${confirmingDelete ? "text-wl-danger" : ""}`}
+                  className={confirmingDelete ? dangerButton : dangerGhostButton}
                >
-                  {confirmingDelete ? `${t.confirmDelete}?` : t.delete}
+                  <Icon name="trash" />
+                  {confirmingDelete ? t.confirmDelete : t.delete}
                </button>
             )}
+            <div className="ml-auto flex items-center gap-2">
+               {onCancel && (
+                  <button type="button" onClick={onCancel} className={outlineButton}>
+                     {t.cancel}
+                  </button>
+               )}
+               <button
+                  type="submit"
+                  disabled={pending || title.trim() === ""}
+                  className={primaryButton}
+               >
+                  {submitIcon && <Icon name={submitIcon} />}
+                  {submitLabel}
+               </button>
+            </div>
          </div>
       </form>
    );
 }
 
-const fieldInput =
-   "min-w-0 border-b border-wl-leader bg-transparent py-2 text-wl-ink outline-none placeholder:text-wl-leader focus:border-wl-accent focus:shadow-[0_1px_0_0_var(--color-wl-accent)] aria-invalid:border-wl-danger";
-
 function Field({
    label,
+   optional,
    error,
    children,
 }: {
    label: string;
+   optional?: string;
    error?: string;
    children: React.ReactNode;
 }): JSX.Element {
    return (
-      <label className="flex min-w-0 flex-col gap-1">
-         <span className="text-[11px] tracking-[0.16em] text-wl-muted uppercase">
+      <label className="flex min-w-0 flex-col gap-2">
+         <span className="text-sm font-medium">
             {label}
+            {optional != null && (
+               <span className="font-normal text-wl-muted-fg"> ({optional})</span>
+            )}
          </span>
          {children}
-         {error != null && (
-            <span className="text-[13px] text-wl-danger italic">{error}</span>
-         )}
+         {error != null && <span className="text-sm text-wl-danger">{error}</span>}
       </label>
+   );
+}
+
+// Lucide icon paths, inlined to avoid a dependency for seven icons.
+const iconPaths = {
+   gift: [
+      "M3 9a1 1 0 0 1 1-1h16a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z",
+      "M12 8v13",
+      "M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7",
+      "M7.5 8a2.5 2.5 0 0 1 0-5A4.8 8 0 0 1 12 8a4.8 8 0 0 1 4.5-5 2.5 2.5 0 0 1 0 5",
+   ],
+   check: ["M20 6 9 17l-5-5"],
+   pencil: [
+      "M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z",
+      "m15 5 4 4",
+   ],
+   plus: ["M5 12h14", "M12 5v14"],
+   trash: [
+      "M3 6h18",
+      "M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6",
+      "M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2",
+   ],
+   externalLink: [
+      "M15 3h6v6",
+      "M10 14 21 3",
+      "M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6",
+   ],
+   eyeOff: [
+      "M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49",
+      "M14.084 14.158a3 3 0 0 1-4.242-4.242",
+      "M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143",
+      "m2 2 20 20",
+   ],
+} satisfies Record<string, Array<string>>;
+
+type IconName = keyof typeof iconPaths;
+
+function Icon({ name, className }: { name: IconName; className?: string }): JSX.Element {
+   return (
+      <svg
+         viewBox="0 0 24 24"
+         fill="none"
+         stroke="currentColor"
+         strokeWidth={2}
+         strokeLinecap="round"
+         strokeLinejoin="round"
+         aria-hidden="true"
+         className={className}
+      >
+         {iconPaths[name].map((d) => (
+            <path key={d} d={d} />
+         ))}
+      </svg>
    );
 }

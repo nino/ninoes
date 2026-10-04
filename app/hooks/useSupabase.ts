@@ -554,7 +554,8 @@ export function useWishes({
          const { data, error } = await supabase
             .from("wishes")
             .select(spoilerFree ? wishColumns : `${wishColumns}, claimed_by`)
-            .order("created_at", { ascending: true });
+            .order("created_at", { ascending: true })
+            .order("id");
          if (error) throw error;
          return data.map((wish) => WishSchema.parse(wish));
       },

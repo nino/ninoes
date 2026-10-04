@@ -68,6 +68,7 @@ export function linkLabel(link: string): string {
 
 export interface WishlistStrings {
    couple: string;
+   date: string;
    title: string;
    gateIntro: string;
    nameLabel: string;
@@ -75,13 +76,14 @@ export interface WishlistStrings {
    signedAs: string;
    notYou: string;
    languageNav: string;
-   loading: string;
    loadError: string;
    empty: string;
+   summary: (total: number, open: number | null) => string;
    spoilerFreeLabel: string;
    spoilerFreeText: (name: string) => string;
    claim: string;
-   from: string;
+   yours: string;
+   takenBy: (name: string) => string;
    takeBack: string;
    edit: string;
    addHeading: string;
@@ -105,22 +107,26 @@ export interface WishlistStrings {
 
 export const strings: Record<Language, WishlistStrings> = {
    en: {
-      couple: "Katherine & Nino · 7 November 2026",
+      couple: "Katherine & Nino",
+      date: "7 November 2026",
       title: "Wishlist",
-      gateIntro: "Sign the book so everyone knows who is bringing what.",
+      gateIntro: "Enter your name so everyone knows who is bringing what.",
       nameLabel: "Your name",
-      openList: "Open the list",
-      signedAs: "Signed as",
-      notYou: "not you?",
+      openList: "Continue",
+      signedAs: "Signed in as",
+      notYou: "Not you?",
       languageNav: "Language",
-      loading: "Opening the book…",
       loadError: "The list didn’t load. Try reloading the page.",
       empty: "No wishes yet.",
-      spoilerFreeLabel: "No spoilers",
+      summary: (total, open) =>
+         `${total} ${total === 1 ? "wish" : "wishes"}` +
+         (open == null ? "" : ` · ${open} still available`),
+      spoilerFreeLabel: "No-spoilers mode",
       spoilerFreeText: (name) =>
-         `Hello ${name}. Who is giving what stays sealed until the wedding on 7 November.`,
+         `Hi ${name}. You won’t see who is giving what until the wedding on 7 November.`,
       claim: "I’ll give this",
-      from: "From",
+      yours: "You’re giving this",
+      takenBy: (name) => `${name} is giving this`,
       takeBack: "Take back",
       edit: "Edit",
       addHeading: "Add a wish",
@@ -132,33 +138,37 @@ export const strings: Record<Language, WishlistStrings> = {
       fieldPrice: "Price",
       fieldLink: "Link",
       optional: "optional",
-      add: "Add",
+      add: "Add wish",
       save: "Save",
       cancel: "Cancel",
       delete: "Delete",
-      confirmDelete: "Really delete",
+      confirmDelete: "Really delete?",
       invalidPrice: "That doesn’t look like a price.",
       invalidLink: "That doesn’t look like a web address.",
       alreadyClaimed: "Someone else just claimed this one.",
       somethingWentWrong: "Something went wrong. Please try again.",
    },
    de: {
-      couple: "Katherine & Nino · 7. November 2026",
+      couple: "Katherine & Nino",
+      date: "7. November 2026",
       title: "Wunschliste",
-      gateIntro: "Tragt euch ein, damit alle wissen, wer was mitbringt.",
+      gateIntro: "Gib deinen Namen ein, damit alle wissen, wer was mitbringt.",
       nameLabel: "Dein Name",
-      openList: "Zur Liste",
-      signedAs: "Eingetragen als",
-      notYou: "nicht du?",
+      openList: "Weiter",
+      signedAs: "Angemeldet als",
+      notYou: "Nicht du?",
       languageNav: "Sprache",
-      loading: "Das Buch wird aufgeschlagen…",
       loadError: "Die Liste konnte nicht geladen werden. Lade die Seite bitte neu.",
       empty: "Noch keine Wünsche.",
-      spoilerFreeLabel: "Ohne Spoiler",
+      summary: (total, open) =>
+         `${total} ${total === 1 ? "Wunsch" : "Wünsche"}` +
+         (open == null ? "" : ` · ${open} noch frei`),
+      spoilerFreeLabel: "Spoilerfrei",
       spoilerFreeText: (name) =>
-         `Hallo ${name}. Wer was schenkt, bleibt bis zur Hochzeit am 7. November zugeklebt.`,
+         `Hallo ${name}. Wer was schenkt, erfährst du erst bei der Hochzeit am 7. November.`,
       claim: "Das schenke ich",
-      from: "Von",
+      yours: "Das schenkst du",
+      takenBy: (name) => `${name} schenkt das`,
       takeBack: "Zurücknehmen",
       edit: "Bearbeiten",
       addHeading: "Neuer Wunsch",
@@ -170,11 +180,11 @@ export const strings: Record<Language, WishlistStrings> = {
       fieldPrice: "Preis",
       fieldLink: "Link",
       optional: "optional",
-      add: "Eintragen",
+      add: "Wunsch eintragen",
       save: "Speichern",
       cancel: "Abbrechen",
       delete: "Löschen",
-      confirmDelete: "Wirklich löschen",
+      confirmDelete: "Wirklich löschen?",
       invalidPrice: "Das sieht nicht nach einem Preis aus.",
       invalidLink: "Das sieht nicht nach einer Webadresse aus.",
       alreadyClaimed: "Das hat gerade jemand anderes reserviert.",

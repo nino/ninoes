@@ -12,6 +12,7 @@ import type { ReactNode } from "react";
 import type { User } from "@supabase/supabase-js";
 import { Button } from "~/components/ui/Button";
 import { useToast } from "~/components/ui/Toast";
+import { Skeleton } from "~/components/ui/Skeleton";
 
 export const loader = async ({
    request,
@@ -31,8 +32,18 @@ export default function Vote(): ReactNode {
 
    if (isLoading || !names || teamsQuery.isPending) {
       return (
-         <div className="flex min-h-64 items-center justify-center">
-            <div className="aqua-spinner" role="status" aria-label="Loading" />
+         <div role="status" className="flex flex-col items-center gap-8 py-8">
+            <span className="sr-only">Loading</span>
+            <Skeleton className="h-9 w-64" />
+            <div className="flex flex-wrap justify-center gap-4">
+               <Skeleton className="h-14 w-40" />
+               <Skeleton className="h-14 w-40" />
+            </div>
+            <div className="flex flex-wrap justify-center gap-4">
+               <Skeleton className="h-10 w-32" />
+               <Skeleton className="h-10 w-32" />
+               <Skeleton className="h-10 w-24" />
+            </div>
          </div>
       );
    }
@@ -78,9 +89,13 @@ export default function Vote(): ReactNode {
    };
 
    return (
-      <div className="flex flex-col items-center gap-8 p-8">
-         <h1 className="text-2xl font-bold">Choose a name</h1>
-         <div className="text-sm -mt-4">(it should be much more difficult now)</div>
+      <div className="flex flex-col items-center gap-8 py-8">
+         <div className="flex flex-col items-center gap-2 text-center">
+            <h1 className="font-title text-3xl">Choose a name</h1>
+            <p className="text-sm text-muted-fg">
+               (it should be much more difficult now)
+            </p>
+         </div>
          <div className="flex w-full flex-wrap justify-center gap-4">
             {names.map((name, index) => (
                <Button

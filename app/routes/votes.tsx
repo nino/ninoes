@@ -3,7 +3,6 @@ import { type VoteWithExtras } from "~/model/types";
 import { type ReactNode } from "react";
 import { Table, type TableColumnDef } from "~/components/ui/Table";
 import { Button } from "~/components/ui/Button";
-import { Spinner } from "~/components/ui/Spinner";
 import { useToast } from "~/components/ui/Toast";
 
 export default function Votes(): ReactNode {
@@ -57,9 +56,12 @@ export default function Votes(): ReactNode {
    return (
       <div className="space-y-8">
          <div>
-            <h2 className="text-xl font-bold mb-4">All votes</h2>
-            {isLoadingVotes && <Spinner />}
-            {votesData?.data && <Table data={votesData.data} columns={voteColumns} />}
+            <h1 className="mb-6 font-title text-3xl">All votes</h1>
+            <Table
+               data={votesData?.data ?? []}
+               columns={voteColumns}
+               isLoading={isLoadingVotes}
+            />
          </div>
       </div>
    );

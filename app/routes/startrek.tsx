@@ -6,6 +6,12 @@ import {
    useRevalidator,
 } from "react-router";
 import { useInterval } from "~/hooks/useInterval";
+import {
+   cardClass,
+   focusRing,
+   outlineButton,
+   primaryButton,
+} from "~/components/ui/styles";
 import { externalOrigin } from "~/utils/request";
 import { formatAirDate, formatGap, formatShortDate } from "~/utils/startrek-format";
 import {
@@ -89,7 +95,7 @@ export const loader = ({ request }: LoaderFunctionArgs): LoaderData => {
 function ProgressBar({ value, max }: { value: number; max: number }): JSX.Element {
    return (
       <div
-         className="mt-3 h-3 overflow-hidden rounded-full border border-gray-400/70 bg-white/70 shadow-inner"
+         className="mt-3 h-1.5 overflow-hidden rounded-full bg-muted"
          role="progressbar"
          aria-valuenow={value}
          aria-valuemin={0}
@@ -97,7 +103,7 @@ function ProgressBar({ value, max }: { value: number; max: number }): JSX.Elemen
          aria-label={`${value} of ${max} episodes aired`}
       >
          <div
-            className="h-full bg-gradient-to-b from-[#9dc0f4] to-[#2f6fd0]"
+            className="h-full rounded-full bg-primary"
             style={{ width: `${(value / max) * 100}%` }}
          />
       </div>
@@ -106,7 +112,7 @@ function ProgressBar({ value, max }: { value: number; max: number }): JSX.Elemen
 
 function SeriesBadge({ shortName }: { shortName: string }): JSX.Element {
    return (
-      <span className="inline-block min-w-[2.6rem] rounded bg-[#5b6470] px-1.5 py-px text-center text-[10px] font-bold tracking-wide text-white">
+      <span className="inline-block min-w-[2.6rem] rounded-sm bg-muted-fg px-1.5 py-px text-center text-[10px] font-bold tracking-wide text-card">
          {shortName}
       </span>
    );
@@ -124,26 +130,26 @@ function HeroSlot({
    showSeries?: boolean;
 }): JSX.Element {
    return (
-      <div className="rounded-md border border-gray-300 bg-white/60 p-3">
-         <h3 className="text-[11px] font-bold tracking-wide text-gray-500 uppercase">
+      <div className="rounded-lg border border-border p-3">
+         <h3 className="text-[11px] font-semibold tracking-wide text-muted-fg uppercase">
             {label}
          </h3>
          {episode == null ? (
-            <p className="mt-1 text-gray-600">{emptyMessage}</p>
+            <p className="mt-1 text-muted-fg">{emptyMessage}</p>
          ) : (
             <>
                <p className="mt-1 flex items-baseline gap-2 leading-tight font-semibold">
                   {showSeries && <SeriesBadge shortName={episode.seriesShortName} />}
                   <span>{episode.title}</span>
                </p>
-               <p className="mt-1 text-gray-600">
+               <p className="mt-1 text-muted-fg">
                   <span className="tabular-nums">{episodeCode(episode)}</span> ·{" "}
                   {formatAirDate(episode.airDate)}
                </p>
                {episode.summary !== "" && (
-                  <p className="mt-1 text-sm text-gray-700">{episode.summary}</p>
+                  <p className="mt-1 text-sm text-muted-fg">{episode.summary}</p>
                )}
-               <p className="mt-0.5 font-medium text-[#2f6fd0]">
+               <p className="mt-0.5 font-medium text-primary">
                   {formatGap(episode.daysUntilAir)}
                </p>
             </>
@@ -164,23 +170,23 @@ function EpisodeRow({
    showSeries?: boolean;
 }): JSX.Element {
    const highlight = isLatest
-      ? "bg-[#dbe8fb]"
+      ? "bg-muted"
       : isNext
-        ? "bg-white ring-1 ring-inset ring-[#2f6fd0]/40"
+        ? "ring-1 ring-ring/50 ring-inset"
         : "";
 
    return (
       <li
-         className={`col-span-full grid grid-cols-subgrid items-baseline gap-x-3 rounded border-b border-gray-200 px-2 py-1.5 last:border-b-0 ${highlight} ${
-            episode.hasAired ? "" : "text-gray-500"
+         className={`col-span-full grid grid-cols-subgrid items-baseline gap-x-3 rounded-md border-b border-border px-2 py-1.5 last:border-b-0 ${highlight} ${
+            episode.hasAired ? "" : "text-faint-fg"
          }`}
       >
          <span className="flex items-baseline gap-1.5 tabular-nums">
             <span
                className={`inline-block h-2 w-2 shrink-0 rounded-full ${
                   episode.hasAired
-                     ? "bg-[#2f6fd0]"
-                     : "border border-gray-400 bg-transparent"
+                     ? "bg-primary"
+                     : "border border-muted-fg bg-transparent"
                }`}
                aria-hidden="true"
             />
@@ -193,21 +199,21 @@ function EpisodeRow({
                {episode.title}
             </span>
             {isLatest && (
-               <span className="ml-2 rounded bg-[#2f6fd0] px-1.5 py-px text-[10px] font-bold tracking-wide text-white uppercase">
+               <span className="ml-2 rounded-sm bg-primary px-1.5 py-px text-[10px] font-bold tracking-wide text-primary-fg uppercase">
                   Latest
                </span>
             )}
             {isNext && (
-               <span className="ml-2 rounded border border-[#2f6fd0]/50 px-1.5 py-px text-[10px] font-bold tracking-wide text-[#2f6fd0] uppercase">
+               <span className="ml-2 rounded-sm border border-primary/50 px-1.5 py-px text-[10px] font-bold tracking-wide text-primary uppercase">
                   Next
                </span>
             )}
             {episode.summary !== "" && (
-               <span className="mt-0.5 block text-sm text-gray-700">
+               <span className="mt-0.5 block text-sm text-muted-fg">
                   {episode.summary}
                </span>
             )}
-            <span className="block text-xs text-gray-500">
+            <span className="block text-xs text-faint-fg">
                originally {formatShortDate(episode.originalAirDate)}
                <span className="sr-only">
                   {episode.hasAired ? " — already aired" : " — not out yet"}
@@ -221,7 +227,7 @@ function EpisodeRow({
             <span className="whitespace-nowrap tabular-nums">
                {formatAirDate(episode.airDate)}
             </span>
-            <span className="text-xs whitespace-nowrap text-gray-500">
+            <span className="text-xs whitespace-nowrap text-faint-fg">
                {formatGap(episode.daysUntilAir)}
             </span>
          </span>
@@ -241,7 +247,7 @@ function EpisodeList({
    nextKey?: string;
 }): JSX.Element {
    return (
-      <ul className="grid grid-cols-[auto_1fr] gap-x-3 rounded-md border border-gray-300 bg-white/50 p-1 sm:grid-cols-[auto_1fr_auto]">
+      <ul className="grid grid-cols-[auto_1fr] gap-x-3 rounded-xl border border-border bg-card p-1 shadow-xs sm:grid-cols-[auto_1fr_auto]">
          {episodes.map((episode) => (
             <EpisodeRow
                key={episode.key}
@@ -268,16 +274,16 @@ function SeriesCard({ summary }: { summary: SeriesSummary }): JSX.Element {
    return (
       <Link
          to={`/startrek?series=${summary.id}`}
-         className="rounded-md border border-gray-300 bg-white/60 p-3 no-underline transition-colors hover:bg-white"
+         className={`rounded-lg border border-border p-3 transition-colors hover:bg-muted ${focusRing}`}
       >
          <span className="flex items-baseline gap-2">
             <SeriesBadge shortName={summary.shortName} />
             <span className="font-semibold">{summary.name}</span>
          </span>
-         <span className="mt-1 block text-xs text-gray-500">
+         <span className="mt-1 block text-xs text-faint-fg">
             {summary.originalRunYears} · {summary.delayYears} years delayed
          </span>
-         <span className="mt-1 block text-sm text-gray-700">{headline}</span>
+         <span className="mt-1 block text-sm text-muted-fg">{headline}</span>
          <ProgressBar value={summary.airedCount} max={summary.episodeCount} />
       </Link>
    );
@@ -288,9 +294,9 @@ function FreshPanel({ fresh }: { fresh: FreshView }): JSX.Element {
 
    return (
       <div className="space-y-8">
-         <div className="aqua-panel p-4 sm:p-5">
-            <h2 className="text-lg font-bold">Where everything stands</h2>
-            <p className="text-sm text-gray-600">
+         <div className={`p-4 sm:p-5 ${cardClass}`}>
+            <h2 className="text-lg font-semibold">Where everything stands</h2>
+            <p className="text-sm text-muted-fg">
                {outNow === 0
                   ? "Nothing is on the air yet."
                   : `${outNow} ${outNow === 1 ? "series is" : "series are"} on the air right now.`}
@@ -303,9 +309,9 @@ function FreshPanel({ fresh }: { fresh: FreshView }): JSX.Element {
          </div>
 
          <section className="space-y-2">
-            <h2 className="text-lg font-bold">Just out</h2>
+            <h2 className="text-lg font-semibold">Just out</h2>
             {fresh.recent.length === 0 ? (
-               <p className="text-gray-600">
+               <p className="text-muted-fg">
                   Nothing has aired yet. The first episode is below.
                </p>
             ) : (
@@ -314,7 +320,7 @@ function FreshPanel({ fresh }: { fresh: FreshView }): JSX.Element {
          </section>
 
          <section className="space-y-2">
-            <h2 className="text-lg font-bold">Coming up</h2>
+            <h2 className="text-lg font-semibold">Coming up</h2>
             <EpisodeList episodes={fresh.upcoming} showSeries />
          </section>
       </div>
@@ -329,21 +335,23 @@ function SubscribePanel({
    label: string;
 }): JSX.Element {
    return (
-      <div className="aqua-panel flex flex-wrap items-center gap-x-4 gap-y-3 p-4">
+      <div
+         className={`flex flex-wrap items-center gap-x-4 gap-y-3 p-4 sm:p-5 ${cardClass}`}
+      >
          <div className="min-w-56 grow">
-            <h2 className="font-bold">Subscribe</h2>
-            <p className="text-sm text-gray-600">
+            <h2 className="font-semibold">Subscribe</h2>
+            <p className="text-sm text-muted-fg">
                Put {label} in your calendar — one all-day entry per episode, on the day
                it comes out.
             </p>
          </div>
-         <a className="aqua-btn aqua-btn--blue" href={feed.subscribeUrl}>
+         <a className={primaryButton} href={feed.subscribeUrl}>
             Add to calendar
          </a>
-         <a className="aqua-btn" href={feed.downloadUrl}>
+         <a className={outlineButton} href={feed.downloadUrl}>
             Download .ics
          </a>
-         <p className="w-full text-xs break-all text-gray-500">
+         <p className="w-full text-xs break-all text-faint-fg">
             Or paste this into your calendar app: {feed.downloadUrl}
          </p>
       </div>
@@ -362,8 +370,8 @@ function SeasonSection({
    return (
       <section className="space-y-2">
          <h2 className="flex flex-wrap items-baseline gap-x-3">
-            <span className="text-lg font-bold">Season {group.season}</span>
-            <span className="text-xs tabular-nums text-gray-500">
+            <span className="text-lg font-semibold">Season {group.season}</span>
+            <span className="text-xs tabular-nums text-faint-fg">
                {group.originalRunYears} · {group.episodeCount} episodes ·{" "}
                {group.airedCount} out
             </span>
@@ -385,17 +393,17 @@ function SeriesPanel({ schedule }: { schedule: Schedule }): JSX.Element {
 
    return (
       <div className="space-y-8">
-         <div className="aqua-panel p-4 sm:p-5">
-            <h2 className="text-lg font-bold">{schedule.fullName}</h2>
-            <p className="text-sm text-gray-600">
+         <div className={`p-4 sm:p-5 ${cardClass}`}>
+            <h2 className="text-lg font-semibold">{schedule.fullName}</h2>
+            <p className="text-sm text-muted-fg">
                {schedule.originalRunYears} · {schedule.delayYears} years delayed
             </p>
 
             <p className="mt-3 flex flex-wrap items-baseline gap-x-2">
-               <span className="text-3xl font-bold tabular-nums">
+               <span className="font-title text-3xl tabular-nums">
                   {schedule.airedCount}
                </span>
-               <span className="text-gray-600">
+               <span className="text-muted-fg">
                   of {schedule.episodeCount} episodes are out
                </span>
             </p>
@@ -427,6 +435,12 @@ function SeriesPanel({ schedule }: { schedule: Schedule }): JSX.Element {
    );
 }
 
+function tabClass(active: boolean): string {
+   return `flex h-8 items-center rounded-md px-3 text-sm font-medium transition-colors ${focusRing} ${
+      active ? "bg-card text-fg shadow-xs" : "text-muted-fg hover:text-fg"
+   }`;
+}
+
 export default function StarTrek(): JSX.Element {
    const data = useLoaderData<typeof loader>();
    const { revalidate } = useRevalidator();
@@ -438,16 +452,19 @@ export default function StarTrek(): JSX.Element {
    return (
       <div className="space-y-8">
          <header className="space-y-2">
-            <h1 className="text-2xl font-bold">Star Trek, in real time</h1>
-            <p className="max-w-2xl text-gray-600">
+            <h1 className="font-title text-3xl">Star Trek, in real time</h1>
+            <p className="max-w-2xl text-muted-fg">
                TOS 60 years delayed, everything else 45 years delayed
             </p>
          </header>
 
-         <nav className="aqua-toolbar flex-wrap rounded-md" aria-label="Series">
+         <nav
+            className="inline-flex flex-wrap items-center gap-0.5 rounded-lg bg-muted p-[3px]"
+            aria-label="Series"
+         >
             <Link
                to="/startrek"
-               className={`aqua-tab ${selectedId === null ? "aqua-tab--active" : ""}`}
+               className={tabClass(selectedId === null)}
                aria-current={selectedId === null ? "page" : undefined}
             >
                Fresh
@@ -456,7 +473,7 @@ export default function StarTrek(): JSX.Element {
                <Link
                   key={tab.id}
                   to={`/startrek?series=${tab.id}`}
-                  className={`aqua-tab ${tab.id === selectedId ? "aqua-tab--active" : ""}`}
+                  className={tabClass(tab.id === selectedId)}
                   aria-current={tab.id === selectedId ? "page" : undefined}
                >
                   {tab.shortName}

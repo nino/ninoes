@@ -19,7 +19,6 @@ import { Button } from "~/components/ui/Button";
 import { Input } from "~/components/ui/Input";
 import { Table, type TableColumnDef } from "~/components/ui/Table";
 import { useToast } from "~/components/ui/Toast";
-import { Spinner } from "~/components/ui/Spinner";
 
 const createTeamSchema = z.object({ name: z.string().min(1, "Team name is required") });
 
@@ -162,14 +161,14 @@ export default function Teams(): React.ReactNode {
    };
 
    return (
-      <main className="p-4">
-         <h1 className="text-3xl font-bold mb-8">Teams I created</h1>
+      <div>
+         <h1 className="mb-8 font-title text-3xl">Teams I created</h1>
 
          <div className="mb-8">
-            <h2 className="text-xl font-semibold mb-4">Create New Team</h2>
+            <h2 className="mb-4 text-lg font-semibold">Create New Team</h2>
             <form
                onSubmit={createTeamForm.handleSubmit(handleCreateTeam)}
-               className="flex gap-4"
+               className="flex items-start gap-3"
             >
                <Input
                   {...createTeamForm.register("name")}
@@ -183,10 +182,10 @@ export default function Teams(): React.ReactNode {
          </div>
 
          <div className="mb-8">
-            <h2 className="text-xl font-semibold mb-4">Join Team</h2>
+            <h2 className="mb-4 text-lg font-semibold">Join Team</h2>
             <form
                onSubmit={joinTeamForm.handleSubmit(handleJoinTeam)}
-               className="flex gap-4"
+               className="flex items-start gap-3"
             >
                <Input
                   {...joinTeamForm.register("teamId")}
@@ -200,18 +199,22 @@ export default function Teams(): React.ReactNode {
          </div>
 
          <div className="mb-8">
-            <h2 className="text-xl font-semibold mb-4">My Teams</h2>
-            {teamsPending && <Spinner />}
-            {teamsData?.data && <Table data={teamsData.data} columns={columns} />}
+            <h2 className="mb-4 text-lg font-semibold">My Teams</h2>
+            <Table
+               data={teamsData?.data ?? []}
+               columns={columns}
+               isLoading={teamsPending}
+            />
          </div>
 
          <div>
-            <h2 className="text-xl font-semibold mb-4">Teams I&rsquo;m a member of</h2>
-            {membershipsPending && <Spinner />}
-            {membershipsData?.data && (
-               <Table data={membershipsData.data} columns={membershipColumns} />
-            )}
+            <h2 className="mb-4 text-lg font-semibold">Teams I&rsquo;m a member of</h2>
+            <Table
+               data={membershipsData?.data ?? []}
+               columns={membershipColumns}
+               isLoading={membershipsPending}
+            />
          </div>
-      </main>
+      </div>
    );
 }

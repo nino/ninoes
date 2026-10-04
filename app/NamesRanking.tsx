@@ -2,7 +2,6 @@ import { useNames, useVotes } from "./hooks/useSupabase";
 import type { Enum, Name, NameGender, VoteWithExtras } from "./model/types";
 import React, { type ReactNode } from "react";
 import { Table, type TableColumnDef } from "~/components/ui/Table";
-import { Spinner } from "./components/ui/Spinner";
 import { GENDER_LABELS, GenderFilter } from "~/components/GenderFilter";
 
 export function NamesRanking(): ReactNode {
@@ -53,19 +52,27 @@ export function NamesRanking(): ReactNode {
    return (
       <div className="space-y-8">
          <div>
-            <h2 className="text-xl font-bold mb-4">Names</h2>
+            <h2 className="mb-4 font-title text-2xl">Names</h2>
             <div className="mb-4">
                <GenderFilter value={genders} onChange={setGenders} />
             </div>
-            {isLoadingNames && <Spinner />}
-            {names && <Table data={names} columns={nameColumns} />}
+            <Table data={names ?? []} columns={nameColumns} isLoading={isLoadingNames} />
          </div>
          <div>
-            <h2 className="text-xl font-bold mb-4">
-               Votes <a href="/votes">(see all)</a>
+            <h2 className="mb-4 flex items-baseline gap-3">
+               <span className="font-title text-2xl">Votes</span>
+               <a
+                  href="/votes"
+                  className="rounded-sm text-sm font-medium underline underline-offset-4 outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:shadow-glow"
+               >
+                  See all
+               </a>
             </h2>
-            {isLoadingVotes && <Spinner />}
-            {votesData?.data && <Table data={votesData.data} columns={voteColumns} />}
+            <Table
+               data={votesData?.data ?? []}
+               columns={voteColumns}
+               isLoading={isLoadingVotes}
+            />
          </div>
       </div>
    );

@@ -31,6 +31,12 @@ import "./app.css";
 
 export const links: Route.LinksFunction = () => [
    { rel: "stylesheet", href: "/app.css" },
+   // Bunny Fonts is a drop-in for Google Fonts that doesn't log visitors' IP addresses.
+   { rel: "preconnect", href: "https://fonts.bunny.net" },
+   {
+      rel: "stylesheet",
+      href: "https://fonts.bunny.net/css?family=bevan:400|bricolage-grotesque:400,500,600,700&display=swap",
+   },
 ];
 
 export function Layout({ children }: { children: ReactNode }): ReactNode {
@@ -78,7 +84,7 @@ export default function App(): ReactNode {
    return (
       <QueryClientProvider client={queryClient}>
          <Outlet />
-         <Toaster />
+         <Toaster theme="system" />
       </QueryClientProvider>
    );
 }
@@ -99,12 +105,10 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps): ReactNode {
       stack = error.stack;
    }
 
-   // Renders outside the aqua window, directly on the dark desktop
-   // background, so it needs its own light text color.
    return (
-      <main className="pt-16 p-4 container mx-auto text-gray-100">
-         <h1>{message}</h1>
-         <p>{details}</p>
+      <main className="container mx-auto flex flex-col gap-2 p-4 pt-16">
+         <h1 className="font-title text-3xl">{message}</h1>
+         <p className="text-muted-fg">{details}</p>
          {stack != null && (
             <pre className="w-full p-4 overflow-x-auto">
                <code>{stack}</code>

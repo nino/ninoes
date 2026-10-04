@@ -10,6 +10,7 @@ import {
    useWishes,
    useWithdrawContribution,
 } from "~/hooks/useSupabase";
+import { WishDescription } from "~/components/WishDescription";
 import type { Wish } from "~/model/types";
 import {
    contributionState,
@@ -455,9 +456,7 @@ function WishCard({
                )}
             </div>
             {shown.description != null && (
-               <p className="text-sm leading-relaxed whitespace-pre-line text-wl-muted-fg">
-                  {shown.description}
-               </p>
+               <WishDescription>{shown.description}</WishDescription>
             )}
             {shown.translatedFrom != null && (
                <p className="flex items-center gap-1.5 text-xs text-wl-muted-fg">

@@ -21,6 +21,7 @@ You get one entry as JSON with a title and an optional description. Work out whe
 - Keep brand names, product names, model numbers, sizes and prices as they are.
 - Write English with British spelling and vocabulary.
 - Match the register of the original: short and plain, the way a guest or the couple would write it.
+- The description may use markdown. Keep its formatting and link URLs exactly as they are, and translate only the text.
 - If something has no sensible translation (a proper name, for example), keep it unchanged.
 - Translate only. Don't add, explain or leave out anything.`;
 

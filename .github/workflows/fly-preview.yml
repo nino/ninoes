@@ -1,0 +1,120 @@
+# Deploys each pull request to its own Fly app (ninoes-pr-<number>) and destroys
+# it when the PR is closed or merged. Previews talk to the production Supabase
+# project, since there is no staging database.
+
+name: Fly Preview
+on:
+   pull_request:
+      types: [opened, reopened, synchronize, closed]
+
+permissions:
+   contents: read
+   deployments: write
+   pull-requests: write
+
+concurrency:
+   group: fly-preview-${{ github.event.number }}
+   cancel-in-progress: true
+
+env:
+   FLY_API_TOKEN: ${{ secrets.FLY_PREVIEW_API_TOKEN }}
+   APP_NAME: ninoes-pr-${{ github.event.number }}
+   GH_TOKEN: ${{ github.token }}
+   PR_NUMBER: ${{ github.event.number }}
+   HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+
+jobs:
+   deploy:
+      name: Deploy preview
+      # Secrets aren't available to fork or Dependabot PRs, so skip those.
+      if: >-
+         github.event.action != 'closed' &&
+         github.event.pull_request.head.repo.full_name == github.repository &&
+         github.event.pull_request.user.login != 'dependabot[bot]'
+      runs-on: ubuntu-latest
+      environment:
+         name: preview
+         url: https://${{ env.APP_NAME }}.fly.dev
+      steps:
+         - name: Check for Fly token
+           id: token
+           run: |
+              if [ -n "$FLY_API_TOKEN" ]; then
+                 echo "present=true" >> "$GITHUB_OUTPUT"
+              else
+                 echo "::notice::FLY_PREVIEW_API_TOKEN is not set, skipping preview."
+              fi
+         - uses: actions/checkout@v7
+           if: steps.token.outputs.present == 'true'
+         - name: Comment deploying
+           if: steps.token.outputs.present == 'true'
+           run: .github/scripts/preview-comment.sh deploying
+         - uses: superfly/flyctl-actions/setup-flyctl@master
+           if: steps.token.outputs.present == 'true'
+         - name: Create app if missing
+           if: steps.token.outputs.present == 'true'
+           # Put the preview in the same Fly org as the production app.
+           run: |
+              if ! flyctl status --app "$APP_NAME" > /dev/null 2>&1; then
+                 org=$(flyctl apps list --json |
+                    jq -r '.[] | select((.Name // .name) == "ninoes")
+                       | (.Organization.Slug // .organization.slug)')
+                 if [ -z "$org" ]; then
+                    echo "::error::FLY_PREVIEW_API_TOKEN can't see the ninoes app. Create it with fly tokens create org for the org that owns ninoes."
+                    exit 1
+                 fi
+                 flyctl apps create "$APP_NAME" --org "$org"
+              fi
+         - name: Write preview config
+           if: steps.token.outputs.present == 'true'
+           # Same as production, but let the machine stop when idle.
+           run: |
+              sed \
+                 -e "s/^app = .*/app = '$APP_NAME'/" \
+                 -e "s/^min_machines_running = .*/min_machines_running = 0/" \
+                 fly.toml > fly.preview.toml
+              grep -q "^app = '$APP_NAME'" fly.preview.toml
+              grep -q "^min_machines_running = 0" fly.preview.toml
+         - name: Deploy
+           if: steps.token.outputs.present == 'true'
+           run: >-
+              flyctl deploy --remote-only --ha=false
+              --config fly.preview.toml --app "$APP_NAME"
+              --build-arg VITE_SUPABASE_URL="${{ secrets.VITE_SUPABASE_URL }}"
+              --build-arg VITE_SUPABASE_ANON_KEY="${{ secrets.VITE_SUPABASE_ANON_KEY }}"
+         - name: Comment deployed
+           if: success() && steps.token.outputs.present == 'true'
+           run: .github/scripts/preview-comment.sh deployed
+         - name: Comment failed
+           if: failure() && steps.token.outputs.present == 'true'
+           run: .github/scripts/preview-comment.sh failed
+
+   destroy:
+      name: Destroy preview
+      if: >-
+         github.event.action == 'closed' &&
+         github.event.pull_request.head.repo.full_name == github.repository &&
+         github.event.pull_request.user.login != 'dependabot[bot]'
+      runs-on: ubuntu-latest
+      steps:
+         - name: Check for Fly token
+           id: token
+           run: |
+              if [ -n "$FLY_API_TOKEN" ]; then
+                 echo "present=true" >> "$GITHUB_OUTPUT"
+              else
+                 echo "::notice::FLY_PREVIEW_API_TOKEN is not set, skipping preview."
+              fi
+         - uses: actions/checkout@v7
+           if: steps.token.outputs.present == 'true'
+         - uses: superfly/flyctl-actions/setup-flyctl@master
+           if: steps.token.outputs.present == 'true'
+         - name: Destroy app
+           if: steps.token.outputs.present == 'true'
+           run: |
+              if flyctl status --app "$APP_NAME" > /dev/null 2>&1; then
+                 flyctl apps destroy "$APP_NAME" --yes
+              fi
+         - name: Comment destroyed
+           if: steps.token.outputs.present == 'true'
+           run: .github/scripts/preview-comment.sh destroyed

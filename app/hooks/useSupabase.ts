@@ -16,6 +16,7 @@ import type {
    User,
    VoteType,
    VoteWithExtras,
+   Wish,
 } from "~/model/types";
 import {
    NameSchema,
@@ -24,6 +25,7 @@ import {
    TeamSchema,
    UserSchema,
    VoteWithExtrasSchema,
+   WishSchema,
 } from "../model/types";
 import { useSession } from "./useSession";
 import { z } from "zod";
@@ -533,5 +535,130 @@ export function useEloLeaderboard({
          console.log({ data, count });
          return { data, total: count };
       },
+   });
+}
+
+// Wishlist. Unauthenticated: everything goes through the anon client.
+
+const wishColumns =
+   "id, created_at, title, description, price, link, language, translated_title, translated_description";
+
+export function useWishes({
+   spoilerFree,
+}: {
+   spoilerFree: boolean;
+}): UseQueryResult<Array<Wish>> {
+   return useQuery({
+      queryKey: ["wishes", spoilerFree],
+      queryFn: async () => {
+         // In no-spoilers mode the claim columns aren't fetched at all.
+         const { data, error } = await supabase
+            .from("wishes")
+            .select(spoilerFree ? wishColumns : `${wishColumns}, claimed_by`)
+            .order("created_at", { ascending: true })
+            .order("id");
+         if (error) throw error;
+         return data.map((wish) => WishSchema.parse(wish));
+      },
+   });
+}
+
+export type WishInput = {
+   title: string;
+   description: string | null;
+   price: number | null;
+   link: string | null;
+};
+
+export function useAddWish(): UseMutationResult<Wish, Error, WishInput> {
+   const queryClient = useQueryClient();
+   return useMutation({
+      mutationFn: async (wish: WishInput) => {
+         const { data, error } = await supabase
+            .from("wishes")
+            .insert(wish)
+            .select(wishColumns)
+            .single();
+         if (error) throw error;
+         return WishSchema.parse(data);
+      },
+      onSuccess: () => queryClient.invalidateQueries({ queryKey: ["wishes"] }),
+   });
+}
+
+export function useUpdateWish(): UseMutationResult<
+   void,
+   Error,
+   { id: string; wish: WishInput }
+> {
+   const queryClient = useQueryClient();
+   return useMutation({
+      mutationFn: async ({ id, wish }) => {
+         const { error } = await supabase
+            .from("wishes")
+            .update({ ...wish, updated_at: new Date().toISOString() })
+            .eq("id", id);
+         if (error) throw error;
+      },
+      onSuccess: () => queryClient.invalidateQueries({ queryKey: ["wishes"] }),
+   });
+}
+
+export function useDeleteWish(): UseMutationResult<void, Error, string> {
+   const queryClient = useQueryClient();
+   return useMutation({
+      mutationFn: async (id: string) => {
+         const { error } = await supabase.from("wishes").delete().eq("id", id);
+         if (error) throw error;
+      },
+      onSuccess: () => queryClient.invalidateQueries({ queryKey: ["wishes"] }),
+   });
+}
+
+/**
+ * Claims or releases a wish for `name`. Resolves to false when the database
+ * refused, e.g. because someone else claimed it first.
+ */
+export function useSetWishClaim(): UseMutationResult<
+   boolean,
+   Error,
+   { id: string; name: string; claim: boolean }
+> {
+   const queryClient = useQueryClient();
+   return useMutation({
+      mutationFn: async ({ id, name, claim }) => {
+         const { data, error } = await supabase.rpc(
+            claim ? "claim_wish" : "unclaim_wish",
+            { p_wish_id: id, p_name: name },
+         );
+         if (error) throw error;
+         return z.boolean().parse(data);
+      },
+      onSettled: () => queryClient.invalidateQueries({ queryKey: ["wishes"] }),
+   });
+}
+
+/**
+ * Runs the server action that machine-translates wishes still waiting for a
+ * translation. Resolves to how many it managed.
+ */
+export function useTranslateWishes(): UseMutationResult<
+   { translated: number; failed: number },
+   Error,
+   void
+> {
+   const queryClient = useQueryClient();
+   return useMutation({
+      mutationFn: async () => {
+         const response = await fetch("/wishlist/translate", { method: "POST" });
+         if (!response.ok) throw new Error(`Translation failed: ${response.status}`);
+         return z
+            .object({ translated: z.number(), failed: z.number() })
+            .parse(await response.json());
+      },
+      onSuccess: ({ translated }) =>
+         translated > 0
+            ? queryClient.invalidateQueries({ queryKey: ["wishes"] })
+            : undefined,
    });
 }

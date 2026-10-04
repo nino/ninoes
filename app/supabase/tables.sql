@@ -59,3 +59,24 @@ CREATE TABLE public.teams (
   CONSTRAINT Teams_pkey PRIMARY KEY (id),
   CONSTRAINT teams_creator_fkey FOREIGN KEY (creator) REFERENCES "Users" (id) ON UPDATE CASCADE ON DELETE CASCADE
 ) TABLESPACE pg_default;
+
+CREATE TABLE public.wishes (
+  id uuid NOT NULL DEFAULT gen_random_uuid (),
+  created_at timestamp WITH time zone NOT NULL DEFAULT NOW(),
+  updated_at timestamp WITH time zone NOT NULL DEFAULT NOW(),
+  title text NOT NULL CHECK (length(trim(title)) > 0),
+  description text NULL,
+  price numeric(10, 2) NULL CHECK (price >= 0),
+  link text NULL CHECK (link ~* '^https?://'),
+  claimed_by text NULL,
+  claimed_at timestamp WITH time zone NULL,
+  CONSTRAINT wishes_pkey PRIMARY KEY (id)
+) TABLESPACE pg_default;
+
+-- 2026-10-04-translate-wishes.sql
+ALTER TABLE public.wishes
+  ADD COLUMN language text NULL CHECK (language IN ('en', 'de')),
+  ADD COLUMN translated_title text NULL,
+  ADD COLUMN translated_description text NULL,
+  ADD CONSTRAINT wishes_title_length CHECK (length(title) <= 200),
+  ADD CONSTRAINT wishes_description_length CHECK (length(description) <= 2000);

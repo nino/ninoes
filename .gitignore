@@ -9,3 +9,9 @@
 .env.sentry-build-plugin
 
 .opencode
+
+# Supabase CLI link state
+/supabase/.temp/
+
+# Local environment (Supabase keys, Sentry token)
+.env

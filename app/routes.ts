@@ -16,4 +16,6 @@ export default [
    route("/startrek.ics", "routes/startrek-ics.ts"),
    route("/calendar", "routes/calendar-ics.ts"),
    route("/last-year", "routes/last-year.ts"),
+   route("/wishlist", "routes/wishlist.tsx"),
+   route("/wishlist/translate", "routes/wishlist-translate.ts"),
 ] satisfies RouteConfig;

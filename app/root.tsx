@@ -5,15 +5,11 @@ import {
    Outlet,
    Scripts,
    ScrollRestoration,
-   useLocation,
    useNavigation,
 } from "react-router";
 import * as Sentry from "@sentry/react";
 import { type ReactNode } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { useSession } from "./hooks/useSession";
-import { Layout as OtherLayout } from "./components/Layout";
-import { Button } from "./components/ui/Button";
 import { Toaster } from "sonner";
 
 if (import.meta.env.PROD) {
@@ -78,38 +74,10 @@ const queryClient = new QueryClient({
    },
 });
 
-function AuthenticatedLayout({ children }: { children: ReactNode }): ReactNode {
-   const { session } = useSession();
-   return (
-      <OtherLayout>
-         {children}
-         {session && (
-            <div className="flex my-16 justify-end">
-               <form action="/logout" method="post">
-                  <Button variant="secondary" type="submit">
-                     Sign Out
-                  </Button>
-               </form>
-            </div>
-         )}
-      </OtherLayout>
-   );
-}
-
-// Pages that bring their own look instead of the Aqua window.
-const standalonePaths = new Set(["/wishlist"]);
-
 export default function App(): ReactNode {
-   const { pathname } = useLocation();
    return (
       <QueryClientProvider client={queryClient}>
-         {standalonePaths.has(pathname) ? (
-            <Outlet />
-         ) : (
-            <AuthenticatedLayout>
-               <Outlet />
-            </AuthenticatedLayout>
-         )}
+         <Outlet />
          <Toaster />
       </QueryClientProvider>
    );

@@ -80,3 +80,8 @@ ALTER TABLE public.wishes
   ADD COLUMN translated_description text NULL,
   ADD CONSTRAINT wishes_title_length CHECK (length(title) <= 200),
   ADD CONSTRAINT wishes_description_length CHECK (length(description) <= 2000);
+
+-- 2026-10-04-wishlist-review-fixes.sql
+ALTER TABLE public.wishes
+  ADD COLUMN translation_started_at timestamp WITH time zone NULL,
+  ADD CONSTRAINT wishes_claimed_by_length CHECK (length(claimed_by) <= 80);

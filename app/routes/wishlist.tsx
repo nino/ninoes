@@ -16,6 +16,9 @@ import {
    type Language,
    linkLabel,
    localizedWish,
+   maxDescriptionLength,
+   maxNameLength,
+   maxTitleLength,
    normalizeLink,
    parsePrice,
    sameName,
@@ -107,7 +110,14 @@ function useVisitor(): {
 
    const language = visitor?.language;
    React.useEffect(() => {
-      if (language != null) document.documentElement.lang = language;
+      if (language == null) return;
+      // Put the root layout's lang back when leaving, so other pages aren't
+      // announced as German.
+      const previous = document.documentElement.lang;
+      document.documentElement.lang = language;
+      return () => {
+         document.documentElement.lang = previous;
+      };
    }, [language]);
 
    const setName = React.useCallback((value: string | null) => {
@@ -238,6 +248,7 @@ function NameGate({
                      value={name}
                      onChange={(e) => setName(e.target.value)}
                      required
+                     maxLength={maxNameLength}
                      autoComplete="given-name"
                      autoFocus
                      className={`h-10 ${inputClass}`}
@@ -561,13 +572,23 @@ function AddWish({
    const [formKey, setFormKey] = React.useState(0);
 
    const add = async (input: WishInput): Promise<void> => {
+      let wish;
       try {
-         const wish = await addWish.mutateAsync(input);
-         if (claimNow) await setClaim.mutateAsync({ id: wish.id, name, claim: true });
-         setFormKey((k) => k + 1);
-         setClaimNow(false);
+         wish = await addWish.mutateAsync(input);
       } catch {
          toast.error(t.somethingWentWrong);
+         return;
+      }
+      // The wish exists from here on, so clear the form even if claiming
+      // fails; otherwise a second click would add it twice.
+      setFormKey((k) => k + 1);
+      setClaimNow(false);
+      if (!claimNow) return;
+      try {
+         const claimed = await setClaim.mutateAsync({ id: wish.id, name, claim: true });
+         if (!claimed) toast.error(t.claimAfterAddFailed);
+      } catch {
+         toast.error(t.claimAfterAddFailed);
       }
    };
 
@@ -660,6 +681,7 @@ function WishForm({
                value={title}
                onChange={(e) => setTitle(e.target.value)}
                required
+               maxLength={maxTitleLength}
                className={`h-10 ${inputClass}`}
             />
          </Field>
@@ -667,6 +689,7 @@ function WishForm({
             <textarea
                value={description}
                onChange={(e) => setDescription(e.target.value)}
+               maxLength={maxDescriptionLength}
                rows={3}
                className={`min-h-20 resize-y py-2 ${inputClass}`}
             />

@@ -7,34 +7,27 @@ import type { Route } from "./+types/wishlist-translate";
 // minute; the client calls again while some are left.
 const batchSize = 10;
 
+const PendingWishesSchema = z.array(
+   z.object({ id: z.uuid(), title: z.string(), description: z.string().nullable() }),
+);
+
 /**
  * Translates wishes that don't have a translation yet. Takes no input: it only
- * ever works on what's pending in the database, so calling it more often than
- * needed costs nothing.
+ * works on what's pending in the database, and each pending wish is leased to
+ * one run at a time, so extra or concurrent calls don't repeat paid work.
  */
 export async function action({ request }: Route.ActionArgs): Promise<Response> {
    const headers = new Headers();
    const { supabase } = getSupabaseServerClient(request, headers);
 
-   const { data, error } = await supabase
-      .from("wishes")
-      .select("id, title, description")
-      .is("language", null)
-      .order("created_at", { ascending: true })
-      .limit(batchSize);
+   const { data, error } = await supabase.rpc("start_wish_translations", {
+      p_limit: batchSize,
+   });
    if (error) throw error;
+   const pending = PendingWishesSchema.parse(data);
 
-   const pending = z
-      .array(
-         z.object({
-            id: z.uuid(),
-            title: z.string(),
-            description: z.string().nullable(),
-         }),
-      )
-      .parse(data);
    const results = await Promise.allSettled(
-      pending.map(async (wish) => {
+      pending.map(async (wish): Promise<boolean> => {
          const translation = await translateWish(wish);
          // Only write if nobody edited the wish while it was being translated.
          let update = supabase
@@ -51,17 +44,24 @@ export async function action({ request }: Route.ActionArgs): Promise<Response> {
             wish.description == null
                ? update.is("description", null)
                : update.eq("description", wish.description);
-         const { error: updateError } = await update;
+         const { data: updated, error: updateError } = await update.select("id");
          if (updateError) throw updateError;
+         // No row means the wish was edited or deleted meanwhile; the edit put
+         // it back in the queue, so this isn't progress.
+         return updated.length > 0;
       }),
    );
 
-   const failures = results.filter((r) => r.status === "rejected");
-   for (const failure of failures)
-      console.error("Wish translation failed:", failure.reason);
+   let translated = 0;
+   let failed = 0;
+   for (const result of results) {
+      if (result.status === "rejected") {
+         failed++;
+         console.error("Wish translation failed:", result.reason);
+      } else if (result.value) {
+         translated++;
+      }
+   }
 
-   return Response.json(
-      { translated: results.length - failures.length, failed: failures.length },
-      { headers },
-   );
+   return Response.json({ translated, failed }, { headers });
 }

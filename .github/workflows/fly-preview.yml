@@ -10,6 +10,7 @@ on:
 permissions:
    contents: read
    deployments: write
+   pull-requests: write
 
 concurrency:
    group: fly-preview-${{ github.event.number }}
@@ -18,6 +19,9 @@ concurrency:
 env:
    FLY_API_TOKEN: ${{ secrets.FLY_PREVIEW_API_TOKEN }}
    APP_NAME: ninoes-pr-${{ github.event.number }}
+   GH_TOKEN: ${{ github.token }}
+   PR_NUMBER: ${{ github.event.number }}
+   HEAD_SHA: ${{ github.event.pull_request.head.sha }}
 
 jobs:
    deploy:
@@ -42,6 +46,9 @@ jobs:
               fi
          - uses: actions/checkout@v7
            if: steps.token.outputs.present == 'true'
+         - name: Comment deploying
+           if: steps.token.outputs.present == 'true'
+           run: .github/scripts/preview-comment.sh deploying
          - uses: superfly/flyctl-actions/setup-flyctl@master
            if: steps.token.outputs.present == 'true'
          - name: Create app if missing
@@ -75,6 +82,12 @@ jobs:
               --config fly.preview.toml --app "$APP_NAME"
               --build-arg VITE_SUPABASE_URL="${{ secrets.VITE_SUPABASE_URL }}"
               --build-arg VITE_SUPABASE_ANON_KEY="${{ secrets.VITE_SUPABASE_ANON_KEY }}"
+         - name: Comment deployed
+           if: success() && steps.token.outputs.present == 'true'
+           run: .github/scripts/preview-comment.sh deployed
+         - name: Comment failed
+           if: failure() && steps.token.outputs.present == 'true'
+           run: .github/scripts/preview-comment.sh failed
 
    destroy:
       name: Destroy preview
@@ -92,6 +105,8 @@ jobs:
               else
                  echo "::notice::FLY_PREVIEW_API_TOKEN is not set, skipping preview."
               fi
+         - uses: actions/checkout@v7
+           if: steps.token.outputs.present == 'true'
          - uses: superfly/flyctl-actions/setup-flyctl@master
            if: steps.token.outputs.present == 'true'
          - name: Destroy app
@@ -100,3 +115,6 @@ jobs:
               if flyctl status --app "$APP_NAME" > /dev/null 2>&1; then
                  flyctl apps destroy "$APP_NAME" --yes
               fi
+         - name: Comment destroyed
+           if: steps.token.outputs.present == 'true'
+           run: .github/scripts/preview-comment.sh destroyed

@@ -10,6 +10,7 @@ import {
    useWishes,
    useWithdrawContribution,
 } from "~/hooks/useSupabase";
+import { WeddingRain } from "~/components/WeddingRain";
 import { WishDescription } from "~/components/WishDescription";
 import type { Wish } from "~/model/types";
 import {
@@ -172,6 +173,7 @@ export default function WishlistPage(): JSX.Element {
                )}
             </>
          )}
+         <WeddingRain />
       </div>
    );
 }

@@ -235,6 +235,7 @@ function NameGate({
          <div className={`w-full max-w-sm ${cardClass}`}>
             <div className="flex flex-col gap-1.5 p-6 pb-0">
                <h1 className="text-2xl font-semibold tracking-tight">{t.title}</h1>
+               <p className="text-sm text-wl-muted-fg">{t.giftNotice}</p>
                <p className="text-sm text-wl-muted-fg">{t.gateIntro}</p>
             </div>
             <form

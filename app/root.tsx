@@ -5,6 +5,7 @@ import {
    Outlet,
    Scripts,
    ScrollRestoration,
+   useLocation,
    useNavigation,
 } from "react-router";
 import * as Sentry from "@sentry/react";
@@ -95,12 +96,20 @@ function AuthenticatedLayout({ children }: { children: ReactNode }): ReactNode {
    );
 }
 
+// Pages that bring their own look instead of the Aqua window.
+const standalonePaths = new Set(["/wishlist"]);
+
 export default function App(): ReactNode {
+   const { pathname } = useLocation();
    return (
       <QueryClientProvider client={queryClient}>
-         <AuthenticatedLayout>
+         {standalonePaths.has(pathname) ? (
             <Outlet />
-         </AuthenticatedLayout>
+         ) : (
+            <AuthenticatedLayout>
+               <Outlet />
+            </AuthenticatedLayout>
+         )}
          <Toaster />
       </QueryClientProvider>
    );

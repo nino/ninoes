@@ -8,6 +8,19 @@
    --breakpoint-xl: 1280px;
    --breakpoint-2xl: 1536px;
 
+   --font-caslon: "Libre Caslon Text", Georgia, serif;
+   --font-signature: Caveat, "Segoe Script", cursive;
+
+   /* Wishlist palette. Swapped for dark mode below. */
+   --color-wl-paper: #f5f4ef;
+   --color-wl-ink: #22201b;
+   --color-wl-soft: #4a463f;
+   --color-wl-muted: #6b675e;
+   --color-wl-rule: #d9d5cb;
+   --color-wl-leader: #a8a396;
+   --color-wl-accent: #2b4c7e;
+   --color-wl-danger: #9b2c22;
+
    --font-sans:
       "Lucida Grande", "Lucida Sans Unicode", "Helvetica Neue", Helvetica, Arial,
       "Segoe UI", sans-serif;
@@ -547,5 +560,29 @@ body {
       border: 3px solid rgba(0, 0, 0, 0.2);
       border-top-color: #4a90e2;
       animation: aqua-spin 0.7s linear infinite;
+   }
+}
+
+/* ------------------------------------------------------------------ *
+ *  Wishlist: its own page outside the Aqua window, following the
+ *  system light/dark setting.
+ * ------------------------------------------------------------------ */
+
+html:has(.wishlist-page),
+html:has(.wishlist-page) body {
+   color-scheme: light dark;
+   background: var(--color-wl-paper);
+}
+
+@media (prefers-color-scheme: dark) {
+   :root {
+      --color-wl-paper: #15181d;
+      --color-wl-ink: #ece8df;
+      --color-wl-soft: #c9c4b9;
+      --color-wl-muted: #9c978c;
+      --color-wl-rule: #2c3038;
+      --color-wl-leader: #5c5850;
+      --color-wl-accent: #9db6e0;
+      --color-wl-danger: #f0a196;
    }
 }

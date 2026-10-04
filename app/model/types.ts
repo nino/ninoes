@@ -62,3 +62,16 @@ export type TeamElo = z.infer<typeof TeamEloSchema>;
 
 export const TeamEloWithNameSchema = TeamEloSchema.extend({ name: NameSchema });
 export type TeamEloWithName = z.infer<typeof TeamEloWithNameSchema>;
+
+export const WishSchema = z.object({
+   id: z.uuid(),
+   created_at: z.coerce.date(),
+   title: z.string().min(1),
+   description: z.string().nullable(),
+   // numeric columns arrive as numbers or strings depending on size.
+   price: z.coerce.number().nullable(),
+   link: z.string().nullable(),
+   // Left out of the select entirely in no-spoilers mode.
+   claimed_by: z.string().nullable().optional(),
+});
+export type Wish = z.infer<typeof WishSchema>;

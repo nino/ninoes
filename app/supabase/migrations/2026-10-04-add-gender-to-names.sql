@@ -38,6 +38,7 @@ returns table (
 language plpgsql
 security definer
 stable
+set search_path = public
 as $$
 declare
   v_order_by text;
@@ -107,5 +108,8 @@ begin
   offset p_offset;
 end;
 $$;
+
+grant all on function get_leaderboard(integer, integer, text, text, uuid, text[])
+  to anon, authenticated, service_role;
 
 commit;

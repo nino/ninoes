@@ -3,6 +3,7 @@ CREATE TABLE public."Names" (
   created_at timestamp WITH time zone NOT NULL DEFAULT NOW(),
   updated_at timestamp WITH time zone NOT NULL DEFAULT NOW(),
   name character varying NOT NULL,
+  gender public.name_gender NULL,
   CONSTRAINT Names_pkey PRIMARY KEY (id),
   CONSTRAINT Names_name_key UNIQUE (name)
 ) TABLESPACE pg_default;

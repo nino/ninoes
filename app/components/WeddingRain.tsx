@@ -1,6 +1,7 @@
 import React, { type JSX } from "react";
 
 export const holdDuration = 5000;
+export const flipWindow = 2000;
 const spawnDuration = 4000;
 const pieceCount = 260;
 
@@ -60,6 +61,34 @@ export function useAltHold(onHold: () => void, duration = holdDuration): void {
          window.removeEventListener("blur", reset);
       };
    }, [duration]);
+}
+
+/**
+ * Calls `onFlip` when the screen goes from portrait to landscape and back to
+ * portrait within `window` ms, i.e. a phone turned sideways and straight back.
+ */
+export function useFlipBack(onFlip: () => void, within = flipWindow): void {
+   const onFlipRef = React.useRef(onFlip);
+   React.useEffect(() => {
+      onFlipRef.current = onFlip;
+   }, [onFlip]);
+
+   React.useEffect(() => {
+      const landscape = window.matchMedia("(orientation: landscape)");
+      let turnedAt: number | undefined;
+
+      function onChange(event: MediaQueryListEvent): void {
+         if (event.matches) {
+            turnedAt = Date.now();
+            return;
+         }
+         if (turnedAt != null && Date.now() - turnedAt <= within) onFlipRef.current();
+         turnedAt = undefined;
+      }
+
+      landscape.addEventListener("change", onChange);
+      return () => landscape.removeEventListener("change", onChange);
+   }, [within]);
 }
 
 type Piece = {
@@ -125,20 +154,20 @@ function makePieces(width: number, height: number): Array<Piece> {
 }
 
 /**
- * Hold Alt/Option for five seconds and rings, suits, flowers and confetti
- * rain over the whole viewport. Does nothing for visitors who prefer reduced
+ * Hold Alt/Option for five seconds, or turn a phone sideways and straight
+ * back, and rings, suits, flowers and confetti rain over the whole viewport. Does nothing for visitors who prefer reduced
  * motion.
  */
 export function WeddingRain(): JSX.Element | null {
    const [runId, setRunId] = React.useState(0);
    const canvasRef = React.useRef<HTMLCanvasElement>(null);
 
-   useAltHold(
-      React.useCallback(() => {
-         if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-         setRunId((id) => id + 1);
-      }, []),
-   );
+   const start = React.useCallback(() => {
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+      setRunId((id) => id + 1);
+   }, []);
+   useAltHold(start);
+   useFlipBack(start);
 
    React.useEffect(() => {
       const canvas = canvasRef.current;

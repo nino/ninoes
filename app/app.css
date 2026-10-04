@@ -20,11 +20,14 @@
    --color-wl-border: oklch(0.87 0.018 225);
    --color-wl-input: oklch(0.87 0.018 225);
    --color-wl-field: oklch(0.996 0.003 225);
-   --color-wl-ring: oklch(0.7 0.04 230);
+   --color-wl-ring: oklch(0.64 0.14 240);
    --color-wl-primary: oklch(0.3 0.05 235);
    --color-wl-primary-fg: oklch(0.985 0.006 225);
    --color-wl-danger: oklch(0.577 0.245 27.325);
    --color-wl-success: oklch(0.527 0.154 150.069);
+   /* Soft halo drawn outside the focus ring. */
+   --shadow-wl-glow: 0 0 12px 2px
+      color-mix(in oklab, var(--color-wl-ring) 35%, transparent);
 
    --font-sans:
       "Lucida Grande", "Lucida Sans Unicode", "Helvetica Neue", Helvetica, Arial,
@@ -589,7 +592,7 @@ html:has(.wishlist-page) body {
       --color-wl-border: oklch(1 0 0 / 14%);
       --color-wl-input: oklch(1 0 0 / 20%);
       --color-wl-field: oklch(1 0 0 / 4.5%);
-      --color-wl-ring: oklch(0.55 0.04 230);
+      --color-wl-ring: oklch(0.68 0.13 240);
       --color-wl-primary: oklch(0.88 0.035 225);
       --color-wl-primary-fg: oklch(0.22 0.03 240);
       --color-wl-danger: oklch(0.704 0.191 22.216);

@@ -10,18 +10,19 @@
 
    --font-geist: Geist, ui-sans-serif, system-ui, sans-serif;
 
-   /* Wishlist palette (shadcn zinc). Swapped for dark mode below. */
-   --color-wl-page: oklch(0.985 0 0);
-   --color-wl-card: oklch(1 0 0);
-   --color-wl-fg: oklch(0.141 0.005 285.823);
-   --color-wl-muted: oklch(0.967 0.001 286.375);
-   --color-wl-muted-fg: oklch(0.552 0.016 285.938);
-   --color-wl-border: oklch(0.92 0.004 286.32);
-   --color-wl-input: oklch(0.92 0.004 286.32);
-   --color-wl-field: oklch(1 0 0);
-   --color-wl-ring: oklch(0.705 0.015 286.067);
-   --color-wl-primary: oklch(0.21 0.006 285.885);
-   --color-wl-primary-fg: oklch(0.985 0 0);
+   /* Wishlist palette (shadcn zinc, tinted toward a cool blue). Swapped for dark
+      mode below. */
+   --color-wl-page: oklch(0.982 0.008 225);
+   --color-wl-card: oklch(0.996 0.003 225);
+   --color-wl-fg: oklch(0.15 0.02 240);
+   --color-wl-muted: oklch(0.956 0.012 225);
+   --color-wl-muted-fg: oklch(0.45 0.03 235);
+   --color-wl-border: oklch(0.87 0.018 225);
+   --color-wl-input: oklch(0.87 0.018 225);
+   --color-wl-field: oklch(0.996 0.003 225);
+   --color-wl-ring: oklch(0.7 0.04 230);
+   --color-wl-primary: oklch(0.3 0.05 235);
+   --color-wl-primary-fg: oklch(0.985 0.006 225);
    --color-wl-danger: oklch(0.577 0.245 27.325);
    --color-wl-success: oklch(0.527 0.154 150.069);
 
@@ -580,17 +581,17 @@ html:has(.wishlist-page) body {
 
 @media (prefers-color-scheme: dark) {
    :root {
-      --color-wl-page: oklch(0.141 0.005 285.823);
-      --color-wl-card: oklch(0.183 0.006 285.79);
-      --color-wl-fg: oklch(0.985 0 0);
-      --color-wl-muted: oklch(0.274 0.006 286.033);
-      --color-wl-muted-fg: oklch(0.705 0.015 286.067);
-      --color-wl-border: oklch(1 0 0 / 10%);
-      --color-wl-input: oklch(1 0 0 / 15%);
+      --color-wl-page: oklch(0.16 0.015 240);
+      --color-wl-card: oklch(0.2 0.018 240);
+      --color-wl-fg: oklch(0.975 0.006 225);
+      --color-wl-muted: oklch(0.28 0.02 235);
+      --color-wl-muted-fg: oklch(0.8 0.03 230);
+      --color-wl-border: oklch(1 0 0 / 14%);
+      --color-wl-input: oklch(1 0 0 / 20%);
       --color-wl-field: oklch(1 0 0 / 4.5%);
-      --color-wl-ring: oklch(0.552 0.016 285.938);
-      --color-wl-primary: oklch(0.92 0.004 286.32);
-      --color-wl-primary-fg: oklch(0.21 0.006 285.885);
+      --color-wl-ring: oklch(0.55 0.04 230);
+      --color-wl-primary: oklch(0.88 0.035 225);
+      --color-wl-primary-fg: oklch(0.22 0.03 240);
       --color-wl-danger: oklch(0.704 0.191 22.216);
       --color-wl-success: oklch(0.792 0.209 151.711);
    }

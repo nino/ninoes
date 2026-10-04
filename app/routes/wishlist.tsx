@@ -459,7 +459,7 @@ function WishCard({
                <WishDescription>{shown.description}</WishDescription>
             )}
             {shown.translatedFrom != null && (
-               <p className="flex items-center gap-1.5 text-xs text-wl-muted-fg">
+               <p className="flex items-center gap-1.5 text-xs text-wl-faint-fg">
                   <Icon name="languages" className="size-3.5" />
                   {t.translatedFrom(shown.translatedFrom)}
                </p>

@@ -161,7 +161,10 @@ export function Table<TData extends RowData>({
                         }`}
                      >
                         {row.getVisibleCells().map((cell) => (
-                           <td key={cell.id} className="h-11 px-4 py-1.5 whitespace-nowrap">
+                           <td
+                              key={cell.id}
+                              className="h-11 px-4 py-1.5 whitespace-nowrap"
+                           >
                               {flexRender(cell.column.columnDef.cell, cell.getContext())}
                            </td>
                         ))}

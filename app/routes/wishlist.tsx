@@ -37,11 +37,11 @@ export function meta({}: Route.MetaArgs): ReturnType<Route.MetaFunction> {
 }
 
 export const links: Route.LinksFunction = () => [
-   { rel: "preconnect", href: "https://fonts.googleapis.com" },
-   { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
+   // Bunny Fonts is a drop-in for Google Fonts that doesn't log visitors' IP addresses.
+   { rel: "preconnect", href: "https://fonts.bunny.net" },
    {
       rel: "stylesheet",
-      href: "https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&display=swap",
+      href: "https://fonts.bunny.net/css?family=bevan:400|bricolage-grotesque:400,500,600,700&display=swap",
    },
 ];
 
@@ -138,7 +138,7 @@ export default function WishlistPage(): JSX.Element {
    const t = visitor ? strings[visitor.language] : null;
 
    return (
-      <div className="wishlist-page min-h-screen bg-wl-page font-geist text-wl-fg antialiased">
+      <div className="wishlist-page min-h-screen bg-wl-page font-wl-body text-wl-fg antialiased">
          {visitor && t && (
             <>
                <header className="border-b border-wl-border bg-wl-card">
@@ -234,7 +234,7 @@ function NameGate({
       <main className="flex min-h-[calc(100vh-3.5rem)] items-center justify-center px-4 py-12">
          <div className={`w-full max-w-sm ${cardClass}`}>
             <div className="flex flex-col gap-1.5 p-6 pb-0">
-               <h1 className="text-2xl font-semibold tracking-tight">{t.title}</h1>
+               <h1 className="font-wl-title text-2xl">{t.title}</h1>
                <p className="text-sm text-wl-muted-fg">{t.giftNotice}</p>
                <p className="text-sm text-wl-muted-fg">{t.gateIntro}</p>
             </div>
@@ -300,7 +300,7 @@ function WishList({
    return (
       <main className="mx-auto flex max-w-2xl flex-col gap-6 px-4 py-8 sm:py-12">
          <div className="flex flex-col gap-1">
-            <h1 className="mb-1 text-3xl font-semibold tracking-tight">{t.title}</h1>
+            <h1 className="mb-1 font-wl-title text-3xl">{t.title}</h1>
             {summary != null && <p className="text-sm text-wl-muted-fg">{summary}</p>}
             <p className="text-sm text-wl-muted-fg">
                {t.signedAs} <span className="font-medium text-wl-fg">{name}</span> ·{" "}

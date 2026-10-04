@@ -1,4 +1,5 @@
 import { type ButtonHTMLAttributes, type ReactNode } from "react";
+import { buttonBase, buttonColors } from "./styles";
 
 type ButtonVariant = "primary" | "secondary" | "danger" | "ghost";
 
@@ -7,6 +8,13 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
    isLoading?: boolean;
    big?: boolean;
 }
+
+const variantStyles: Record<ButtonVariant, string> = {
+   primary: buttonColors.primary,
+   secondary: buttonColors.outline,
+   danger: buttonColors.dangerOutline,
+   ghost: buttonColors.ghost,
+};
 
 export function Button({
    children,
@@ -17,30 +25,29 @@ export function Button({
    big,
    ...props
 }: ButtonProps): ReactNode {
-   const variantStyles: Record<ButtonVariant, string> = {
-      primary: "aqua-btn--blue",
-      secondary: "",
-      danger: "aqua-btn--red",
-      ghost: "aqua-btn--ghost",
-   };
-
    return (
       <button
-         className={`
-        aqua-btn
-        ${variantStyles[variant]}
-        ${big ? "aqua-btn--big" : ""}
-        ${isLoading ? "is-loading" : ""}
-        ${className}
-      `}
+         className={`relative ${buttonBase} ${variantStyles[variant]} ${
+            // Long candidate names must wrap rather than overflow the page.
+            big ? "min-h-14 px-7 py-3 text-lg" : "h-10 px-4 text-sm whitespace-nowrap"
+         } ${isLoading ? "text-transparent!" : ""} ${className}`}
          disabled={(disabled ?? false) || isLoading}
          {...props}
       >
          {children}
          {isLoading && (
-            <div className="aqua-btn__spinner text-gray-600">
+            <span
+               className={`absolute inset-0 flex items-center justify-center ${
+                  variant === "primary"
+                     ? "text-primary-fg"
+                     : variant === "danger"
+                       ? "text-danger"
+                       : "text-muted-fg"
+               }`}
+            >
+               <span className="size-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
                <span className="sr-only">Loading</span>
-            </div>
+            </span>
          )}
       </button>
    );

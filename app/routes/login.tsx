@@ -13,6 +13,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "~/components/ui/Button";
 import { Input } from "~/components/ui/Input";
 import { useToast } from "~/components/ui/Toast";
+import { cardClass } from "~/components/ui/styles";
 
 const LoginSchema = z.object({ email: z.email(), password: z.string().min(8) });
 
@@ -64,18 +65,15 @@ export default function LoginPage(): ReactNode {
    }
 
    return (
-      <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
-         <div className="sm:mx-auto sm:w-full sm:max-w-sm">
-            <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight">
-               Sign in to your account
-            </h2>
-         </div>
-
-         <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-            <div className="aqua-panel p-8">
-               <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+      <div className="flex justify-center py-4 sm:py-12">
+         <div className={`w-full max-w-sm ${cardClass}`}>
+            <div className="p-6 pb-0">
+               <h1 className="font-title text-2xl">Sign in to your account</h1>
+            </div>
+            <div className="p-6">
+               <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
                   <div>
-                     <label htmlFor="email" className="aqua-label leading-6">
+                     <label htmlFor="email" className="text-sm font-medium">
                         Email
                      </label>
                      <div className="mt-2">
@@ -90,7 +88,7 @@ export default function LoginPage(): ReactNode {
                   </div>
 
                   <div>
-                     <label htmlFor="password" className="aqua-label leading-6">
+                     <label htmlFor="password" className="text-sm font-medium">
                         Password
                      </label>
                      <div className="mt-2">

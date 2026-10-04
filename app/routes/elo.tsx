@@ -45,7 +45,7 @@ export default function Leaderboard(): React.ReactNode {
 
    return (
       <div className="space-y-8">
-         <h1 className="text-2xl font-bold">Name Leaderboard</h1>
+         <h1 className="font-title text-3xl">Name Leaderboard</h1>
          <GenderFilter
             value={genders}
             onChange={(value) => {
@@ -63,8 +63,9 @@ export default function Leaderboard(): React.ReactNode {
             isLoading={eloLeaderboard.isFetching}
          />
          {numPages != null && numPages > 0 && !eloLeaderboard.isError && (
-            <div className="flex justify-end items-baseline gap-4">
+            <div className="flex items-center justify-end gap-4">
                <Button
+                  variant="secondary"
                   onClick={() =>
                      setPagination((current) => ({
                         ...current,
@@ -74,8 +75,11 @@ export default function Leaderboard(): React.ReactNode {
                >
                   prev
                </Button>
-               <div>{pagination.pageIndex + 1}</div>
+               <div className="text-sm text-muted-fg tabular-nums">
+                  {pagination.pageIndex + 1}
+               </div>
                <Button
+                  variant="secondary"
                   onClick={() =>
                      setPagination((current) => ({
                         ...current,

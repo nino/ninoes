@@ -12,6 +12,16 @@ import {
 } from "~/hooks/useSupabase";
 import { WeddingRain } from "~/components/WeddingRain";
 import { WishDescription } from "~/components/WishDescription";
+import { Skeleton } from "~/components/ui/Skeleton";
+import {
+   cardClass,
+   dangerButton,
+   dangerGhostButton,
+   ghostButton,
+   inputClass,
+   outlineButton,
+   primaryButton,
+} from "~/components/ui/styles";
 import type { Wish } from "~/model/types";
 import {
    contributionState,
@@ -40,12 +50,6 @@ export function meta({}: Route.MetaArgs): ReturnType<Route.MetaFunction> {
 export const links: Route.LinksFunction = () => [
    { rel: "icon", href: "/wishlist-icon.svg", type: "image/svg+xml" },
    { rel: "apple-touch-icon", href: "/wishlist-apple-touch-icon.png" },
-   // Bunny Fonts is a drop-in for Google Fonts that doesn't log visitors' IP addresses.
-   { rel: "preconnect", href: "https://fonts.bunny.net" },
-   {
-      rel: "stylesheet",
-      href: "https://fonts.bunny.net/css?family=bevan:400|bricolage-grotesque:400,500,600,700&display=swap",
-   },
 ];
 
 const nameKey = "wishlist:name";
@@ -141,20 +145,20 @@ export default function WishlistPage(): JSX.Element {
    const t = visitor ? strings[visitor.language] : null;
 
    return (
-      <div className="wishlist-page min-h-screen bg-wl-page font-wl-body text-wl-fg antialiased">
+      <div className="min-h-screen">
          {visitor == null || t == null ? (
             <PageSkeleton />
          ) : (
             <>
-               <header className="border-b border-wl-border bg-wl-card">
+               <header className="border-b border-border bg-card">
                   <div className="mx-auto flex h-14 max-w-2xl items-center justify-between gap-4 px-4">
                      <div className="flex items-center gap-2.5">
-                        <span className="flex size-8 items-center justify-center rounded-md bg-wl-primary text-wl-primary-fg">
+                        <span className="flex size-8 items-center justify-center rounded-md bg-primary text-primary-fg">
                            <Icon name="gift" className="size-4" />
                         </span>
                         <div className="flex flex-col leading-tight">
                            <span className="text-sm font-semibold">{t.couple}</span>
-                           <span className="text-xs text-wl-muted-fg">{t.date}</span>
+                           <span className="text-xs text-muted-fg">{t.date}</span>
                         </div>
                      </div>
                      <LanguageToggle
@@ -180,17 +184,6 @@ export default function WishlistPage(): JSX.Element {
    );
 }
 
-const buttonBase =
-   "inline-flex shrink-0 items-center justify-center gap-2 rounded-md text-sm font-medium whitespace-nowrap transition-colors outline-none focus-visible:ring-[3px] focus-visible:ring-wl-ring/50 focus-visible:shadow-wl-glow disabled:pointer-events-none disabled:opacity-50 [&_svg]:size-4 [&_svg]:shrink-0";
-const primaryButton = `${buttonBase} h-10 px-4 bg-wl-primary text-wl-primary-fg shadow-xs hover:bg-wl-primary/90`;
-const outlineButton = `${buttonBase} h-10 px-4 border border-wl-border bg-wl-card shadow-xs hover:bg-wl-muted`;
-const ghostButton = `${buttonBase} h-9 px-3 text-wl-muted-fg hover:bg-wl-muted hover:text-wl-fg`;
-const dangerButton = `${buttonBase} h-10 px-4 bg-wl-danger text-white shadow-xs hover:bg-wl-danger/90`;
-const dangerGhostButton = `${buttonBase} h-10 px-3 text-wl-danger hover:bg-wl-danger/10`;
-const inputClass =
-   "w-full min-w-0 rounded-md border border-wl-input bg-wl-field px-3 text-base shadow-xs transition-[color,box-shadow] outline-none placeholder:text-wl-muted-fg focus-visible:border-wl-ring focus-visible:ring-[3px] focus-visible:ring-wl-ring/50 focus-visible:shadow-wl-glow aria-invalid:border-wl-danger aria-invalid:ring-wl-danger/20 sm:text-sm";
-const cardClass = "rounded-xl border border-wl-border bg-wl-card shadow-xs";
-
 function LanguageToggle({
    language,
    onChange,
@@ -207,7 +200,7 @@ function LanguageToggle({
       <div
          role="group"
          aria-label={t.languageNav}
-         className="relative inline-grid h-9 grid-cols-2 items-center rounded-lg bg-wl-muted p-[3px]"
+         className="relative inline-grid h-9 grid-cols-2 items-center rounded-lg bg-muted p-[3px]"
       >
          <span
             aria-hidden
@@ -219,7 +212,7 @@ function LanguageToggle({
          >
             <span
                key={switches}
-               className={`block size-full rounded-md bg-wl-card shadow-xs motion-reduce:animate-none ${
+               className={`block size-full rounded-md bg-card shadow-xs motion-reduce:animate-none ${
                   switches > 0 ? "animate-wl-pill-wiggle" : ""
                }`}
             />
@@ -235,10 +228,8 @@ function LanguageToggle({
                   setSwitches((n) => n + 1);
                   onChange(option);
                }}
-               className={`relative h-full rounded-md px-3 text-xs font-medium uppercase transition-colors outline-none focus-visible:ring-[3px] focus-visible:ring-wl-ring/50 focus-visible:shadow-wl-glow ${
-                  option === language
-                     ? "text-wl-fg"
-                     : "text-wl-muted-fg hover:text-wl-fg"
+               className={`relative h-full rounded-md px-3 text-xs font-medium uppercase transition-colors outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:shadow-glow ${
+                  option === language ? "text-fg" : "text-muted-fg hover:text-fg"
                }`}
             >
                {option}
@@ -261,9 +252,9 @@ function NameGate({
       <main className="flex min-h-[calc(100vh-3.5rem)] items-center justify-center px-4 py-12">
          <div className={`w-full max-w-sm ${cardClass}`}>
             <div className="flex flex-col gap-1.5 p-6 pb-0">
-               <h1 className="font-wl-title text-2xl">{t.title}</h1>
-               <p className="text-sm text-wl-muted-fg">{t.giftNotice}</p>
-               <p className="text-sm text-wl-muted-fg">{t.gateIntro}</p>
+               <h1 className="font-title text-2xl">{t.title}</h1>
+               <p className="text-sm text-muted-fg">{t.giftNotice}</p>
+               <p className="text-sm text-muted-fg">{t.gateIntro}</p>
             </div>
             <form
                className="flex flex-col gap-4 p-6"
@@ -327,18 +318,18 @@ function WishList({
    return (
       <main className="mx-auto flex max-w-2xl flex-col gap-6 px-4 py-8 sm:py-12">
          <div className="flex flex-col gap-1">
-            <h1 className="mb-1 font-wl-title text-3xl">{t.title}</h1>
+            <h1 className="mb-1 font-title text-3xl">{t.title}</h1>
             {wishes.isPending ? (
-               <Bone className="my-0.5 h-4 w-44" />
+               <Skeleton className="my-0.5 h-4 w-44" />
             ) : (
-               summary != null && <p className="text-sm text-wl-muted-fg">{summary}</p>
+               summary != null && <p className="text-sm text-muted-fg">{summary}</p>
             )}
-            <p className="text-sm text-wl-muted-fg">
-               {t.signedAs} <span className="font-medium text-wl-fg">{name}</span> ·{" "}
+            <p className="text-sm text-muted-fg">
+               {t.signedAs} <span className="font-medium text-fg">{name}</span> ·{" "}
                <button
                   type="button"
                   onClick={onSignOut}
-                  className="rounded-sm font-medium text-wl-fg underline underline-offset-4 outline-none focus-visible:ring-[3px] focus-visible:ring-wl-ring/50 focus-visible:shadow-wl-glow"
+                  className="rounded-sm font-medium text-fg underline underline-offset-4 outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:shadow-glow"
                >
                   {t.notYou}
                </button>
@@ -348,11 +339,11 @@ function WishList({
          {spoilerFree && (
             <div
                role="note"
-               className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-0.5 rounded-lg border border-wl-border bg-wl-card px-4 py-3 text-sm"
+               className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-0.5 rounded-lg border border-border bg-card px-4 py-3 text-sm"
             >
                <Icon name="eyeOff" className="row-span-2 mt-0.5 size-4" />
                <div className="font-medium">{t.spoilerFreeLabel}</div>
-               <p className="text-wl-muted-fg">{t.spoilerFreeText(name)}</p>
+               <p className="text-muted-fg">{t.spoilerFreeText(name)}</p>
             </div>
          )}
 
@@ -362,15 +353,15 @@ function WishList({
                <WishSkeletons spoilerFree={spoilerFree} />
             </div>
          ) : wishes.isError ? (
-            <p className="rounded-lg border border-wl-danger/40 bg-wl-danger/5 px-4 py-3 text-sm text-wl-danger">
+            <p className="rounded-lg border border-danger/40 bg-danger/5 px-4 py-3 text-sm text-danger">
                {t.loadError}
             </p>
          ) : wishes.data.length === 0 ? (
-            <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed border-wl-border px-6 py-12 text-center">
-               <span className="flex size-10 items-center justify-center rounded-full bg-wl-muted">
-                  <Icon name="gift" className="size-5 text-wl-muted-fg" />
+            <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed border-border px-6 py-12 text-center">
+               <span className="flex size-10 items-center justify-center rounded-full bg-muted">
+                  <Icon name="gift" className="size-5 text-muted-fg" />
                </span>
-               <p className="text-sm text-wl-muted-fg">{t.empty}</p>
+               <p className="text-sm text-muted-fg">{t.empty}</p>
             </div>
          ) : (
             <ul className="flex flex-col gap-3">
@@ -391,11 +382,6 @@ function WishList({
    );
 }
 
-/** A placeholder block that shimmers while content loads. */
-function Bone({ className }: { className: string }): JSX.Element {
-   return <div className={`wl-skeleton rounded-md ${className}`} />;
-}
-
 // Varied widths so the placeholders read as different wishes, not a grid.
 const skeletonWidths = [
    { title: "w-1/2", line: "w-11/12", tail: "w-2/3" },
@@ -411,16 +397,16 @@ function WishSkeletons({ spoilerFree }: { spoilerFree: boolean }): JSX.Element {
             <li key={i} className={cardClass}>
                <div className="flex flex-col gap-2.5 p-5">
                   <div className="flex items-center justify-between gap-4">
-                     <Bone className={`h-5 ${w.title}`} />
-                     <Bone className="h-5 w-14" />
+                     <Skeleton className={`h-5 ${w.title}`} />
+                     <Skeleton className="h-5 w-14" />
                   </div>
-                  <Bone className={`h-3.5 ${w.line}`} />
-                  <Bone className={`h-3.5 ${w.tail}`} />
+                  <Skeleton className={`h-3.5 ${w.line}`} />
+                  <Skeleton className={`h-3.5 ${w.tail}`} />
                </div>
                {!spoilerFree && (
-                  <div className="flex min-h-14 items-center justify-between gap-3 border-t border-wl-border px-5 py-2.5">
-                     <Bone className="h-9 w-28" />
-                     <Bone className="h-9 w-16" />
+                  <div className="flex min-h-14 items-center justify-between gap-3 border-t border-border px-5 py-2.5">
+                     <Skeleton className="h-9 w-28" />
+                     <Skeleton className="h-9 w-16" />
                   </div>
                )}
             </li>
@@ -436,23 +422,23 @@ function WishSkeletons({ spoilerFree }: { spoilerFree: boolean }): JSX.Element {
 function PageSkeleton(): JSX.Element {
    return (
       <div aria-busy="true">
-         <header className="border-b border-wl-border bg-wl-card">
+         <header className="border-b border-border bg-card">
             <div className="mx-auto flex h-14 max-w-2xl items-center justify-between gap-4 px-4">
                <div className="flex items-center gap-2.5">
-                  <Bone className="size-8" />
+                  <Skeleton className="size-8" />
                   <div className="flex flex-col gap-1.5">
-                     <Bone className="h-3.5 w-28" />
-                     <Bone className="h-3 w-20" />
+                     <Skeleton className="h-3.5 w-28" />
+                     <Skeleton className="h-3 w-20" />
                   </div>
                </div>
-               <Bone className="h-8 w-24 rounded-full" />
+               <Skeleton className="h-8 w-24 rounded-full" />
             </div>
          </header>
          <main className="mx-auto flex max-w-2xl flex-col gap-6 px-4 py-8 sm:py-12">
             <div className="flex flex-col gap-2">
-               <Bone className="mb-1 h-9 w-56" />
-               <Bone className="h-4 w-44" />
-               <Bone className="h-4 w-52" />
+               <Skeleton className="mb-1 h-9 w-56" />
+               <Skeleton className="h-4 w-44" />
+               <Skeleton className="h-4 w-52" />
             </div>
             <WishSkeletons spoilerFree={false} />
          </main>
@@ -560,7 +546,7 @@ function WishCard({
                <WishDescription>{shown.description}</WishDescription>
             )}
             {shown.translatedFrom != null && (
-               <p className="flex items-center gap-1.5 text-xs text-wl-faint-fg">
+               <p className="flex items-center gap-1.5 text-xs text-faint-fg">
                   <Icon name="languages" className="size-3.5" />
                   {t.translatedFrom(shown.translatedFrom)}
                </p>
@@ -574,13 +560,10 @@ function WishCard({
                         href={wish.link}
                         target="_blank"
                         rel="noopener noreferrer nofollow"
-                        className="inline-flex items-center gap-1.5 rounded-sm text-sm font-medium underline-offset-4 outline-none hover:underline focus-visible:ring-[3px] focus-visible:ring-wl-ring/50 focus-visible:shadow-wl-glow"
+                        className="inline-flex items-center gap-1.5 rounded-sm text-sm font-medium underline-offset-4 outline-none hover:underline focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:shadow-glow"
                      >
                         {linkLabel(wish.link)}
-                        <Icon
-                           name="externalLink"
-                           className="size-3.5 text-wl-muted-fg"
-                        />
+                        <Icon name="externalLink" className="size-3.5 text-muted-fg" />
                      </a>
                   )}
                   {/* The couple can't claim, so editing doesn't need a footer of its own. */}
@@ -687,10 +670,10 @@ function Contributions({
    if (state.whole != null) {
       const mine = state.whole === state.mine;
       return (
-         <div className="flex min-h-14 items-center justify-between gap-3 border-t border-wl-border px-5 py-2.5">
+         <div className="flex min-h-14 items-center justify-between gap-3 border-t border-border px-5 py-2.5">
             {mine ? (
                <div className="flex shrink-0 items-center gap-1">
-                  <span className="inline-flex items-center gap-1.5 rounded-md bg-wl-success/10 px-2.5 py-1 text-sm font-medium text-wl-success">
+                  <span className="inline-flex items-center gap-1.5 rounded-md bg-success/10 px-2.5 py-1 text-sm font-medium text-success">
                      <Icon name="check" className="size-4" />
                      {t.yours}
                   </span>
@@ -704,7 +687,7 @@ function Contributions({
                   </button>
                </div>
             ) : (
-               <span className="inline-flex min-w-0 items-center gap-1.5 rounded-md bg-wl-muted px-2.5 py-1 text-sm font-medium text-wl-muted-fg">
+               <span className="inline-flex min-w-0 items-center gap-1.5 rounded-md bg-muted px-2.5 py-1 text-sm font-medium text-muted-fg">
                   <Icon name="check" className="size-4 shrink-0" />
                   <span className="truncate">{t.takenBy(state.whole.name)}</span>
                </span>
@@ -724,7 +707,7 @@ function Contributions({
    const editOnProgressLine = !hasActions && progress != null && shareForm == null;
 
    return (
-      <div className="flex flex-col gap-3 border-t border-wl-border px-5 py-3">
+      <div className="flex flex-col gap-3 border-t border-border px-5 py-3">
          {contributions.length > 0 && (
             <ul
                aria-label={t.contributionsLabel}
@@ -734,17 +717,14 @@ function Contributions({
                   const isMine = c === state.mine;
                   return (
                      <li key={c.id} className="flex min-h-8 items-center gap-2">
-                        <Icon
-                           name="gift"
-                           className="size-3.5 shrink-0 text-wl-muted-fg"
-                        />
+                        <Icon name="gift" className="size-3.5 shrink-0 text-muted-fg" />
                         <span
                            className={`min-w-0 truncate ${isMine ? "font-medium" : ""}`}
                         >
                            {isMine ? t.you : c.name}
                         </span>
                         {c.amount != null && (
-                           <span className="text-wl-muted-fg tabular-nums">
+                           <span className="text-muted-fg tabular-nums">
                               {formatPrice(c.amount, language)}
                            </span>
                         )}
@@ -784,15 +764,15 @@ function Contributions({
                      formatPrice(state.total, language),
                      formatPrice(wish.price, language),
                   )}
-                  className="h-1.5 overflow-hidden rounded-full bg-wl-muted"
+                  className="h-1.5 overflow-hidden rounded-full bg-muted"
                >
                   <div
-                     className="h-full rounded-full bg-wl-success"
+                     className="h-full rounded-full bg-success"
                      style={{ width: `${progress}%` }}
                   />
                </div>
                <div className="flex min-h-9 items-center justify-between gap-2">
-                  <span className="text-xs text-wl-muted-fg tabular-nums">
+                  <span className="text-xs text-muted-fg tabular-nums">
                      {t.covered(
                         formatPrice(state.total, language),
                         formatPrice(wish.price, language),
@@ -812,7 +792,7 @@ function Contributions({
                   <span className="relative">
                      <span
                         aria-hidden="true"
-                        className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-sm text-wl-muted-fg"
+                        className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-sm text-muted-fg"
                      >
                         £
                      </span>
@@ -934,7 +914,7 @@ function AddWish({
             type="button"
             aria-expanded={false}
             onClick={() => setOpen(true)}
-            className={`mt-4 h-12 w-full border-dashed text-wl-muted-fg hover:text-wl-fg ${outlineButton}`}
+            className={`mt-4 h-12 w-full border-dashed text-muted-fg hover:text-fg ${outlineButton}`}
          >
             <Icon name="plus" />
             {t.addHeading}
@@ -946,7 +926,7 @@ function AddWish({
       <section className={`mt-4 ${cardClass}`}>
          <div className="flex flex-col gap-1.5 p-5 pb-0 sm:p-6 sm:pb-0">
             <h2 className="text-lg font-semibold tracking-tight">{t.addHeading}</h2>
-            {!spoilerFree && <p className="text-sm text-wl-muted-fg">{t.addIntro}</p>}
+            {!spoilerFree && <p className="text-sm text-muted-fg">{t.addIntro}</p>}
          </div>
          <div className="p-5 sm:p-6">
             <WishForm
@@ -964,7 +944,7 @@ function AddWish({
                         type="checkbox"
                         checked={claimNow}
                         onChange={(e) => setClaimNow(e.target.checked)}
-                        className="size-4 rounded-sm accent-wl-primary outline-none focus-visible:ring-[3px] focus-visible:ring-wl-ring/50 focus-visible:shadow-wl-glow"
+                        className="size-4 rounded-sm accent-primary outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:shadow-glow"
                      />
                      {t.claimNow}
                   </label>
@@ -1053,7 +1033,7 @@ function WishForm({
                <span className="relative">
                   <span
                      aria-hidden="true"
-                     className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-sm text-wl-muted-fg"
+                     className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-sm text-muted-fg"
                   >
                      £
                   </span>
@@ -1130,11 +1110,11 @@ function Field({
          <span className="text-sm font-medium">
             {label}
             {optional != null && (
-               <span className="font-normal text-wl-muted-fg"> ({optional})</span>
+               <span className="font-normal text-muted-fg"> ({optional})</span>
             )}
          </span>
          {children}
-         {error != null && <span className="text-sm text-wl-danger">{error}</span>}
+         {error != null && <span className="text-sm text-danger">{error}</span>}
       </label>
    );
 }

@@ -146,7 +146,12 @@ function TroopPath({
 function TroopPoint({ troop }: { troop: Troop }): ReactNode {
    const [x, y] = projection([troop.LONP, troop.LATP]) ?? [0, 0];
    return (
-      <circle cx={x} cy={y} r={1} fill={troop.DIR === "A" ? "#D4B996" : "#000000"} />
+      <circle
+         cx={x}
+         cy={y}
+         r={1}
+         fill={troop.DIR === "A" ? "#D4B996" : "currentColor"}
+      />
    );
 }
 
@@ -163,7 +168,7 @@ function TemperatureLine({
       return tempLine(temperatures) ?? "";
    }, [temperatures]);
 
-   return <path d={d} fill="none" stroke="black" strokeWidth={1.5} />;
+   return <path d={d} fill="none" stroke="currentColor" strokeWidth={1.5} />;
 }
 
 function TemperaturePoint({ temperature }: { temperature: Temperature }): ReactNode {
@@ -172,7 +177,7 @@ function TemperaturePoint({ temperature }: { temperature: Temperature }): ReactN
          cx={tempXScale(temperature.LONT)}
          cy={tempYScale(temperature.TEMP)}
          r={3}
-         fill="black"
+         fill="currentColor"
       />
    );
 }
@@ -242,14 +247,14 @@ function GeoBackground(): ReactNode {
       <>
          <path
             d={pathGenerator(sphere) ?? ""}
-            fill="#f0f0f0"
-            stroke="#000"
+            className="fill-muted"
+            stroke="currentColor"
             strokeWidth={0.5}
          />
          <path
             d={pathGenerator(graticulePath) ?? ""}
             fill="none"
-            stroke="#ddd"
+            className="stroke-border"
             strokeWidth={0.2}
          />
          {graticuleMajor.map((line, i) => (
@@ -257,14 +262,14 @@ function GeoBackground(): ReactNode {
                key={i}
                d={pathGenerator(line) ?? ""}
                fill="none"
-               stroke="#999"
+               className="stroke-muted-fg"
                strokeWidth={0.5}
             />
          ))}
          <path
             d={pathGenerator(graticuleOutline) ?? ""}
             fill="none"
-            stroke="#ddd"
+            className="stroke-border"
             strokeWidth={1}
          />
          {/* Add latitude labels */}
@@ -312,9 +317,10 @@ export default function Data(): ReactNode {
    }
 
    return (
-      <div className="p-8">
-         <h1 className="text-2xl font-bold mb-8">Napoleon&rsquo;s March</h1>
+      <div className="overflow-x-auto">
+         <h1 className="mb-8 font-title text-3xl">Napoleon&rsquo;s March</h1>
          <svg
+            className="fill-current"
             width={dimensions.width + dimensions.margin.left + dimensions.margin.right}
             height={dimensions.height + dimensions.margin.top + dimensions.margin.bottom}
          >
@@ -329,7 +335,7 @@ export default function Data(): ReactNode {
                   if (i === troops.length - 1) return null;
                   const nextTroop = troops[i + 1];
                   const strokeWidth = strokeScale(troop.SURV);
-                  const color = troop.DIR === "A" ? "#D4B996" : "#000000";
+                  const color = troop.DIR === "A" ? "#D4B996" : "currentColor";
                   return (
                      <TroopPath
                         key={i}

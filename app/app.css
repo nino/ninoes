@@ -8,6 +8,23 @@
    --breakpoint-xl: 1280px;
    --breakpoint-2xl: 1536px;
 
+   --font-geist: Geist, ui-sans-serif, system-ui, sans-serif;
+
+   /* Wishlist palette (shadcn zinc). Swapped for dark mode below. */
+   --color-wl-page: oklch(0.985 0 0);
+   --color-wl-card: oklch(1 0 0);
+   --color-wl-fg: oklch(0.141 0.005 285.823);
+   --color-wl-muted: oklch(0.967 0.001 286.375);
+   --color-wl-muted-fg: oklch(0.552 0.016 285.938);
+   --color-wl-border: oklch(0.92 0.004 286.32);
+   --color-wl-input: oklch(0.92 0.004 286.32);
+   --color-wl-field: oklch(1 0 0);
+   --color-wl-ring: oklch(0.705 0.015 286.067);
+   --color-wl-primary: oklch(0.21 0.006 285.885);
+   --color-wl-primary-fg: oklch(0.985 0 0);
+   --color-wl-danger: oklch(0.577 0.245 27.325);
+   --color-wl-success: oklch(0.527 0.154 150.069);
+
    --font-sans:
       "Lucida Grande", "Lucida Sans Unicode", "Helvetica Neue", Helvetica, Arial,
       "Segoe UI", sans-serif;
@@ -547,5 +564,34 @@ body {
       border: 3px solid rgba(0, 0, 0, 0.2);
       border-top-color: #4a90e2;
       animation: aqua-spin 0.7s linear infinite;
+   }
+}
+
+/* ------------------------------------------------------------------ *
+ *  Wishlist: its own page outside the Aqua window, following the
+ *  system light/dark setting.
+ * ------------------------------------------------------------------ */
+
+html:has(.wishlist-page),
+html:has(.wishlist-page) body {
+   color-scheme: light dark;
+   background: var(--color-wl-page);
+}
+
+@media (prefers-color-scheme: dark) {
+   :root {
+      --color-wl-page: oklch(0.141 0.005 285.823);
+      --color-wl-card: oklch(0.183 0.006 285.79);
+      --color-wl-fg: oklch(0.985 0 0);
+      --color-wl-muted: oklch(0.274 0.006 286.033);
+      --color-wl-muted-fg: oklch(0.705 0.015 286.067);
+      --color-wl-border: oklch(1 0 0 / 10%);
+      --color-wl-input: oklch(1 0 0 / 15%);
+      --color-wl-field: oklch(1 0 0 / 4.5%);
+      --color-wl-ring: oklch(0.552 0.016 285.938);
+      --color-wl-primary: oklch(0.92 0.004 286.32);
+      --color-wl-primary-fg: oklch(0.21 0.006 285.885);
+      --color-wl-danger: oklch(0.704 0.191 22.216);
+      --color-wl-success: oklch(0.792 0.209 151.711);
    }
 }

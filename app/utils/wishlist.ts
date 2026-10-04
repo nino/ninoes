@@ -138,6 +138,7 @@ export interface WishlistStrings {
    signedAs: string;
    notYou: string;
    languageNav: string;
+   loading: string;
    loadError: string;
    empty: string;
    summary: (total: number, open: number | null) => string;
@@ -191,6 +192,7 @@ export const strings: Record<Language, WishlistStrings> = {
       signedAs: "Signed in as",
       notYou: "Not you?",
       languageNav: "Language",
+      loading: "Loading the list…",
       loadError: "The list didn’t load. Try reloading the page.",
       empty: "No wishes yet.",
       summary: (total, open) =>
@@ -249,6 +251,7 @@ export const strings: Record<Language, WishlistStrings> = {
       signedAs: "Angemeldet als",
       notYou: "Nicht du?",
       languageNav: "Sprache",
+      loading: "Die Liste wird geladen …",
       loadError: "Die Liste konnte nicht geladen werden. Lade die Seite bitte neu.",
       empty: "Noch keine Wünsche.",
       summary: (total, open) =>

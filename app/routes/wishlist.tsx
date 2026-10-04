@@ -37,6 +37,8 @@ export function meta({}: Route.MetaArgs): ReturnType<Route.MetaFunction> {
 }
 
 export const links: Route.LinksFunction = () => [
+   { rel: "icon", href: "/wishlist-icon.svg", type: "image/svg+xml" },
+   { rel: "apple-touch-icon", href: "/wishlist-apple-touch-icon.png" },
    // Bunny Fonts is a drop-in for Google Fonts that doesn't log visitors' IP addresses.
    { rel: "preconnect", href: "https://fonts.bunny.net" },
    {

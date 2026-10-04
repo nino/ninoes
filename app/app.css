@@ -8,7 +8,9 @@
    --breakpoint-xl: 1280px;
    --breakpoint-2xl: 1536px;
 
-   --font-geist: Geist, ui-sans-serif, system-ui, sans-serif;
+   /* Wishlist fonts, loaded from Bunny Fonts in routes/wishlist.tsx. Bevan has one weight. */
+   --font-wl-body: "Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif;
+   --font-wl-title: Bevan, Rockwell, Georgia, serif;
 
    /* Wishlist palette (shadcn zinc, tinted toward a cool blue). Swapped for dark
       mode below. */

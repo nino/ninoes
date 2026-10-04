@@ -514,7 +514,8 @@ function Contributions({
    const t = strings[language];
    const contribute = useContribute();
    const withdraw = useWithdrawContribution();
-   const [chippingIn, setChippingIn] = React.useState(false);
+   // The share form, either for a new share or for changing your own.
+   const [shareForm, setShareForm] = React.useState<"new" | "edit" | null>(null);
    const [share, setShare] = React.useState("");
    const [shareError, setShareError] = React.useState<string | null>(null);
 
@@ -528,8 +529,7 @@ function Contributions({
          {
             onSuccess: (status) => {
                if (status === "ok") {
-                  setChippingIn(false);
-                  setShare("");
+                  closeShareForm();
                   return;
                }
                toast.error(
@@ -545,6 +545,19 @@ function Contributions({
             onError: () => toast.error(t.somethingWentWrong),
          },
       );
+   };
+
+   const openShareForm = (mode: "new" | "edit"): void => {
+      const current = mode === "edit" ? state.mine?.amount : null;
+      setShare(current == null ? "" : String(current));
+      setShareError(null);
+      setShareForm(mode);
+   };
+
+   const closeShareForm = (): void => {
+      setShareForm(null);
+      setShare("");
+      setShareError(null);
    };
 
    const takeBack = (): void => {
@@ -607,7 +620,7 @@ function Contributions({
    // With nothing left to do but edit, the edit button goes on the progress
    // line instead of a row of its own.
    const hasActions = state.canGiveWhole || state.canChipIn;
-   const editOnProgressLine = !hasActions && progress != null;
+   const editOnProgressLine = !hasActions && progress != null && shareForm == null;
 
    return (
       <div className="flex flex-col gap-3 border-t border-wl-border px-5 py-3">
@@ -634,15 +647,25 @@ function Contributions({
                               {formatPrice(c.amount, language)}
                            </span>
                         )}
-                        {isMine && (
-                           <button
-                              type="button"
-                              disabled={busy}
-                              onClick={takeBack}
-                              className={`ml-auto h-8 ${ghostButton}`}
-                           >
-                              {t.takeBack}
-                           </button>
+                        {isMine && shareForm !== "edit" && (
+                           <div className="ml-auto flex items-center">
+                              <button
+                                 type="button"
+                                 disabled={busy}
+                                 onClick={() => openShareForm("edit")}
+                                 className={`h-8 ${ghostButton}`}
+                              >
+                                 {t.changeShare}
+                              </button>
+                              <button
+                                 type="button"
+                                 disabled={busy}
+                                 onClick={takeBack}
+                                 className={`h-8 ${ghostButton}`}
+                              >
+                                 {t.takeBack}
+                              </button>
+                           </div>
                         )}
                      </li>
                   );
@@ -678,7 +701,7 @@ function Contributions({
                </div>
             </div>
          )}
-         {editOnProgressLine ? null : chippingIn ? (
+         {shareForm != null ? (
             <form onSubmit={submitShare} noValidate className="flex flex-col gap-2">
                <Field
                   label={t.fieldShare}
@@ -705,21 +728,17 @@ function Contributions({
                <div className="flex items-center justify-end gap-2">
                   <button
                      type="button"
-                     onClick={() => {
-                        setChippingIn(false);
-                        setShare("");
-                        setShareError(null);
-                     }}
+                     onClick={closeShareForm}
                      className={outlineButton}
                   >
                      {t.cancel}
                   </button>
                   <button type="submit" disabled={busy} className={primaryButton}>
-                     {t.chipIn}
+                     {shareForm === "edit" ? t.save : t.chipIn}
                   </button>
                </div>
             </form>
-         ) : (
+         ) : editOnProgressLine ? null : (
             <div className="flex min-h-10 items-center justify-between gap-2">
                <div className="flex flex-wrap items-center gap-2">
                   {state.canGiveWhole && (
@@ -737,7 +756,7 @@ function Contributions({
                      <button
                         type="button"
                         disabled={busy}
-                        onClick={() => setChippingIn(true)}
+                        onClick={() => openShareForm("new")}
                         className={outlineButton}
                      >
                         <Icon name="plus" />

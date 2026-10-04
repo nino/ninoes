@@ -165,6 +165,7 @@ export interface WishlistStrings {
    alreadyClaimed: string;
    claimAfterAddFailed: string;
    chipIn: string;
+   changeShare: string;
    fieldShare: string;
    covered: (total: string, price: string) => string;
    you: string;
@@ -220,6 +221,7 @@ export const strings: Record<Language, WishlistStrings> = {
       claimAfterAddFailed:
          "Your wish was added, but claiming it didn’t work. Use “I’ll give this” on it instead.",
       chipIn: "Chip in",
+      changeShare: "Change",
       fieldShare: "Your share",
       covered: (total, price) => `${total} of ${price}`,
       you: "You",
@@ -275,6 +277,7 @@ export const strings: Record<Language, WishlistStrings> = {
       claimAfterAddFailed:
          "Dein Wunsch ist eingetragen, aber das Reservieren hat nicht geklappt. Nutze dort „Das schenke ich“.",
       chipIn: "Mitschenken",
+      changeShare: "Ändern",
       fieldShare: "Dein Anteil",
       covered: (total, price) => `${total} von ${price}`,
       you: "Du",

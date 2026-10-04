@@ -6,6 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "./components/ui/Button";
 import { Input } from "./components/ui/Input";
 import { useToast } from "./components/ui/Toast";
+import { cardClass } from "./components/ui/styles";
 
 const loginSchema = z.object({
    email: z.email("Please enter a valid email"),
@@ -42,10 +43,10 @@ export function Auth(): ReactNode {
 
    return (
       <div className="flex min-h-screen items-center justify-center px-4 py-12 sm:px-6 lg:px-8">
-         <div className="aqua-panel w-full max-w-md space-y-8 p-8">
+         <div className={`w-full max-w-md space-y-8 p-8 ${cardClass}`}>
             <div>
-               <h1 className="text-center text-3xl font-bold">Supabase + React</h1>
-               <p className="mt-2 text-center text-gray-600">
+               <h1 className="text-center font-title text-3xl">Supabase + React</h1>
+               <p className="mt-2 text-center text-muted-fg">
                   Sign in using your email and password below
                </p>
             </div>

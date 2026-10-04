@@ -13,7 +13,7 @@ import {
    useTable,
 } from "@tanstack/react-table";
 import React from "react";
-import { Spinner } from "./Spinner";
+import { Skeleton } from "./Skeleton";
 
 // v9 needs every feature to be registered. These are the ones this table uses:
 // column visibility for getVisibleLeafColumns/getVisibleCells, sorting for the
@@ -28,6 +28,11 @@ const features = tableFeatures({
 // v9 makes ColumnDef generic over the feature set. Call sites all use this
 // table, so they import this alias and don't name the features themselves.
 export type TableColumnDef<TData extends RowData> = ColumnDef<typeof features, TData>;
+
+// Varied so the loading rows look like names of different lengths.
+const skeletonWidths = ["w-2/5", "w-3/5", "w-1/3", "w-1/2", "w-2/3"];
+// Matches the h-11 of a body row.
+const rowHeight = 44;
 
 interface TableProps<TData extends RowData> {
    data: Array<TData>;
@@ -75,6 +80,9 @@ export function Table<TData extends RowData>({
          : pagination != null && pagination.pageSize !== lastRowCount
            ? (lastBodyHeight / lastRowCount) * pagination.pageSize
            : lastBodyHeight;
+   const skeletonRows =
+      placeholderHeight == null ? 2 : Math.ceil(placeholderHeight / rowHeight);
+
    // The core row model is built automatically in v9, so it is no longer passed.
    const table = useTable({
       features,
@@ -87,15 +95,19 @@ export function Table<TData extends RowData>({
    });
 
    return (
-      <div className="aqua-panel w-full overflow-x-auto">
-         <table className="aqua-table min-w-full">
+      <div className="w-full overflow-x-auto rounded-xl border border-border bg-card shadow-xs">
+         <table className="min-w-full text-sm">
             <thead>
                {table.getHeaderGroups().map((headerGroup) => (
                   <tr key={headerGroup.id}>
                      {headerGroup.headers.map((header) => (
                         <th
                            key={header.id}
-                           className={header.column.getCanSort() ? "is-sortable" : ""}
+                           className={`h-10 border-b border-border px-4 text-left text-xs font-medium whitespace-nowrap text-muted-fg select-none ${
+                              header.column.getCanSort()
+                                 ? "cursor-pointer transition-colors hover:text-fg"
+                                 : ""
+                           }`}
                            onClick={header.column.getToggleSortingHandler()}
                         >
                            {flexRender(
@@ -113,16 +125,25 @@ export function Table<TData extends RowData>({
             {showPlaceholder ? (
                <tbody>
                   <tr>
-                     <td
-                        colSpan={table.getVisibleLeafColumns().length}
-                        className="border-b-0 p-0"
-                     >
+                     <td colSpan={table.getVisibleLeafColumns().length} className="p-0">
                         <div
-                           className="flex items-center justify-center"
+                           className="overflow-hidden"
                            data-testid="table-loading-placeholder"
                            style={{ height: placeholderHeight, minHeight: 80 }}
                         >
-                           <Spinner />
+                           <div role="status" className="flex flex-col">
+                              <span className="sr-only">Loading</span>
+                              {Array.from({ length: skeletonRows }, (_, i) => (
+                                 <div
+                                    key={i}
+                                    className="flex h-11 items-center border-b border-border px-4"
+                                 >
+                                    <Skeleton
+                                       className={`h-4 ${skeletonWidths[i % skeletonWidths.length]}`}
+                                    />
+                                 </div>
+                              ))}
+                           </div>
                         </div>
                      </td>
                   </tr>
@@ -133,10 +154,17 @@ export function Table<TData extends RowData>({
                      <tr
                         key={row.id}
                         onClick={() => onRowClick?.(row.original)}
-                        className={onRowClick ? "is-clickable" : ""}
+                        className={`border-b border-border last:border-b-0 ${
+                           onRowClick
+                              ? "cursor-pointer transition-colors hover:bg-muted"
+                              : ""
+                        }`}
                      >
                         {row.getVisibleCells().map((cell) => (
-                           <td key={cell.id}>
+                           <td
+                              key={cell.id}
+                              className="h-11 px-4 py-1.5 whitespace-nowrap"
+                           >
                               {flexRender(cell.column.columnDef.cell, cell.getContext())}
                            </td>
                         ))}

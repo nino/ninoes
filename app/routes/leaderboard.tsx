@@ -56,7 +56,7 @@ export default function Leaderboard(): ReactNode {
 
    return (
       <div className="space-y-8">
-         <h1 className="text-2xl font-bold">Name Leaderboard</h1>
+         <h1 className="font-title text-3xl">Name Leaderboard</h1>
          <GenderFilter
             value={genders}
             onChange={(value) => {

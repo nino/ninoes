@@ -1,7 +1,7 @@
 import { index, layout, route, type RouteConfig } from "@react-router/dev/routes";
 
 export default [
-   layout("routes/aqua-layout.tsx", [
+   layout("routes/app-layout.tsx", [
       index("routes/home.tsx"),
       route("/vote", "routes/vote.tsx"),
       route("/votes", "routes/votes.tsx"),
@@ -18,7 +18,7 @@ export default [
       route("/calendar", "routes/calendar-ics.ts"),
       route("/last-year", "routes/last-year.ts"),
    ]),
-   // Its own look, outside the Aqua window.
+   // Its own header and favicon, outside the app layout.
    route("/wishlist", "routes/wishlist.tsx"),
    route("/wishlist/translate", "routes/wishlist-translate.ts"),
 ] satisfies RouteConfig;

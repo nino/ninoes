@@ -281,12 +281,16 @@ function WishList({
    const wishes = useWishes({ spoilerFree });
    useTranslatePending(wishes.data);
 
-   const summary = wishes.data
-      ? t.summary(
-           wishes.data.length,
-           spoilerFree ? null : wishes.data.filter((w) => w.claimed_by == null).length,
-        )
-      : null;
+   // Nothing to summarise on an empty list; the empty state says it.
+   const summary =
+      wishes.data != null && wishes.data.length > 0
+         ? t.summary(
+              wishes.data.length,
+              spoilerFree
+                 ? null
+                 : wishes.data.filter((w) => w.claimed_by == null).length,
+           )
+         : null;
 
    return (
       <main className="mx-auto flex max-w-2xl flex-col gap-6 px-4 py-8 sm:py-12">
@@ -399,6 +403,7 @@ function WishCard({
                t={t}
                initial={wish}
                submitLabel={t.save}
+               autoFocus
                pending={updateWish.isPending || deleteWish.isPending}
                onCancel={() => setEditing(false)}
                onDelete={() =>
@@ -568,8 +573,22 @@ function AddWish({
    const addWish = useAddWish();
    const setClaim = useSetWishClaim();
    const [claimNow, setClaimNow] = React.useState(false);
-   // Remounting the form clears it after a successful add.
-   const [formKey, setFormKey] = React.useState(0);
+   // Collapsed to a button by default: the form is used a handful of times,
+   // and the list is what people come for.
+   const [open, setOpen] = React.useState(false);
+   const toggleRef = React.useRef<HTMLButtonElement>(null);
+   const wasOpen = React.useRef(false);
+
+   // Closing unmounts the focused form, so hand focus back to the button.
+   React.useEffect(() => {
+      if (wasOpen.current && !open) toggleRef.current?.focus();
+      wasOpen.current = open;
+   }, [open]);
+
+   const close = (): void => {
+      setOpen(false);
+      setClaimNow(false);
+   };
 
    const add = async (input: WishInput): Promise<void> => {
       let wish;
@@ -579,11 +598,11 @@ function AddWish({
          toast.error(t.somethingWentWrong);
          return;
       }
-      // The wish exists from here on, so clear the form even if claiming
+      // The wish exists from here on, so close the form even if claiming
       // fails; otherwise a second click would add it twice.
-      setFormKey((k) => k + 1);
-      setClaimNow(false);
-      if (!claimNow) return;
+      const claim = claimNow;
+      close();
+      if (!claim) return;
       try {
          const claimed = await setClaim.mutateAsync({ id: wish.id, name, claim: true });
          if (!claimed) toast.error(t.claimAfterAddFailed);
@@ -591,6 +610,21 @@ function AddWish({
          toast.error(t.claimAfterAddFailed);
       }
    };
+
+   if (!open) {
+      return (
+         <button
+            ref={toggleRef}
+            type="button"
+            aria-expanded={false}
+            onClick={() => setOpen(true)}
+            className={`mt-4 h-12 w-full border-dashed text-wl-muted-fg hover:text-wl-fg ${outlineButton}`}
+         >
+            <Icon name="plus" />
+            {t.addHeading}
+         </button>
+      );
+   }
 
    return (
       <section className={`mt-4 ${cardClass}`}>
@@ -600,11 +634,12 @@ function AddWish({
          </div>
          <div className="p-5 sm:p-6">
             <WishForm
-               key={formKey}
                t={t}
                submitLabel={t.add}
                submitIcon="plus"
+               autoFocus
                pending={addWish.isPending || setClaim.isPending}
+               onCancel={close}
                onSubmit={add}
             >
                {!spoilerFree && (
@@ -629,6 +664,7 @@ function WishForm({
    initial,
    submitLabel,
    submitIcon,
+   autoFocus,
    pending,
    onSubmit,
    onCancel,
@@ -639,6 +675,7 @@ function WishForm({
    initial?: Wish;
    submitLabel: string;
    submitIcon?: IconName;
+   autoFocus?: boolean;
    pending: boolean;
    onSubmit: (input: WishInput) => Promise<void>;
    onCancel?: () => void;
@@ -681,6 +718,7 @@ function WishForm({
                value={title}
                onChange={(e) => setTitle(e.target.value)}
                required
+               autoFocus={autoFocus}
                maxLength={maxTitleLength}
                className={`h-10 ${inputClass}`}
             />

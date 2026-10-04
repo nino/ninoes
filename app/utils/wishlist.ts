@@ -243,7 +243,7 @@ export const strings: Record<Language, WishlistStrings> = {
       title: "Wunschliste",
       gateIntro: "Gib deinen Namen ein, damit alle wissen, wer was mitbringt.",
       giftNotice:
-         "Wir erwarten keine Geschenke. Wenn du uns aber etwas schenken möchtest, kannst du diese Seite nutzen, um dich zu organisieren und dich inspirieren zu lassen.",
+         "Wir erwarten keine Geschenke. Wenn ihr uns aber etwas schenken möchtet, könnt ihr diese Seite nutzen, um euch zu organisieren und euch inspirieren zu lassen.",
       nameLabel: "Dein Name",
       openList: "Weiter",
       signedAs: "Angemeldet als",

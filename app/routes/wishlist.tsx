@@ -197,22 +197,43 @@ function LanguageToggle({
    t: WishlistStrings;
 }): JSX.Element {
    const options: Array<Language> = ["en", "de"];
+   // Bumped on every switch so the pill's wiggle replays, but not on first render.
+   const [switches, setSwitches] = React.useState(0);
    return (
       <div
          role="group"
          aria-label={t.languageNav}
-         className="inline-flex h-9 items-center rounded-lg bg-wl-muted p-[3px]"
+         className="relative inline-grid h-9 grid-cols-2 items-center rounded-lg bg-wl-muted p-[3px]"
       >
+         <span
+            aria-hidden
+            className={`absolute inset-y-[3px] left-[3px] w-[calc(50%-3px)] transition-transform duration-500 ease-[cubic-bezier(0.3,1.9,0.45,0.9)] motion-reduce:transition-none ${
+               language === "de"
+                  ? "translate-x-full [--dir:1]"
+                  : "translate-x-0 [--dir:-1]"
+            }`}
+         >
+            <span
+               key={switches}
+               className={`block size-full rounded-md bg-wl-card shadow-xs motion-reduce:animate-none ${
+                  switches > 0 ? "animate-wl-pill-wiggle" : ""
+               }`}
+            />
+         </span>
          {options.map((option) => (
             <button
                key={option}
                type="button"
                lang={option}
                aria-pressed={option === language}
-               onClick={() => onChange(option)}
-               className={`h-full rounded-md px-3 text-xs font-medium uppercase transition-colors outline-none focus-visible:ring-[3px] focus-visible:ring-wl-ring/50 focus-visible:shadow-wl-glow ${
+               onClick={() => {
+                  if (option === language) return;
+                  setSwitches((n) => n + 1);
+                  onChange(option);
+               }}
+               className={`relative h-full rounded-md px-3 text-xs font-medium uppercase transition-colors outline-none focus-visible:ring-[3px] focus-visible:ring-wl-ring/50 focus-visible:shadow-wl-glow ${
                   option === language
-                     ? "bg-wl-card text-wl-fg shadow-xs"
+                     ? "text-wl-fg"
                      : "text-wl-muted-fg hover:text-wl-fg"
                }`}
             >

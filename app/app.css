@@ -587,6 +587,13 @@ html:has(.wishlist-page) body {
    background: var(--color-wl-page);
 }
 
+/* Squircle corners where supported (Chromium only so far); other browsers
+   ignore the property and keep the plain rounded corners. Pills and circles
+   (rounded-full) stay round. */
+.wishlist-page :is(.rounded-sm, .rounded-md, .rounded-lg, .rounded-xl) {
+   corner-shape: squircle;
+}
+
 @media (prefers-color-scheme: dark) {
    :root {
       --color-wl-page: oklch(0.16 0.015 240);

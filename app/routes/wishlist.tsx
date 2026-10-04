@@ -432,6 +432,8 @@ function WishCard({
    }
 
    const shown = localizedWish(wish, language);
+   // Wherever this lands, it's pulled right so its hover background sits as far
+   // from the card's right edge as from its bottom edge.
    const editButton = (
       <button
          type="button"
@@ -485,7 +487,7 @@ function WishCard({
                      </a>
                   )}
                   {/* The couple can't claim, so editing doesn't need a footer of its own. */}
-                  {spoilerFree && <span className="-mr-3">{editButton}</span>}
+                  {spoilerFree && <span className="-mr-2">{editButton}</span>}
                </div>
             )}
          </div>
@@ -610,7 +612,7 @@ function Contributions({
                   <span className="truncate">{t.takenBy(state.whole.name)}</span>
                </span>
             )}
-            {editButton}
+            <span className="-mr-2.5">{editButton}</span>
          </div>
       );
    }
@@ -699,7 +701,7 @@ function Contributions({
                         formatPrice(wish.price, language),
                      )}
                   </span>
-                  {editOnProgressLine && <span className="-mr-3">{editButton}</span>}
+                  {editOnProgressLine && <span className="-mr-2">{editButton}</span>}
                </div>
             </div>
          )}
@@ -766,7 +768,7 @@ function Contributions({
                      </button>
                   )}
                </div>
-               {editButton}
+               <span className="-mr-1.5">{editButton}</span>
             </div>
          )}
       </div>

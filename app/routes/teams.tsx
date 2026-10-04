@@ -17,18 +17,13 @@ import type { User } from "@supabase/supabase-js";
 import { requireUser } from "~/server/guards.server";
 import { Button } from "~/components/ui/Button";
 import { Input } from "~/components/ui/Input";
-import { Table } from "~/components/ui/Table";
+import { Table, type TableColumnDef } from "~/components/ui/Table";
 import { useToast } from "~/components/ui/Toast";
-import type { ColumnDef } from "@tanstack/react-table";
 import { Spinner } from "~/components/ui/Spinner";
 
-const createTeamSchema = z.object({
-   name: z.string().min(1, "Team name is required"),
-});
+const createTeamSchema = z.object({ name: z.string().min(1, "Team name is required") });
 
-const joinTeamSchema = z.object({
-   teamId: z.string().min(1, "Team ID is required"),
-});
+const joinTeamSchema = z.object({ teamId: z.string().min(1, "Team ID is required") });
 
 type CreateTeamFormData = z.infer<typeof createTeamSchema>;
 type JoinTeamFormData = z.infer<typeof joinTeamSchema>;
@@ -64,11 +59,8 @@ export default function Teams(): React.ReactNode {
       resolver: zodResolver(joinTeamSchema),
    });
 
-   const columns: Array<ColumnDef<Team>> = [
-      {
-         accessorKey: "name",
-         header: "Name",
-      },
+   const columns: Array<TableColumnDef<Team>> = [
+      { accessorKey: "name", header: "Name" },
       {
          accessorKey: "created_at",
          header: "Created At",
@@ -115,11 +107,8 @@ export default function Teams(): React.ReactNode {
       },
    ];
 
-   const membershipColumns: Array<ColumnDef<TeamMembershipWithTeam>> = [
-      {
-         accessorKey: "team.name",
-         header: "Team Name",
-      },
+   const membershipColumns: Array<TableColumnDef<TeamMembershipWithTeam>> = [
+      { accessorKey: "team.name", header: "Team Name" },
       {
          accessorKey: "team.created_at",
          header: "Created At",
@@ -152,10 +141,7 @@ export default function Teams(): React.ReactNode {
 
    const handleCreateTeam = async (values: CreateTeamFormData): Promise<void> => {
       try {
-         await createTeam.mutateAsync({
-            name: values.name,
-            creator: user.id,
-         });
+         await createTeam.mutateAsync({ name: values.name, creator: user.id });
          createTeamForm.reset();
          showToast("success", "Team created successfully");
       } catch (error) {

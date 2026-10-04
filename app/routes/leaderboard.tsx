@@ -1,26 +1,16 @@
 import { useNameScores } from "~/hooks/useSupabase";
 import type { NameScore } from "~/hooks/useSupabase";
 import { type ReactNode, useState } from "react";
-import { Table } from "~/components/ui/Table";
-import type { ColumnDef } from "@tanstack/react-table";
-import { Spinner } from "~/components/ui/Spinner";
+import { Table, type TableColumnDef } from "~/components/ui/Table";
 import { GENDER_LABELS, GenderFilter } from "~/components/GenderFilter";
 import type { Enum, NameGender } from "~/model/types";
 
 export default function Leaderboard(): ReactNode {
-   const [pagination, setPagination] = useState({
-      pageIndex: 0,
-      pageSize: 50,
-   });
-   const [sorting, setSorting] = useState([
-      {
-         id: "score",
-         desc: true,
-      },
-   ]);
+   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 50 });
+   const [sorting, setSorting] = useState([{ id: "score", desc: true }]);
    const [genders, setGenders] = useState<Array<Enum<typeof NameGender>>>([]);
 
-   const { data: scores, isLoading } = useNameScores({
+   const { data: scores, isFetching } = useNameScores({
       limit: pagination.pageSize,
       offset: pagination.pageIndex * pagination.pageSize,
       orderBy: sorting[0]?.id ?? "score",
@@ -28,11 +18,8 @@ export default function Leaderboard(): ReactNode {
       genders,
    });
 
-   const columns: Array<ColumnDef<NameScore>> = [
-      {
-         accessorKey: "name",
-         header: "Name",
-      },
+   const columns: Array<TableColumnDef<NameScore>> = [
+      { accessorKey: "name", header: "Name" },
       {
          accessorKey: "gender",
          header: "Gender",
@@ -77,17 +64,15 @@ export default function Leaderboard(): ReactNode {
                setPagination((current) => ({ ...current, pageIndex: 0 }));
             }}
          />
-         {isLoading && <Spinner />}
-         {scores?.data && (
-            <Table
-               data={scores.data}
-               columns={columns}
-               sorting={sorting}
-               setSorting={setSorting}
-               pagination={pagination}
-               setPagination={setPagination}
-            />
-         )}
+         <Table
+            data={scores?.data ?? []}
+            columns={columns}
+            sorting={sorting}
+            setSorting={setSorting}
+            pagination={pagination}
+            setPagination={setPagination}
+            isLoading={isFetching}
+         />
       </div>
    );
 }

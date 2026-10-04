@@ -2,15 +2,9 @@ import { type ReactNode, useMemo } from "react";
 import * as d3 from "d3";
 import { useQuery } from "@tanstack/react-query";
 import React from "react";
-import type { GeoPermissibleObjects, GeoSphere } from "d3-geo";
+import type { GeoPermissibleObjects, GeoSphere } from "d3";
 
-type Troop = {
-   LATP: number;
-   LONP: number;
-   SURV: number;
-   DIR: "A" | "R";
-   DIV: number;
-};
+type Troop = { LATP: number; LONP: number; SURV: number; DIR: "A" | "R"; DIV: number };
 
 type Temperature = {
    LONT: number;
@@ -199,7 +193,7 @@ function XAxis({
          const axis = d3
             .axisBottom(scale)
             .tickValues(ticks)
-            .tickFormat((d) => `${d}°E`);
+            .tickFormat((d) => `${Number(d)}°E`);
          d3.select(ref.current).call(axis);
       }
    }, [scale]);
@@ -222,12 +216,15 @@ function YAxis({
 
    React.useEffect(() => {
       if (ref.current) {
-         // Create geographic ticks
-         const ticks = d3.range(50, 60, 2);
-         const axis = d3
-            .axisLeft(scale)
-            .tickValues(tickValues ?? ticks)
-            .tickFormat(tickFormat ?? ((d) => `${d}°N`));
+         // Fall back to d3's own ticks for the scale's domain; a hardcoded
+         // default here would silently render out-of-domain labels.
+         const axis = d3.axisLeft(scale);
+         if (tickValues) {
+            axis.tickValues(tickValues);
+         }
+         if (tickFormat) {
+            axis.tickFormat(tickFormat);
+         }
          d3.select(ref.current).call(axis);
       }
    }, [scale, tickFormat, tickValues]);
@@ -303,10 +300,7 @@ function GeoBackground(): ReactNode {
 }
 
 export default function Data(): ReactNode {
-   const { data: troops } = useQuery({
-      queryKey: ["troops"],
-      queryFn: fetchTroops,
-   });
+   const { data: troops } = useQuery({ queryKey: ["troops"], queryFn: fetchTroops });
 
    const { data: temperatures } = useQuery({
       queryKey: ["temperatures"],
@@ -359,7 +353,7 @@ export default function Data(): ReactNode {
                <YAxis
                   scale={tempYScale}
                   transform={`translate(0,${dimensions.tempHeight})`}
-                  tickFormat={(d) => `${d}°C`}
+                  tickFormat={(d) => `${Number(d)}°C`}
                />
             </g>
          </svg>

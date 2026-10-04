@@ -1,16 +1,14 @@
 import { useEloLeaderboard, useTeams } from "~/hooks/useSupabase";
+import { usePreviousValue } from "~/hooks/usePreviousValue";
 import React from "react";
 import type { Enum, NameGender, TeamEloWithName } from "~/model/types";
-import { Table } from "~/components/ui/Table";
-import { type SortingState, type ColumnDef } from "@tanstack/react-table";
+import { Table, type TableColumnDef } from "~/components/ui/Table";
+import { type SortingState } from "@tanstack/react-table";
 import { Button } from "~/components/ui/Button";
 import { GENDER_LABELS, GenderFilter } from "~/components/GenderFilter";
 
 export default function Leaderboard(): React.ReactNode {
-   const [pagination, setPagination] = React.useState({
-      pageIndex: 0,
-      pageSize: 10,
-   });
+   const [pagination, setPagination] = React.useState({ pageIndex: 0, pageSize: 10 });
    const [sorting, setSorting] = React.useState<SortingState>([]);
    const [genders, setGenders] = React.useState<Array<Enum<typeof NameGender>>>([]);
 
@@ -25,20 +23,15 @@ export default function Leaderboard(): React.ReactNode {
       orderDirection: sorting[0]?.desc === false ? "asc" : "desc",
       genders,
    });
-   const numPages =
-      eloLeaderboard.data?.total == null
-         ? null
-         : Math.ceil(eloLeaderboard.data.total / pagination.pageSize);
 
-   const columns: Array<ColumnDef<TeamEloWithName>> = [
-      {
-         accessorKey: "elo",
-         header: "ELO",
-      },
-      {
-         accessorKey: "name.name",
-         header: "Name",
-      },
+   // Remember the last known total so the pager doesn't disappear (and the
+   // page doesn't jump) while the next page is being fetched.
+   const total = usePreviousValue(eloLeaderboard.data?.total);
+   const numPages = total == null ? null : Math.ceil(total / pagination.pageSize);
+
+   const columns: Array<TableColumnDef<TeamEloWithName>> = [
+      { accessorKey: "elo", header: "ELO" },
+      { accessorKey: "name.name", header: "Name" },
       {
          accessorKey: "name.gender",
          header: "Gender",
@@ -67,8 +60,9 @@ export default function Leaderboard(): React.ReactNode {
             setPagination={setPagination}
             sorting={sorting}
             setSorting={setSorting}
+            isLoading={eloLeaderboard.isFetching}
          />
-         {eloLeaderboard.data && numPages != null && (
+         {numPages != null && numPages > 0 && !eloLeaderboard.isError && (
             <div className="flex justify-end items-baseline gap-4">
                <Button
                   onClick={() =>

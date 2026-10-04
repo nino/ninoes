@@ -2,16 +2,24 @@ name: Dependabot Auto-Merge
 on: pull_request
 
 permissions:
-  contents: write
-  pull-requests: write
+   contents: write
+   pull-requests: write
 
 jobs:
-  dependabot:
-    runs-on: ubuntu-latest
-    if: ${{ github.actor == 'dependabot[bot]' }}
-    steps:
-      - name: Enable auto-merge for Dependabot PRs
-        run: gh pr merge --auto --merge "$PR_URL"
-        env:
-          PR_URL: ${{github.event.pull_request.html_url}}
-          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+   dependabot:
+      runs-on: ubuntu-latest
+      if: ${{ github.actor == 'dependabot[bot]' }}
+      steps:
+         # `--auto` only waits when the target branch has a required status
+         # check. Without one it merges at once, which is how react-table v9
+         # reached main with a red CI run. main requires the `checks` context
+         # from ci.yml — keep the two in sync, or this silently stops gating.
+         #
+         # A push made with GITHUB_TOKEN does not start `push` workflows, so
+         # nothing here runs CI or Fly Deploy on main after a merge. Deploys
+         # after Dependabot merges are run by hand.
+         - name: Enable auto-merge for Dependabot PRs
+           run: gh pr merge --auto --merge "$PR_URL"
+           env:
+              PR_URL: ${{github.event.pull_request.html_url}}
+              GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}

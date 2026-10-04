@@ -1,26 +1,46 @@
 import {
    type ColumnDef,
+   columnVisibilityFeature,
+   createSortedRowModel,
    flexRender,
-   getCoreRowModel,
-   getSortedRowModel,
    type OnChangeFn,
    type PaginationState,
+   type RowData,
+   rowPaginationFeature,
+   rowSortingFeature,
    type SortingState,
-   useReactTable,
+   tableFeatures,
+   useTable,
 } from "@tanstack/react-table";
 import React from "react";
+import { Spinner } from "./Spinner";
 
-interface TableProps<TData> {
+// v9 needs every feature to be registered. These are the ones this table uses:
+// column visibility for getVisibleLeafColumns/getVisibleCells, sorting for the
+// clickable headers, and pagination for the externally held page state.
+const features = tableFeatures({
+   columnVisibilityFeature,
+   rowPaginationFeature,
+   rowSortingFeature,
+   sortedRowModel: createSortedRowModel(),
+});
+
+// v9 makes ColumnDef generic over the feature set. Call sites all use this
+// table, so they import this alias and don't name the features themselves.
+export type TableColumnDef<TData extends RowData> = ColumnDef<typeof features, TData>;
+
+interface TableProps<TData extends RowData> {
    data: Array<TData>;
-   columns: Array<ColumnDef<TData>>;
+   columns: Array<TableColumnDef<TData>>;
    onRowClick?: (row: TData) => void;
    sorting?: SortingState;
    setSorting?: OnChangeFn<SortingState>;
    pagination?: PaginationState;
    setPagination?: OnChangeFn<PaginationState>;
+   isLoading?: boolean;
 }
 
-export function Table<TData>({
+export function Table<TData extends RowData>({
    data,
    columns,
    onRowClick,
@@ -28,64 +48,102 @@ export function Table<TData>({
    setPagination,
    sorting,
    setSorting,
+   isLoading = false,
 }: TableProps<TData>): React.ReactNode {
-   const table = useReactTable({
+   const tbodyRef = React.useRef<HTMLTableSectionElement>(null);
+   const [lastBodyHeight, setLastBodyHeight] = React.useState<number | null>(null);
+   const [lastRowCount, setLastRowCount] = React.useState<number | null>(null);
+
+   // Remember the body height while rows are shown, so the loading
+   // placeholder can hold the same height and the table doesn't collapse
+   // to just the header and jump back when the next page arrives.
+   React.useLayoutEffect(() => {
+      if (data.length > 0 && tbodyRef.current) {
+         setLastBodyHeight(tbodyRef.current.getBoundingClientRect().height);
+         setLastRowCount(data.length);
+      }
+   }, [data]);
+
+   const showPlaceholder = isLoading && data.length === 0;
+
+   // Expect the incoming page to be pageSize rows tall. If the last page we
+   // measured was shorter (e.g. the final page), scale its per-row height up
+   // so the placeholder matches the page that's about to arrive.
+   const placeholderHeight =
+      lastBodyHeight == null || lastRowCount == null || lastRowCount === 0
+         ? undefined
+         : pagination != null && pagination.pageSize !== lastRowCount
+           ? (lastBodyHeight / lastRowCount) * pagination.pageSize
+           : lastBodyHeight;
+   // The core row model is built automatically in v9, so it is no longer passed.
+   const table = useTable({
+      features,
       data,
       columns,
-      getCoreRowModel: getCoreRowModel(),
-      getSortedRowModel: getSortedRowModel(),
       onSortingChange: setSorting,
       onPaginationChange: setPagination,
-      state: {
-         sorting,
-         pagination,
-      },
+      state: { sorting, pagination },
       manualPagination: true,
    });
 
    return (
-      <div className="w-full overflow-x-auto">
-         <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50 dark:bg-gray-950">
+      <div className="aqua-panel w-full overflow-x-auto">
+         <table className="aqua-table min-w-full">
+            <thead>
                {table.getHeaderGroups().map((headerGroup) => (
                   <tr key={headerGroup.id}>
                      {headerGroup.headers.map((header) => (
                         <th
                            key={header.id}
-                           className="px-2 py-1 text-left text-xs font-medium text-gray-500 dark:text-gray-200 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                           className={header.column.getCanSort() ? "is-sortable" : ""}
                            onClick={header.column.getToggleSortingHandler()}
                         >
                            {flexRender(
                               header.column.columnDef.header,
                               header.getContext(),
                            )}
-                           {{
-                              asc: " 🔼",
-                              desc: " 🔽",
-                           }[header.column.getIsSorted() as string] ?? null}
+                           {{ asc: " ▲", desc: " ▼" }[
+                              header.column.getIsSorted() as string
+                           ] ?? null}
                         </th>
                      ))}
                   </tr>
                ))}
             </thead>
-            <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-amber-700">
-               {table.getRowModel().rows.map((row) => (
-                  <tr
-                     key={row.id}
-                     onClick={() => onRowClick?.(row.original)}
-                     className={onRowClick ? "cursor-pointer hover:bg-gray-50" : ""}
-                  >
-                     {row.getVisibleCells().map((cell) => (
-                        <td
-                           key={cell.id}
-                           className="px-2 py-1 whitespace-nowrap text-sm text-gray-900 dark:text-gray-50"
+            {showPlaceholder ? (
+               <tbody>
+                  <tr>
+                     <td
+                        colSpan={table.getVisibleLeafColumns().length}
+                        className="border-b-0 p-0"
+                     >
+                        <div
+                           className="flex items-center justify-center"
+                           data-testid="table-loading-placeholder"
+                           style={{ height: placeholderHeight, minHeight: 80 }}
                         >
-                           {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                        </td>
-                     ))}
+                           <Spinner />
+                        </div>
+                     </td>
                   </tr>
-               ))}
-            </tbody>
+               </tbody>
+            ) : (
+               <tbody ref={tbodyRef}>
+                  {table.getRowModel().rows.map((row) => (
+                     <tr
+                        key={row.id}
+                        onClick={() => onRowClick?.(row.original)}
+                        className={onRowClick ? "is-clickable" : ""}
+                     >
+                        {row.getVisibleCells().map((cell) => (
+                           <td key={cell.id}>
+                              {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                           </td>
+                        ))}
+                     </tr>
+                  ))}
+               </tbody>
+            )}
          </table>
       </div>
    );

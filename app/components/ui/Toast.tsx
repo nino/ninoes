@@ -2,9 +2,7 @@ import { toast } from "sonner";
 
 type ToastType = "success" | "error" | "info";
 
-export function useToast(): {
-   showToast: (type: ToastType, message: string) => void;
-} {
+export function useToast(): { showToast: (type: ToastType, message: string) => void } {
    return {
       showToast: (type: ToastType, message: string): void => {
          switch (type) {

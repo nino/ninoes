@@ -77,10 +77,7 @@ export function useVotes({
    orderBy: string;
    orderDirection: "asc" | "desc";
    voteTypes?: Array<Enum<typeof VoteType>>;
-}): UseQueryResult<{
-   data: Array<VoteWithExtras>;
-   total: number | null;
-}> {
+}): UseQueryResult<{ data: Array<VoteWithExtras>; total: number | null }> {
    return useQuery({
       queryKey: ["votes", page, pageSize, orderBy, voteTypes],
       queryFn: async () => {
@@ -155,11 +152,7 @@ export function useRandomNames(): UseQueryResult<Array<Name>> {
    });
 }
 
-type CreateVoteNewParams = {
-   winnerId: string;
-   loserId: string;
-   teamId?: string;
-};
+type CreateVoteNewParams = { winnerId: string; loserId: string; teamId?: string };
 
 export function useCreateVoteNew(): UseMutationResult<void, Error, CreateVoteNewParams> {
    const { session, supabase: authSupabase } = useSession();
@@ -177,10 +170,7 @@ export function useCreateVoteNew(): UseMutationResult<void, Error, CreateVoteNew
    });
 }
 
-type CreateVoteParams = {
-   nameId: string;
-   voteType: Enum<typeof VoteType>;
-};
+type CreateVoteParams = { nameId: string; voteType: Enum<typeof VoteType> };
 
 export function useCreateVote(): UseMutationResult<void, Error, CreateVoteParams> {
    const queryClient = useQueryClient();
@@ -192,11 +182,9 @@ export function useCreateVote(): UseMutationResult<void, Error, CreateVoteParams
             throw new Error("User not authenticated");
          }
 
-         const { error } = await authSupabase.from("Votes").insert({
-            name_id: nameId,
-            user_id: session.user.id,
-            vote_type: voteType,
-         });
+         const { error } = await authSupabase
+            .from("Votes")
+            .insert({ name_id: nameId, user_id: session.user.id, vote_type: voteType });
 
          if (error) {
             throw error;
@@ -251,10 +239,7 @@ export function useNameScores({
    orderBy?: string;
    orderDirection?: "asc" | "desc";
    genders?: Array<Enum<typeof NameGender>>;
-} = {}): UseQueryResult<{
-   data: Array<NameScore>;
-   total: number;
-}> {
+} = {}): UseQueryResult<{ data: Array<NameScore>; total: number }> {
    return useQuery({
       queryKey: ["nameScores", limit, offset, orderBy, orderDirection, genders],
       queryFn: async () => {
@@ -293,10 +278,7 @@ export function useTeams({
    pageSize: number;
    orderBy?: string;
    orderDirection?: "asc" | "desc";
-}): UseQueryResult<{
-   data: Array<Team>;
-   total: number;
-}> {
+}): UseQueryResult<{ data: Array<Team>; total: number }> {
    return useQuery({
       queryKey: ["teams", page, pageSize, orderBy, orderDirection],
       queryFn: async () => {
@@ -310,18 +292,12 @@ export function useTeams({
             throw error;
          }
 
-         return {
-            data: data.map((team) => TeamSchema.parse(team)),
-            total: count ?? 0,
-         };
+         return { data: data.map((team) => TeamSchema.parse(team)), total: count ?? 0 };
       },
    });
 }
 
-type CreateTeamParams = {
-   name: string;
-   creator: string;
-};
+type CreateTeamParams = { name: string; creator: string };
 
 export function useCreateTeam(): UseMutationResult<void, Error, CreateTeamParams> {
    const queryClient = useQueryClient();
@@ -363,10 +339,7 @@ export function useTeamMemberships({
    pageSize: number;
    orderBy?: string;
    orderDirection?: "asc" | "desc";
-}): UseQueryResult<{
-   data: Array<TeamMembershipWithTeam>;
-   total: number;
-}> {
+}): UseQueryResult<{ data: Array<TeamMembershipWithTeam>; total: number }> {
    const { session } = useSession();
 
    return useQuery({
@@ -549,10 +522,7 @@ export function useEloLeaderboard({
    orderBy?: string;
    orderDirection?: "asc" | "desc";
    genders?: Array<Enum<typeof NameGender>>;
-} = {}): UseQueryResult<{
-   data: Array<TeamEloWithName>;
-   total: number | null;
-} | null> {
+} = {}): UseQueryResult<{ data: Array<TeamEloWithName>; total: number | null } | null> {
    const { session, supabase: authSupabase } = useSession();
 
    return useQuery({

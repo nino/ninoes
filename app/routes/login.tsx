@@ -14,10 +14,7 @@ import { Button } from "~/components/ui/Button";
 import { Input } from "~/components/ui/Input";
 import { useToast } from "~/components/ui/Toast";
 
-const LoginSchema = z.object({
-   email: z.email(),
-   password: z.string().min(8),
-});
+const LoginSchema = z.object({ email: z.email(), password: z.string().min(8) });
 
 type LoginFormData = z.infer<typeof LoginSchema>;
 
@@ -51,9 +48,7 @@ export default function LoginPage(): ReactNode {
       register,
       handleSubmit,
       formState: { errors },
-   } = useForm<LoginFormData>({
-      resolver: zodResolver(LoginSchema),
-   });
+   } = useForm<LoginFormData>({ resolver: zodResolver(LoginSchema) });
 
    const onSubmit = (values: LoginFormData): void => {
       const formData = new FormData();
@@ -77,13 +72,10 @@ export default function LoginPage(): ReactNode {
          </div>
 
          <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-            <div className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow">
+            <div className="aqua-panel p-8">
                <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                   <div>
-                     <label
-                        htmlFor="email"
-                        className="block text-sm font-medium leading-6 text-gray-900 dark:text-gray-100"
-                     >
+                     <label htmlFor="email" className="aqua-label leading-6">
                         Email
                      </label>
                      <div className="mt-2">
@@ -98,10 +90,7 @@ export default function LoginPage(): ReactNode {
                   </div>
 
                   <div>
-                     <label
-                        htmlFor="password"
-                        className="block text-sm font-medium leading-6 text-gray-900 dark:text-gray-100"
-                     >
+                     <label htmlFor="password" className="aqua-label leading-6">
                         Password
                      </label>
                      <div className="mt-2">

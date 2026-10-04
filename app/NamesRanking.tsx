@@ -1,8 +1,7 @@
 import { useNames, useVotes } from "./hooks/useSupabase";
 import type { Enum, Name, NameGender, VoteWithExtras } from "./model/types";
 import React, { type ReactNode } from "react";
-import { Table } from "~/components/ui/Table";
-import type { ColumnDef } from "@tanstack/react-table";
+import { Table, type TableColumnDef } from "~/components/ui/Table";
 import { Spinner } from "./components/ui/Spinner";
 import { GENDER_LABELS, GenderFilter } from "~/components/GenderFilter";
 
@@ -24,11 +23,8 @@ export function NamesRanking(): ReactNode {
       orderDirection: "desc",
    });
 
-   const nameColumns: Array<ColumnDef<Name>> = [
-      {
-         accessorKey: "name",
-         header: "Name",
-      },
+   const nameColumns: Array<TableColumnDef<Name>> = [
+      { accessorKey: "name", header: "Name" },
       {
          accessorKey: "gender",
          header: "Gender",
@@ -43,19 +39,10 @@ export function NamesRanking(): ReactNode {
       },
    ];
 
-   const voteColumns: Array<ColumnDef<VoteWithExtras>> = [
-      {
-         accessorKey: "name.name",
-         header: "Name",
-      },
-      {
-         accessorKey: "user.name",
-         header: "User ID",
-      },
-      {
-         accessorKey: "vote_type",
-         header: "Vote Type",
-      },
+   const voteColumns: Array<TableColumnDef<VoteWithExtras>> = [
+      { accessorKey: "name.name", header: "Name" },
+      { accessorKey: "user.name", header: "User ID" },
+      { accessorKey: "vote_type", header: "Vote Type" },
       {
          accessorKey: "created_at",
          header: "Created At",

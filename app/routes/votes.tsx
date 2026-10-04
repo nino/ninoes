@@ -1,11 +1,10 @@
 import { useDeleteVote, useVotes } from "~/hooks/useSupabase";
 import { type VoteWithExtras } from "~/model/types";
 import { type ReactNode } from "react";
-import { Table } from "~/components/ui/Table";
+import { Table, type TableColumnDef } from "~/components/ui/Table";
 import { Button } from "~/components/ui/Button";
 import { Spinner } from "~/components/ui/Spinner";
 import { useToast } from "~/components/ui/Toast";
-import type { ColumnDef } from "@tanstack/react-table";
 
 export default function Votes(): ReactNode {
    const { data: votesData, isFetching: isLoadingVotes } = useVotes({
@@ -31,19 +30,10 @@ export default function Votes(): ReactNode {
       }
    };
 
-   const voteColumns: Array<ColumnDef<VoteWithExtras>> = [
-      {
-         accessorKey: "name.name",
-         header: "Name",
-      },
-      {
-         accessorKey: "user.name",
-         header: "User ID",
-      },
-      {
-         accessorKey: "vote_type",
-         header: "Vote Type",
-      },
+   const voteColumns: Array<TableColumnDef<VoteWithExtras>> = [
+      { accessorKey: "name.name", header: "Name" },
+      { accessorKey: "user.name", header: "User ID" },
+      { accessorKey: "vote_type", header: "Vote Type" },
       {
          accessorKey: "created_at",
          header: "Created At",

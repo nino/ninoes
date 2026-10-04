@@ -11,9 +11,7 @@ export const action = async ({ request }: ActionFunctionArgs): Promise<Response>
       console.error(error);
    }
 
-   return redirect("/", {
-      headers,
-   });
+   return redirect("/", { headers });
 };
 
 export default function Logout(): ReactNode {

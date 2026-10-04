@@ -98,3 +98,8 @@ CREATE TABLE public.wish_contributions (
   CONSTRAINT wish_contributions_wish_id_fkey FOREIGN KEY (wish_id)
     REFERENCES public.wishes (id) ON UPDATE CASCADE ON DELETE CASCADE
 ) TABLESPACE pg_default;
+
+-- 2026-10-04-drop-old-wish-claims.sql (claims now live in wish_contributions)
+ALTER TABLE public.wishes
+  DROP COLUMN claimed_by,
+  DROP COLUMN claimed_at;

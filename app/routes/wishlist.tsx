@@ -4,13 +4,15 @@ import {
    type WishInput,
    useAddWish,
    useDeleteWish,
-   useSetWishClaim,
+   useContribute,
    useTranslateWishes,
    useUpdateWish,
    useWishes,
+   useWithdrawContribution,
 } from "~/hooks/useSupabase";
 import type { Wish } from "~/model/types";
 import {
+   contributionState,
    formatPrice,
    isSpoilerFreeName,
    type Language,
@@ -21,7 +23,6 @@ import {
    maxTitleLength,
    normalizeLink,
    parsePrice,
-   sameName,
    strings,
    type WishlistStrings,
 } from "~/utils/wishlist";
@@ -288,7 +289,9 @@ function WishList({
               wishes.data.length,
               spoilerFree
                  ? null
-                 : wishes.data.filter((w) => w.claimed_by == null).length,
+                 : wishes.data.filter(
+                      (w) => !(w.contributions ?? []).some((c) => c.complete),
+                   ).length,
            )
          : null;
 
@@ -424,7 +427,6 @@ function WishCard({
       );
    }
 
-   const claimedBy = wish.claimed_by ?? null;
    const shown = localizedWish(wish, language);
    const editButton = (
       <button
@@ -486,77 +488,266 @@ function WishCard({
             )}
          </div>
          {!spoilerFree && (
-            <div className="flex min-h-14 items-center justify-between gap-3 border-t border-wl-border px-5 py-2.5">
-               <Claim wishId={wish.id} claimedBy={claimedBy} name={name} t={t} />
-               {editButton}
-            </div>
+            <Contributions
+               wish={wish}
+               name={name}
+               language={language}
+               editButton={editButton}
+            />
          )}
       </li>
    );
 }
 
-function Claim({
-   wishId,
-   claimedBy,
+/** Who's giving what, and the buttons to join in. */
+function Contributions({
+   wish,
    name,
-   t,
+   language,
+   editButton,
 }: {
-   wishId: string;
-   claimedBy: string | null;
+   wish: Wish;
    name: string;
-   t: WishlistStrings;
+   language: Language;
+   editButton: React.ReactNode;
 }): JSX.Element {
-   const setClaim = useSetWishClaim();
+   const t = strings[language];
+   const contribute = useContribute();
+   const withdraw = useWithdrawContribution();
+   const [chippingIn, setChippingIn] = React.useState(false);
+   const [share, setShare] = React.useState("");
+   const [shareError, setShareError] = React.useState<string | null>(null);
 
-   const change = (claim: boolean): void => {
-      setClaim.mutate(
-         { id: wishId, name, claim },
+   const contributions = wish.contributions ?? [];
+   const state = contributionState(contributions, name);
+   const busy = contribute.isPending || withdraw.isPending;
+
+   const send = (amount: number | null, complete: boolean): void => {
+      contribute.mutate(
+         { id: wish.id, name, amount, complete },
          {
-            onSuccess: (ok) => {
-               if (!ok) toast.error(claim ? t.alreadyClaimed : t.somethingWentWrong);
+            onSuccess: (status) => {
+               if (status === "ok") {
+                  setChippingIn(false);
+                  setShare("");
+                  return;
+               }
+               toast.error(
+                  status === "taken"
+                     ? t.alreadyClaimed
+                     : status === "shared"
+                       ? t.alreadyShared
+                       : status === "missing"
+                         ? t.wishGone
+                         : t.somethingWentWrong,
+               );
             },
             onError: () => toast.error(t.somethingWentWrong),
          },
       );
    };
 
-   if (claimedBy == null) {
+   const takeBack = (): void => {
+      withdraw.mutate(
+         { id: wish.id, name },
+         {
+            onSuccess: (ok) => {
+               if (!ok) toast.error(t.somethingWentWrong);
+            },
+            onError: () => toast.error(t.somethingWentWrong),
+         },
+      );
+   };
+
+   const submitShare = (e: React.SyntheticEvent): void => {
+      e.preventDefault();
+      const amount = parsePrice(share);
+      if (Number.isNaN(amount) || amount === 0) {
+         setShareError(t.invalidPrice);
+         return;
+      }
+      setShareError(null);
+      send(amount, false);
+   };
+
+   if (state.whole != null) {
+      const mine = state.whole === state.mine;
       return (
-         <button
-            type="button"
-            disabled={setClaim.isPending}
-            onClick={() => change(true)}
-            className={primaryButton}
-         >
-            <Icon name="gift" />
-            {t.claim}
-         </button>
+         <div className="flex min-h-14 items-center justify-between gap-3 border-t border-wl-border px-5 py-2.5">
+            {mine ? (
+               <div className="flex shrink-0 items-center gap-1">
+                  <span className="inline-flex items-center gap-1.5 rounded-md bg-wl-success/10 px-2.5 py-1 text-sm font-medium text-wl-success">
+                     <Icon name="check" className="size-4" />
+                     {t.yours}
+                  </span>
+                  <button
+                     type="button"
+                     disabled={busy}
+                     onClick={takeBack}
+                     className={ghostButton}
+                  >
+                     {t.takeBack}
+                  </button>
+               </div>
+            ) : (
+               <span className="inline-flex min-w-0 items-center gap-1.5 rounded-md bg-wl-muted px-2.5 py-1 text-sm font-medium text-wl-muted-fg">
+                  <Icon name="check" className="size-4 shrink-0" />
+                  <span className="truncate">{t.takenBy(state.whole.name)}</span>
+               </span>
+            )}
+            {editButton}
+         </div>
       );
    }
 
-   if (!sameName(claimedBy, name)) {
-      return (
-         <span className="inline-flex min-w-0 items-center gap-1.5 rounded-md bg-wl-muted px-2.5 py-1 text-sm font-medium text-wl-muted-fg">
-            <Icon name="check" className="size-4 shrink-0" />
-            <span className="truncate">{t.takenBy(claimedBy)}</span>
-         </span>
-      );
-   }
+   const progress =
+      wish.price != null && state.total > 0
+         ? Math.min(100, (state.total / wish.price) * 100)
+         : null;
+   // With nothing left to do but edit, the edit button goes on the progress
+   // line instead of a row of its own.
+   const hasActions = state.canGiveWhole || state.canChipIn;
+   const editOnProgressLine = !hasActions && progress != null;
 
    return (
-      <div className="flex shrink-0 items-center gap-1">
-         <span className="inline-flex items-center gap-1.5 rounded-md bg-wl-success/10 px-2.5 py-1 text-sm font-medium text-wl-success">
-            <Icon name="check" className="size-4" />
-            {t.yours}
-         </span>
-         <button
-            type="button"
-            disabled={setClaim.isPending}
-            onClick={() => change(false)}
-            className={ghostButton}
-         >
-            {t.takeBack}
-         </button>
+      <div className="flex flex-col gap-3 border-t border-wl-border px-5 py-3">
+         {contributions.length > 0 && (
+            <ul
+               aria-label={t.contributionsLabel}
+               className="flex flex-col gap-1 text-sm"
+            >
+               {contributions.map((c) => {
+                  const isMine = c === state.mine;
+                  return (
+                     <li key={c.id} className="flex min-h-8 items-center gap-2">
+                        <Icon
+                           name="gift"
+                           className="size-3.5 shrink-0 text-wl-muted-fg"
+                        />
+                        <span
+                           className={`min-w-0 truncate ${isMine ? "font-medium" : ""}`}
+                        >
+                           {isMine ? t.you : c.name}
+                        </span>
+                        {c.amount != null && (
+                           <span className="text-wl-muted-fg tabular-nums">
+                              {formatPrice(c.amount, language)}
+                           </span>
+                        )}
+                        {isMine && (
+                           <button
+                              type="button"
+                              disabled={busy}
+                              onClick={takeBack}
+                              className={`ml-auto h-8 ${ghostButton}`}
+                           >
+                              {t.takeBack}
+                           </button>
+                        )}
+                     </li>
+                  );
+               })}
+            </ul>
+         )}
+         {progress != null && wish.price != null && (
+            <div className="flex flex-col gap-1.5">
+               <div
+                  role="progressbar"
+                  aria-valuemin={0}
+                  aria-valuemax={100}
+                  aria-valuenow={Math.round(progress)}
+                  aria-label={t.covered(
+                     formatPrice(state.total, language),
+                     formatPrice(wish.price, language),
+                  )}
+                  className="h-1.5 overflow-hidden rounded-full bg-wl-muted"
+               >
+                  <div
+                     className="h-full rounded-full bg-wl-success"
+                     style={{ width: `${progress}%` }}
+                  />
+               </div>
+               <div className="flex min-h-9 items-center justify-between gap-2">
+                  <span className="text-xs text-wl-muted-fg tabular-nums">
+                     {t.covered(
+                        formatPrice(state.total, language),
+                        formatPrice(wish.price, language),
+                     )}
+                  </span>
+                  {editOnProgressLine && <span className="-mr-3">{editButton}</span>}
+               </div>
+            </div>
+         )}
+         {editOnProgressLine ? null : chippingIn ? (
+            <form onSubmit={submitShare} noValidate className="flex flex-col gap-2">
+               <Field
+                  label={t.fieldShare}
+                  optional={t.optional}
+                  error={shareError ?? undefined}
+               >
+                  <span className="relative">
+                     <span
+                        aria-hidden="true"
+                        className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-sm text-wl-muted-fg"
+                     >
+                        £
+                     </span>
+                     <input
+                        value={share}
+                        onChange={(e) => setShare(e.target.value)}
+                        inputMode="decimal"
+                        autoFocus
+                        aria-invalid={shareError != null}
+                        className={`h-10 pl-7 tabular-nums ${inputClass}`}
+                     />
+                  </span>
+               </Field>
+               <div className="flex items-center justify-end gap-2">
+                  <button
+                     type="button"
+                     onClick={() => {
+                        setChippingIn(false);
+                        setShare("");
+                        setShareError(null);
+                     }}
+                     className={outlineButton}
+                  >
+                     {t.cancel}
+                  </button>
+                  <button type="submit" disabled={busy} className={primaryButton}>
+                     {t.chipIn}
+                  </button>
+               </div>
+            </form>
+         ) : (
+            <div className="flex min-h-10 items-center justify-between gap-2">
+               <div className="flex flex-wrap items-center gap-2">
+                  {state.canGiveWhole && (
+                     <button
+                        type="button"
+                        disabled={busy}
+                        onClick={() => send(state.mine?.amount ?? null, true)}
+                        className={primaryButton}
+                     >
+                        <Icon name="gift" />
+                        {t.claim}
+                     </button>
+                  )}
+                  {state.canChipIn && (
+                     <button
+                        type="button"
+                        disabled={busy}
+                        onClick={() => setChippingIn(true)}
+                        className={outlineButton}
+                     >
+                        <Icon name="plus" />
+                        {t.chipIn}
+                     </button>
+                  )}
+               </div>
+               {editButton}
+            </div>
+         )}
       </div>
    );
 }
@@ -571,7 +762,7 @@ function AddWish({
    t: WishlistStrings;
 }): JSX.Element {
    const addWish = useAddWish();
-   const setClaim = useSetWishClaim();
+   const contribute = useContribute();
    const [claimNow, setClaimNow] = React.useState(false);
    // Collapsed to a button by default: the form is used a handful of times,
    // and the list is what people come for.
@@ -604,8 +795,13 @@ function AddWish({
       close();
       if (!claim) return;
       try {
-         const claimed = await setClaim.mutateAsync({ id: wish.id, name, claim: true });
-         if (!claimed) toast.error(t.claimAfterAddFailed);
+         const status = await contribute.mutateAsync({
+            id: wish.id,
+            name,
+            amount: null,
+            complete: true,
+         });
+         if (status !== "ok") toast.error(t.claimAfterAddFailed);
       } catch {
          toast.error(t.claimAfterAddFailed);
       }
@@ -638,7 +834,7 @@ function AddWish({
                submitLabel={t.add}
                submitIcon="plus"
                autoFocus
-               pending={addWish.isPending || setClaim.isPending}
+               pending={addWish.isPending || contribute.isPending}
                onCancel={close}
                onSubmit={add}
             >

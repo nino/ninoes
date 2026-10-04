@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+   contributionState,
    formatPrice,
    isSpoilerFreeName,
    linkLabel,
@@ -124,5 +125,55 @@ describe("localizedWish", () => {
       };
       expect(localizedWish(pending, "en").title).toBe("Gusseisenbräter");
       expect(localizedWish(pending, "en").translatedFrom).toBeNull();
+   });
+});
+
+describe("contributionState", () => {
+   const share = (
+      name: string,
+      amount: number | null = null,
+   ): { name: string; amount: number | null; complete: boolean } => ({
+      name,
+      amount,
+      complete: false,
+   });
+   const whole = (
+      name: string,
+   ): { name: string; amount: number | null; complete: boolean } => ({
+      name,
+      amount: null,
+      complete: true,
+   });
+
+   it("lets anyone give the whole gift or chip in while nobody has", () => {
+      const state = contributionState([], "Ingrid");
+      expect(state).toMatchObject({ whole: null, mine: null, total: 0 });
+      expect(state.canGiveWhole).toBe(true);
+      expect(state.canChipIn).toBe(true);
+   });
+
+   it("closes the wish to others once someone gives the whole gift", () => {
+      const state = contributionState([whole("Tobias")], "Ingrid");
+      expect(state.whole?.name).toBe("Tobias");
+      expect(state.canGiveWhole).toBe(false);
+      expect(state.canChipIn).toBe(false);
+   });
+
+   it("only allows sharing once others chip in, and sums the amounts", () => {
+      const state = contributionState(
+         [share("Tobias", 50), share("Oma", 70.5)],
+         "Ingrid",
+      );
+      expect(state.total).toBe(120.5);
+      expect(state.canGiveWhole).toBe(false);
+      expect(state.canChipIn).toBe(true);
+   });
+
+   it("finds the viewer's own contribution regardless of case", () => {
+      const state = contributionState([share("ingrid ", 20)], "Ingrid");
+      expect(state.mine?.amount).toBe(20);
+      expect(state.canChipIn).toBe(false);
+      // Alone on the wish, a share can still become the whole gift.
+      expect(state.canGiveWhole).toBe(true);
    });
 });

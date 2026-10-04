@@ -551,14 +551,24 @@ export function useWishes({
    return useQuery({
       queryKey: ["wishes", spoilerFree],
       queryFn: async () => {
-         // In no-spoilers mode the claim columns aren't fetched at all.
+         // In no-spoilers mode contributions aren't fetched at all.
          const { data, error } = await supabase
             .from("wishes")
-            .select(spoilerFree ? wishColumns : `${wishColumns}, claimed_by`)
+            .select(
+               spoilerFree
+                  ? wishColumns
+                  : `${wishColumns}, contributions:wish_contributions(id, created_at, name, amount, complete)`,
+            )
             .order("created_at", { ascending: true })
             .order("id");
          if (error) throw error;
-         return data.map((wish) => WishSchema.parse(wish));
+         return data.map((row) => {
+            const wish = WishSchema.parse(row);
+            wish.contributions?.sort(
+               (a, b) => a.created_at.getTime() - b.created_at.getTime(),
+            );
+            return wish;
+         });
       },
    });
 }
@@ -616,21 +626,44 @@ export function useDeleteWish(): UseMutationResult<void, Error, string> {
 }
 
 /**
- * Claims or releases a wish for `name`. Resolves to false when the database
- * refused, e.g. because someone else claimed it first.
+ * Adds or replaces `name`'s contribution to a wish: the whole gift when
+ * `complete`, otherwise a share with an optional amount. Resolves to the
+ * database's verdict; anything but "ok" means nothing changed.
  */
-export function useSetWishClaim(): UseMutationResult<
-   boolean,
+export function useContribute(): UseMutationResult<
+   "ok" | "invalid" | "missing" | "taken" | "shared",
    Error,
-   { id: string; name: string; claim: boolean }
+   { id: string; name: string; amount: number | null; complete: boolean }
 > {
    const queryClient = useQueryClient();
    return useMutation({
-      mutationFn: async ({ id, name, claim }) => {
-         const { data, error } = await supabase.rpc(
-            claim ? "claim_wish" : "unclaim_wish",
-            { p_wish_id: id, p_name: name },
-         );
+      mutationFn: async ({ id, name, amount, complete }) => {
+         const { data, error } = await supabase.rpc("contribute_to_wish", {
+            p_wish_id: id,
+            p_name: name,
+            p_amount: amount,
+            p_complete: complete,
+         });
+         if (error) throw error;
+         return z.enum(["ok", "invalid", "missing", "taken", "shared"]).parse(data);
+      },
+      onSettled: () => queryClient.invalidateQueries({ queryKey: ["wishes"] }),
+   });
+}
+
+/** Removes `name`'s contribution. Resolves to false if there was none. */
+export function useWithdrawContribution(): UseMutationResult<
+   boolean,
+   Error,
+   { id: string; name: string }
+> {
+   const queryClient = useQueryClient();
+   return useMutation({
+      mutationFn: async ({ id, name }) => {
+         const { data, error } = await supabase.rpc("withdraw_wish_contribution", {
+            p_wish_id: id,
+            p_name: name,
+         });
          if (error) throw error;
          return z.boolean().parse(data);
       },

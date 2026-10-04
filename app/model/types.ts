@@ -63,6 +63,16 @@ export type TeamElo = z.infer<typeof TeamEloSchema>;
 export const TeamEloWithNameSchema = TeamEloSchema.extend({ name: NameSchema });
 export type TeamEloWithName = z.infer<typeof TeamEloWithNameSchema>;
 
+export const ContributionSchema = z.object({
+   id: z.uuid(),
+   created_at: z.coerce.date(),
+   name: z.string().min(1),
+   amount: z.coerce.number().nullable(),
+   // true: "I'll give this", the whole gift; false: chipping in.
+   complete: z.boolean(),
+});
+export type Contribution = z.infer<typeof ContributionSchema>;
+
 export const WishSchema = z.object({
    id: z.uuid(),
    created_at: z.coerce.date(),
@@ -76,6 +86,6 @@ export const WishSchema = z.object({
    translated_title: z.string().nullable(),
    translated_description: z.string().nullable(),
    // Left out of the select entirely in no-spoilers mode.
-   claimed_by: z.string().nullable().optional(),
+   contributions: z.array(ContributionSchema).optional(),
 });
 export type Wish = z.infer<typeof WishSchema>;

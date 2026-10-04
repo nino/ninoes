@@ -30,7 +30,7 @@ CI runs `pnpm typecheck`, `pnpm lint`, `pnpm test` and `pnpm build`, in that ord
 - **Auth flow**: Supabase email/password auth. `app/hooks/useSession.ts` for client-side session. `app/server/guards.server.ts` for server-side route protection.
 - **Routing**: Routes defined in `app/routes.ts` (not file-system routing). Auto-generated types in `.react-router/types/`.
 - **Path alias**: `~/` maps to `./app/`
-- **Styling**: Tailwind CSS v4
+- **Styling**: Tailwind CSS v4. Design tokens live in `@theme` in `app/app.css`. Colours like `bg-page`, `bg-card`, `text-fg`, `text-muted-fg`, `border-border` and `bg-primary` are redefined for dark mode there, so use them in place of raw colours. Fonts are `font-sans` (Bricolage Grotesque) and `font-title` (Bevan), loaded from Bunny Fonts in `app/root.tsx`. Shared button, input and card class strings are in `app/components/ui/styles.ts`.
 - **Error tracking**: Sentry (production only)
 
 ## Deploys and previews
@@ -40,9 +40,8 @@ CI runs `pnpm typecheck`, `pnpm lint`, `pnpm test` and `pnpm build`, in that ord
 
 ## Wishlist
 
-- `app/routes/wishlist.tsx` sits outside the Aqua layout and has its own look. Its colours are the `--color-wl-*` variables and its fonts the `--font-wl-*` variables in `app/app.css` (Bevan for titles, Bricolage Grotesque for body text, loaded from Bunny Fonts).
+- `app/routes/wishlist.tsx` sits outside the app layout, with its own header and favicon. It uses the same design system as the rest of the site.
 - German copy addresses guests as "ihr".
-- The rest of the app uses the Lucida Grande / Aqua look.
 
 ## Database migrations
 

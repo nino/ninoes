@@ -76,13 +76,25 @@ psql -X -v ON_ERROR_STOP=1 -c "SET ROLE postgres" -f app/supabase/migrations/<fi
 
 ### 6. Restore (only if something went wrong)
 
-Only restore with the user's go-ahead. Connect with `psql` as above, `SET ROLE postgres`, then run the backup files in this order:
+Only restore with the user's go-ahead.
 
-1. `roles.sql`
-2. `schema.sql`
-3. `data.sql`
+**A full restore only works into an empty database**, such as a new Supabase project. Don't run the backup files against the live database: `schema.sql` skips tables that already exist (`CREATE TABLE IF NOT EXISTS`), and the `COPY` blocks in `data.sql` then fail on rows that are already there.
 
-See Supabase's "Backup and restore using the CLI" guide for details.
+To restore everything into a new project, run the three files in order, as in Supabase's "Backup and restore using the CLI" guide:
+
+```bash
+psql --single-transaction --variable ON_ERROR_STOP=1 \
+  --file roles.sql \
+  --file schema.sql \
+  --command 'SET session_replication_role = replica' \
+  --file data.sql \
+  --dbname "<new project's connection string>"
+```
+
+On the live database, fix problems in place instead:
+
+- **To undo a migration**, write and apply a reverse migration (dropping what it added, restoring what it changed), following steps 3 to 5.
+- **To recover lost rows**, restore the backup into a new project, then copy the rows you need back to the live database.
 
 ## Notes
 

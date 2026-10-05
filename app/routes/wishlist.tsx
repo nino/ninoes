@@ -13,6 +13,7 @@ import {
 import { WeddingRain } from "~/components/WeddingRain";
 import { WishDescription } from "~/components/WishDescription";
 import { Skeleton } from "~/components/ui/Skeleton";
+import { SlidingPill } from "~/components/ui/SlidingPill";
 import {
    cardClass,
    dangerButton,
@@ -202,21 +203,13 @@ function LanguageToggle({
          aria-label={t.languageNav}
          className="relative inline-grid h-9 grid-cols-2 items-center rounded-lg bg-muted p-[3px]"
       >
-         <span
-            aria-hidden
-            className={`absolute inset-y-[3px] left-[3px] w-[calc(50%-3px)] transition-transform duration-500 ease-[cubic-bezier(0.3,1.9,0.45,0.9)] motion-reduce:transition-none ${
-               language === "de"
-                  ? "translate-x-full [--dir:1]"
-                  : "translate-x-0 [--dir:-1]"
+         <SlidingPill
+            dir={language === "de" ? 1 : -1}
+            wiggleKey={switches}
+            className={`left-[3px] w-[calc(50%-3px)] ${
+               language === "de" ? "translate-x-full" : "translate-x-0"
             }`}
-         >
-            <span
-               key={switches}
-               className={`block size-full rounded-md bg-card shadow-xs motion-reduce:animate-none ${
-                  switches > 0 ? "animate-wl-pill-wiggle" : ""
-               }`}
-            />
-         </span>
+         />
          {options.map((option) => (
             <button
                key={option}

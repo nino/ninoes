@@ -1,5 +1,6 @@
 import React from "react";
 import { Link, useLocation } from "react-router";
+import { SlidingPill } from "~/components/ui/SlidingPill";
 import { focusRing, ghostButton } from "~/components/ui/styles";
 
 interface LayoutProps {
@@ -49,15 +50,7 @@ export function Layout({ children, signedIn }: LayoutProps): React.ReactNode {
                </Link>
 
                <div className="hidden items-center gap-2 md:flex">
-                  <nav className="inline-flex h-9 items-center rounded-lg bg-muted p-[3px]">
-                     {navItems.map((item) => (
-                        <NavLink
-                           key={item.path}
-                           item={item}
-                           active={location.pathname === item.path}
-                        />
-                     ))}
-                  </nav>
+                  <DesktopNav pathname={location.pathname} />
                   {signOut}
                </div>
 
@@ -104,13 +97,93 @@ export function Layout({ children, signedIn }: LayoutProps): React.ReactNode {
    );
 }
 
+/** Measured position of the active tab, relative to the nav. */
+interface PillPosition {
+   left: number;
+   width: number;
+}
+
+function DesktopNav({ pathname }: { pathname: string }): React.ReactNode {
+   const navRef = React.useRef<HTMLElement>(null);
+   const [pill, setPill] = React.useState<PillPosition | null>(null);
+   const [dir, setDir] = React.useState<1 | -1>(1);
+   // Bumped on every tab change so the pill's wiggle replays, but not on first render.
+   const [switches, setSwitches] = React.useState(0);
+   // Off until the pill has been placed once, so it doesn't slide in from the left
+   // edge on page load.
+   const [animate, setAnimate] = React.useState(false);
+   const previousPath = React.useRef(pathname);
+
+   React.useLayoutEffect(() => {
+      const from = navItems.findIndex((item) => item.path === previousPath.current);
+      const to = navItems.findIndex((item) => item.path === pathname);
+      previousPath.current = pathname;
+      if (from !== to && from !== -1 && to !== -1) {
+         setDir(to > from ? 1 : -1);
+         setSwitches((n) => n + 1);
+      }
+
+      const nav = navRef.current;
+      if (nav == null) return;
+      const measure = (): void => {
+         const link = nav.querySelector<HTMLElement>('[aria-current="page"]');
+         setPill(
+            link == null ? null : { left: link.offsetLeft, width: link.offsetWidth },
+         );
+      };
+      measure();
+      // Tab widths change once the web font loads.
+      const observer = new ResizeObserver(measure);
+      observer.observe(nav);
+      return () => observer.disconnect();
+   }, [pathname]);
+
+   React.useLayoutEffect(() => {
+      if (pill == null || animate) return;
+      const frame = requestAnimationFrame(() => setAnimate(true));
+      return () => cancelAnimationFrame(frame);
+   }, [pill, animate]);
+
+   return (
+      <nav
+         ref={navRef}
+         className="relative inline-flex h-9 items-center rounded-lg bg-muted p-[3px]"
+      >
+         {pill != null && (
+            <SlidingPill
+               dir={dir}
+               wiggleKey={switches}
+               className="left-0"
+               style={{
+                  translate: `${pill.left}px 0`,
+                  width: pill.width,
+                  transition: animate ? undefined : "none",
+               }}
+            />
+         )}
+         {navItems.map((item) => (
+            <NavLink
+               key={item.path}
+               item={item}
+               active={pathname === item.path}
+               // Until the pill is measured (and during SSR) the tab draws its own
+               // highlight.
+               highlight={pill == null}
+            />
+         ))}
+      </nav>
+   );
+}
+
 function NavLink({
    item,
    active,
+   highlight = true,
    onClick,
 }: {
    item: { path: string; label: string };
    active: boolean;
+   highlight?: boolean;
    onClick?: () => void;
 }): React.ReactNode {
    return (
@@ -118,11 +191,9 @@ function NavLink({
          to={item.path}
          onClick={onClick}
          aria-current={active ? "page" : undefined}
-         className={`flex h-9 items-center rounded-md px-3 text-sm font-medium transition-colors md:h-full ${focusRing} ${
-            active
-               ? "bg-muted text-fg md:bg-card md:shadow-xs"
-               : "text-muted-fg hover:text-fg"
-         }`}
+         className={`relative flex h-9 items-center rounded-md px-3 text-sm font-medium transition-colors md:h-full ${focusRing} ${
+            active ? "text-fg" : "text-muted-fg hover:text-fg"
+         } ${active && highlight ? "bg-muted md:bg-card md:shadow-xs" : ""}`}
       >
          {item.label}
       </Link>

@@ -61,11 +61,11 @@
          rotate: -7deg;
       }
    }
-   /* The wishlist language picker's pill: stretches and leans into the slide
+   /* The SlidingPill behind segmented controls: stretches and leans into the slide
       (--dir is 1 moving right, -1 moving left), squashes on the overshoot, then
       wobbles to rest. */
-   --animate-wl-pill-wiggle: wl-pill-wiggle 0.8s ease-out;
-   @keyframes wl-pill-wiggle {
+   --animate-pill-wiggle: pill-wiggle 0.8s ease-out;
+   @keyframes pill-wiggle {
       0% {
          transform: none;
       }

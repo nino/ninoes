@@ -7,7 +7,17 @@
       .letter { fill: #0d1c27; }
     }
   </style>
-  <rect class="tile" width="32" height="32" rx="7"/>
-  <!-- "N" from Bevan, the site's title font, as in the header logo. -->
-  <path class="letter" transform="translate(5.27 25.09) scale(0.011429 -0.011429)" d="M1097 -1 550 910V345H710V0H64V345H224V1247H64V1592H779L1328 681V1247H1168V1592H1814V1247H1654V0Z"/>
+  <!-- A googly-eyed "N" from Bevan, the site's title font, as in the header logo. -->
+  <g transform="rotate(-8 16 16)">
+    <rect class="tile" x="2" y="3" width="28" height="27" rx="7"/>
+    <path class="letter" transform="translate(6.34 27.68) scale(0.010286 -0.010286)" d="M1097 -1 550 910V345H710V0H64V345H224V1247H64V1592H779L1328 681V1247H1168V1592H1814V1247H1654V0Z"/>
+  </g>
+  <g stroke="#103243" stroke-width="1.2" fill="#fff">
+    <circle cx="10.2" cy="7.2" r="4.6"/>
+    <circle cx="21.4" cy="6" r="4.6"/>
+  </g>
+  <g fill="#0d1c27">
+    <circle cx="11.4" cy="8.4" r="2.2"/>
+    <circle cx="22.6" cy="7.4" r="2.2"/>
+  </g>
 </svg>

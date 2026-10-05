@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <style>
+    .tile { fill: #103243; }
+    .letter { fill: #f6fbfd; }
+    @media (prefers-color-scheme: dark) {
+      .tile { fill: #c0dde9; }
+      .letter { fill: #0d1c27; }
+    }
+  </style>
+  <rect class="tile" width="32" height="32" rx="7"/>
+  <!-- "N" from Bevan, the site's title font, as in the header logo. -->
+  <path class="letter" transform="translate(5.27 25.09) scale(0.011429 -0.011429)" d="M1097 -1 550 910V345H710V0H64V345H224V1247H64V1592H779L1328 681V1247H1168V1592H1814V1247H1654V0Z"/>
+</svg>

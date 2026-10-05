@@ -2,21 +2,34 @@ import { useNameScores } from "~/hooks/useSupabase";
 import type { NameScore } from "~/hooks/useSupabase";
 import { type ReactNode, useState } from "react";
 import { Table, type TableColumnDef } from "~/components/ui/Table";
+import { Pager } from "~/components/ui/Pager";
+import { usePageSize } from "~/hooks/usePageSize";
+import { usePreviousValue } from "~/hooks/usePreviousValue";
 import { GENDER_LABELS, GenderFilter } from "~/components/GenderFilter";
 import type { Enum, NameGender } from "~/model/types";
 
 export default function Leaderboard(): ReactNode {
-   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 50 });
+   const [pageIndex, setPageIndex] = useState(0);
+   const [pageSize, setPageSize] = usePageSize(50);
+   const pagination = { pageIndex, pageSize };
    const [sorting, setSorting] = useState([{ id: "score", desc: true }]);
    const [genders, setGenders] = useState<Array<Enum<typeof NameGender>>>([]);
 
-   const { data: scores, isFetching } = useNameScores({
+   const {
+      data: scores,
+      isFetching,
+      isError,
+   } = useNameScores({
       limit: pagination.pageSize,
       offset: pagination.pageIndex * pagination.pageSize,
       orderBy: sorting[0]?.id ?? "score",
       orderDirection: sorting[0]?.desc !== false ? "desc" : "asc",
       genders,
    });
+
+   // Keep the pager in place while the next page loads.
+   const total = usePreviousValue(scores?.total);
+   const numPages = total == null ? null : Math.ceil(total / pagination.pageSize);
 
    const columns: Array<TableColumnDef<NameScore>> = [
       { accessorKey: "name", header: "Name" },
@@ -61,7 +74,7 @@ export default function Leaderboard(): ReactNode {
             value={genders}
             onChange={(value) => {
                setGenders(value);
-               setPagination((current) => ({ ...current, pageIndex: 0 }));
+               setPageIndex(0);
             }}
          />
          <Table
@@ -70,9 +83,20 @@ export default function Leaderboard(): ReactNode {
             sorting={sorting}
             setSorting={setSorting}
             pagination={pagination}
-            setPagination={setPagination}
             isLoading={isFetching}
          />
+         {numPages != null && numPages > 0 && !isError && (
+            <Pager
+               pageIndex={pageIndex}
+               numPages={numPages}
+               pageSize={pageSize}
+               onPageIndexChange={setPageIndex}
+               onPageSizeChange={(size) => {
+                  setPageSize(size);
+                  setPageIndex(0);
+               }}
+            />
+         )}
       </div>
    );
 }

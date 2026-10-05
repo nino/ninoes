@@ -4,11 +4,14 @@ import React from "react";
 import type { Enum, NameGender, TeamEloWithName } from "~/model/types";
 import { Table, type TableColumnDef } from "~/components/ui/Table";
 import { type SortingState } from "@tanstack/react-table";
-import { Button } from "~/components/ui/Button";
+import { Pager } from "~/components/ui/Pager";
+import { usePageSize } from "~/hooks/usePageSize";
 import { GENDER_LABELS, GenderFilter } from "~/components/GenderFilter";
 
 export default function Leaderboard(): React.ReactNode {
-   const [pagination, setPagination] = React.useState({ pageIndex: 0, pageSize: 10 });
+   const [pageIndex, setPageIndex] = React.useState(0);
+   const [pageSize, setPageSize] = usePageSize(10);
+   const pagination = { pageIndex, pageSize };
    const [sorting, setSorting] = React.useState<SortingState>([]);
    const [genders, setGenders] = React.useState<Array<Enum<typeof NameGender>>>([]);
 
@@ -50,46 +53,28 @@ export default function Leaderboard(): React.ReactNode {
             value={genders}
             onChange={(value) => {
                setGenders(value);
-               setPagination((current) => ({ ...current, pageIndex: 0 }));
+               setPageIndex(0);
             }}
          />
          <Table
             data={eloLeaderboard.data?.data ?? []}
             columns={columns}
             pagination={pagination}
-            setPagination={setPagination}
             sorting={sorting}
             setSorting={setSorting}
             isLoading={eloLeaderboard.isFetching}
          />
          {numPages != null && numPages > 0 && !eloLeaderboard.isError && (
-            <div className="flex items-center justify-end gap-4">
-               <Button
-                  variant="secondary"
-                  onClick={() =>
-                     setPagination((current) => ({
-                        ...current,
-                        pageIndex: Math.max(0, current.pageIndex - 1),
-                     }))
-                  }
-               >
-                  prev
-               </Button>
-               <div className="text-sm text-muted-fg tabular-nums">
-                  {pagination.pageIndex + 1}
-               </div>
-               <Button
-                  variant="secondary"
-                  onClick={() =>
-                     setPagination((current) => ({
-                        ...current,
-                        pageIndex: Math.min(numPages - 1, current.pageIndex + 1),
-                     }))
-                  }
-               >
-                  next
-               </Button>
-            </div>
+            <Pager
+               pageIndex={pageIndex}
+               numPages={numPages}
+               pageSize={pageSize}
+               onPageIndexChange={setPageIndex}
+               onPageSizeChange={(size) => {
+                  setPageSize(size);
+                  setPageIndex(0);
+               }}
+            />
          )}
       </div>
    );

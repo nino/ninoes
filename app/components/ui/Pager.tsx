@@ -36,20 +36,20 @@ export function Pager({
             <Label>Rows per page</Label>
             <Listbox value={pageSize} onChange={onPageSizeChange}>
                <ListboxButton
-                  className={`flex h-10 items-center gap-3 rounded-lg border border-input bg-field pr-3 pl-3.5 text-fg tabular-nums shadow-xs ${focusRing}`}
+                  className={`flex h-10 items-center gap-3 rounded-2xl border border-input bg-field pr-3 pl-3.5 text-fg tabular-nums shadow-xs ${focusRing}`}
                >
                   {pageSize}
                   <Chevron />
                </ListboxButton>
                <ListboxOptions
                   anchor={{ to: "bottom start", gap: 4 }}
-                  className="z-10 w-(--button-width) rounded-lg border border-border bg-card p-1 text-sm text-fg tabular-nums shadow-md outline-none"
+                  className="z-10 w-(--button-width) rounded-2xl border border-border bg-card p-1 text-sm text-fg tabular-nums shadow-md outline-none"
                >
                   {PAGE_SIZES.map((size) => (
                      <ListboxOption
                         key={size}
                         value={size}
-                        className="flex h-8 cursor-default items-center justify-between rounded-md px-2.5 select-none data-focus:bg-muted data-selected:font-semibold"
+                        className="flex h-8 cursor-default items-center justify-between rounded-xl px-2.5 select-none data-focus:bg-muted data-selected:font-semibold"
                      >
                         {size}
                         <Check />

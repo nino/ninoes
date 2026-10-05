@@ -45,11 +45,15 @@ export function Pager({
                   anchor={{ to: "bottom start", gap: 4 }}
                   className="z-10 w-(--button-width) rounded-2xl border border-border bg-card p-1 text-sm text-fg tabular-nums shadow-md outline-none"
                >
+                  {/* Options are concentric with the list: 16px minus the 1px
+                      border and 4px padding. A plain rounded-[11px] rather than
+                      rounded-xl, which app.css turns into a squircle that reads
+                      much tighter than the list's round corners. */}
                   {PAGE_SIZES.map((size) => (
                      <ListboxOption
                         key={size}
                         value={size}
-                        className="flex h-8 cursor-default items-center justify-between rounded-xl px-2.5 select-none data-focus:bg-muted data-selected:font-semibold"
+                        className="flex h-8 cursor-default items-center justify-between rounded-[11px] px-2.5 select-none data-focus:bg-muted data-selected:font-semibold"
                      >
                         {size}
                         <Check />

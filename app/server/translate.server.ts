@@ -30,11 +30,9 @@ export async function translateWish(wish: {
    description: string | null;
 }): Promise<Translation> {
    const response = await getAnthropic().beta.messages.parse({
-      model: "claude-sonnet-5-5",
+      // Haiku has no server-side fallback: a refusal fails this wish (see below).
+      model: "claude-haiku-5-5",
       max_tokens: 16000,
-      // If the model declines, the API retries on a fallback model in the same call.
-      betas: ["server-side-fallback-2026-07-01"],
-      fallbacks: "default",
       output_config: { effort: "low", format: betaZodOutputFormat(TranslationSchema) },
       system,
       messages: [

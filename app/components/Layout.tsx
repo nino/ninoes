@@ -14,6 +14,7 @@ const navItems = [
    { path: "/vote", label: "Vote" },
    { path: "/votes", label: "Votes" },
    { path: "/leaderboard", label: "Leaderboard" },
+   { path: "/banned", label: "Banned" },
    { path: "/elo", label: "ELO" },
 ];
 

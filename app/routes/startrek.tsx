@@ -294,19 +294,39 @@ function FreshPanel({ fresh }: { fresh: FreshView }): JSX.Element {
 
    return (
       <div className="space-y-8">
-         <div className={`p-4 sm:p-5 ${cardClass}`}>
-            <h2 className="text-lg font-semibold">Where everything stands</h2>
-            <p className="text-sm text-muted-fg">
-               {outNow === 0
-                  ? "Nothing is on the air yet."
-                  : `${outNow} ${outNow === 1 ? "series is" : "series are"} on the air right now.`}
-            </p>
-            <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+         <details open className={`group ${cardClass}`}>
+            <summary
+               className={`flex cursor-pointer list-none items-center gap-3 rounded-xl p-4 sm:p-5 [&::-webkit-details-marker]:hidden ${focusRing}`}
+            >
+               <span className="grow">
+                  <h2 className="text-lg font-semibold">Overview</h2>
+                  <span className="block text-sm text-muted-fg">
+                     {outNow === 0
+                        ? "Nothing is on the air yet."
+                        : `${outNow} ${outNow === 1 ? "series is" : "series are"} on the air right now.`}
+                  </span>
+               </span>
+               <svg
+                  viewBox="0 0 16 16"
+                  aria-hidden="true"
+                  className="size-5 shrink-0 text-muted-fg transition-transform group-open:rotate-180"
+               >
+                  <path
+                     d="m4 6 4 4 4-4"
+                     fill="none"
+                     stroke="currentColor"
+                     strokeWidth="1.5"
+                     strokeLinecap="round"
+                     strokeLinejoin="round"
+                  />
+               </svg>
+            </summary>
+            <div className="grid gap-3 px-4 pb-4 sm:grid-cols-2 sm:px-5 sm:pb-5 lg:grid-cols-3">
                {fresh.series.map((summary) => (
                   <SeriesCard key={summary.id} summary={summary} />
                ))}
             </div>
-         </div>
+         </details>
 
          <section className="space-y-2">
             <h2 className="text-lg font-semibold">Just out</h2>

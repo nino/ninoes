@@ -294,7 +294,7 @@ function FreshPanel({ fresh }: { fresh: FreshView }): JSX.Element {
 
    return (
       <div className="space-y-8">
-         <details open className={`group ${cardClass}`}>
+         <details className={`group ${cardClass}`}>
             <summary
                className={`flex cursor-pointer list-none items-center gap-3 rounded-xl p-4 sm:p-5 [&::-webkit-details-marker]:hidden ${focusRing}`}
             >

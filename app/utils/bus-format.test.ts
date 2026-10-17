@@ -1,4 +1,4 @@
-import { expect, test } from "vitest";
+import { expect, test } from "bun:test";
 import { formatExpectedArrival, formatTimeToStation } from "./bus-format";
 
 test("formats arrival times as 24-hour London time", () => {

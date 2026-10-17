@@ -24,7 +24,7 @@
         "react-dom": "^19.3.0",
         "react-hook-form": "^7.89.0",
         "react-markdown": "^10.1.0",
-        "react-router": "^8.3.0",
+        "react-router": "^8.4.0",
         "remark-breaks": "^4.0.0",
         "remark-gfm": "^4.0.1",
         "sonner": "^2.0.8",
@@ -254,6 +254,8 @@
     "@react-types/shared": ["@react-types/shared@3.33.1", "", { "peerDependencies": { "react": "^16.8.0 || ^17.0.0-rc.1 || ^18.0.0 || ^19.0.0-rc.1" } }, "sha512-oJHtjvLG43VjwemQDadlR5g/8VepK56B/xKO2XORPHt9zlW6IZs3tZrYlvH29BMvoqC7RtE7E5UjgbnbFtDGag=="],
 
     "@remix-run/node-fetch-server": ["@remix-run/node-fetch-server@0.13.3", "", {}, "sha512-UfjOXed/DQteaM5VyTfqTeGpHwyL2J5aoRGY6cydip4tt1ehNNeSwuXCC7AEGE0RWBs/7bgKxYkL/B/+UDe4AA=="],
+
+    "@remix-run/route-pattern": ["@remix-run/route-pattern@0.22.1", "", {}, "sha512-czdGJWh09Lapvcqt7Vb09KlrU2PhRJ8xQaI+AItTuD9aDJ5MAgxnS38lnys6Ll+6RJEqPiaUqTwIQhVLwFvv+w=="],
 
     "@rolldown/binding-android-arm-eabi": ["@rolldown/binding-android-arm-eabi@1.2.13", "", { "os": "android", "cpu": "arm" }, "sha512-Vu/NICrgdRvUOeaJZIyB2FP63s6fO/4ud5l8dXmxDx9yDyn+mN0y+gsvsVviSli+T361Aqo0h46EuMoobrwawA=="],
 
@@ -1107,7 +1109,7 @@
 
     "react-refresh": ["react-refresh@0.18.0", "", {}, "sha512-QgT5//D3jfjJb6Gsjxv0Slpj23ip+HtOpnNgnb2S5zU3CB26G/IDPGoy4RJB42wzFE46DRsstbW6tKHoKbhAxw=="],
 
-    "react-router": ["react-router@8.3.0", "", { "dependencies": { "cookie-es": "3.1.1" }, "peerDependencies": { "react": ">=19.2.7", "react-dom": ">=19.2.7" }, "optionalPeers": ["react-dom"] }, "sha512-qyPMvW83jGIct3yiieisxdk9M745anqhpIMKN5m1t6yBMfgVPpt77aHOqs5fUlEJRMCGffg9BaQLH9oPVOL7xQ=="],
+    "react-router": ["react-router@8.4.0", "", { "dependencies": { "@remix-run/route-pattern": "^0.22.1", "cookie-es": "^3.1.1" }, "peerDependencies": { "react": ">=19.2.7", "react-dom": ">=19.2.7" }, "optionalPeers": ["react-dom"] }, "sha512-JtydAkBvU9UTEe5qNC+POhu+ZBNM7rlKY2IegwXc7Idj7xfRG16x5RZrw3mju+XlqBxfvb2ky9P3jUp9WyWC1g=="],
 
     "react-router-devtools": ["react-router-devtools@6.2.3", "", { "dependencies": { "@babel/core": "7.29.7", "@babel/generator": "7.29.8", "@babel/parser": "7.29.8", "@babel/traverse": "7.29.8", "@babel/types": "7.29.8", "@radix-ui/react-accordion": "1.2.20", "@tanstack/devtools-client": "0.0.5", "@tanstack/devtools-event-client": "0.4.4", "@tanstack/devtools-vite": "0.4.1", "@tanstack/react-devtools": "0.9.13", "chalk": "5.6.2", "clsx": "2.1.1", "framer-motion": "12.43.0", "goober": "2.1.19", "react-d3-tree": "3.6.6", "react-hotkeys-hook": "5.3.3", "react-tooltip": "5.30.1", "vite-node": "6.0.0" }, "optionalDependencies": { "@biomejs/cli-darwin-arm64": "2.5.6", "@rollup/rollup-darwin-arm64": "4.62.4", "@rollup/rollup-linux-x64-gnu": "4.62.4" }, "peerDependencies": { "@types/react": ">=17", "@types/react-dom": ">=17", "react": ">=17", "react-dom": ">=17", "react-router": ">=7.0.0", "vite": ">=5.0.0" } }, "sha512-3JgKXzB2/167052LgCLSh7ECb4vi8fu/Ddr8UfdO3OH2lFIDMbr6tMtTe3Wek16puahgPDKniqRw6bZCAu7CFg=="],
 

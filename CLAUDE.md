@@ -34,7 +34,7 @@ CI runs `bun run typecheck`, `bun run lint`, `bun run test` and `bun run build`,
 - **Path alias**: `~/` maps to `./app/`
 - **Styling**: Tailwind CSS v4. Design tokens live in `@theme` in `app/app.css`. Colours like `bg-page`, `bg-card`, `text-fg`, `text-muted-fg`, `border-border` and `bg-primary` are redefined for dark mode there, so use them in place of raw colours. Fonts are `font-sans` (Bricolage Grotesque) and `font-title` (Bevan), loaded from Bunny Fonts in `app/root.tsx`. Shared button, input and card class strings are in `app/components/ui/styles.ts`.
 - **Error tracking**: Sentry (production only)
-- **Analytics**: PostHog page views and exception capture (`app/posthog.ts`), production only. The key and host are the `VITE_POSTHOG_KEY` and `VITE_POSTHOG_HOST` repository secrets, passed as Fly build args by `fly-deploy.yml`; PR previews and dev builds leave them out and send nothing.
+- **Analytics**: PostHog page views and exception capture (`app/posthog.ts`), production only. The key (public by design) and the EU host are set in `fly-deploy.yml` and passed as the `VITE_POSTHOG_KEY`/`VITE_POSTHOG_HOST` Fly build args; PR previews and dev builds leave them out and send nothing.
 
 ## Deploys and previews
 

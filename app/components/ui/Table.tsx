@@ -55,19 +55,21 @@ export function Table<TData extends RowData>({
    setSorting,
    isLoading = false,
 }: TableProps<TData>): React.ReactNode {
-   const tbodyRef = React.useRef<HTMLTableSectionElement>(null);
    const [lastBodyHeight, setLastBodyHeight] = React.useState<number | null>(null);
    const [lastRowCount, setLastRowCount] = React.useState<number | null>(null);
 
    // Remember the body height while rows are shown, so the loading
    // placeholder can hold the same height and the table doesn't collapse
-   // to just the header and jump back when the next page arrives.
-   React.useLayoutEffect(() => {
-      if (data.length > 0 && tbodyRef.current) {
-         setLastBodyHeight(tbodyRef.current.getBoundingClientRect().height);
+   // to just the header and jump back when the next page arrives. A new
+   // callback per page of data, so React measures again before painting it.
+   const measureBody = React.useCallback(
+      (tbody: HTMLTableSectionElement | null) => {
+         if (tbody == null || data.length === 0) return;
+         setLastBodyHeight(tbody.getBoundingClientRect().height);
          setLastRowCount(data.length);
-      }
-   }, [data]);
+      },
+      [data],
+   );
 
    const showPlaceholder = isLoading && data.length === 0;
 
@@ -149,7 +151,7 @@ export function Table<TData extends RowData>({
                   </tr>
                </tbody>
             ) : (
-               <tbody ref={tbodyRef}>
+               <tbody ref={measureBody}>
                   {table.getRowModel().rows.map((row) => (
                      <tr
                         key={row.id}

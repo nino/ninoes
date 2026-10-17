@@ -58,4 +58,5 @@ CI runs `bun run typecheck`, `bun run lint`, `bun run test` and `bun run build`,
 - **Return types**: Named functions and components need explicit return types (oxlint-enforced; inline callbacks and typed function expressions are exempt)
 - **No `any`**: Enforced by oxlint
 - **Nullish**: Use `??` and `?.` (oxlint-enforced). Don't use `!!x`.
+- **No effects**: `useEffect`, `useLayoutEffect` and `useInsertionEffect` are banned outside `useMountEffect`, `useEventListener`, `useInterval`, `useResizeObserver` and `useSession` in `app/hooks/` (oxlint-enforced; the allowlist is in `.oxlintrc.json`). Derive state during render, act in the event handler, use a ref callback, or remount with a `key`.
 - **Curly quotes in JSX**: Use HTML entities `&ldquo;` `&rdquo;` `&lsquo;` `&rsquo;` — never raw curly quotes

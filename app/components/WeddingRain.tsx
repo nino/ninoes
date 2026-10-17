@@ -1,4 +1,6 @@
 import React, { type JSX } from "react";
+import { useEventListener } from "~/hooks/useEventListener";
+import { useMountEffect } from "~/hooks/useMountEffect";
 
 export const holdDuration = 5000;
 export const flipWindow = 2000;
@@ -21,46 +23,30 @@ const confettiColours = [
  * resets the timer.
  */
 export function useAltHold(onHold: () => void, duration = holdDuration): void {
-   const onHoldRef = React.useRef(onHold);
-   React.useEffect(() => {
-      onHoldRef.current = onHold;
-   }, [onHold]);
+   const timer = React.useRef<number | undefined>(undefined);
 
-   React.useEffect(() => {
-      let timer: number | undefined;
+   function reset(): void {
+      window.clearTimeout(timer.current);
+      timer.current = undefined;
+   }
 
-      function reset(): void {
-         window.clearTimeout(timer);
-         timer = undefined;
-      }
-
-      function onKeyDown(event: KeyboardEvent): void {
-         if (event.key !== "Alt") {
-            reset();
-            return;
-         }
-         // Holding a key fires repeated keydowns; only the first one starts the timer.
-         if (event.repeat || timer != null) return;
-         timer = window.setTimeout(() => {
-            timer = undefined;
-            onHoldRef.current();
-         }, duration);
-      }
-
-      function onKeyUp(event: KeyboardEvent): void {
-         if (event.key === "Alt") reset();
-      }
-
-      window.addEventListener("keydown", onKeyDown);
-      window.addEventListener("keyup", onKeyUp);
-      window.addEventListener("blur", reset);
-      return () => {
+   useEventListener("keydown", (event) => {
+      if (event.key !== "Alt") {
          reset();
-         window.removeEventListener("keydown", onKeyDown);
-         window.removeEventListener("keyup", onKeyUp);
-         window.removeEventListener("blur", reset);
-      };
-   }, [duration]);
+         return;
+      }
+      // Holding a key fires repeated keydowns; only the first one starts the timer.
+      if (event.repeat || timer.current != null) return;
+      timer.current = window.setTimeout(() => {
+         timer.current = undefined;
+         onHold();
+      }, duration);
+   });
+   useEventListener("keyup", (event) => {
+      if (event.key === "Alt") reset();
+   });
+   useEventListener("blur", reset);
+   useMountEffect(() => reset);
 }
 
 /**
@@ -68,27 +54,21 @@ export function useAltHold(onHold: () => void, duration = holdDuration): void {
  * portrait within `window` ms, i.e. a phone turned sideways and straight back.
  */
 export function useFlipBack(onFlip: () => void, within = flipWindow): void {
-   const onFlipRef = React.useRef(onFlip);
-   React.useEffect(() => {
-      onFlipRef.current = onFlip;
-   }, [onFlip]);
+   const turnedAt = React.useRef<number | undefined>(undefined);
 
-   React.useEffect(() => {
-      const landscape = window.matchMedia("(orientation: landscape)");
-      let turnedAt: number | undefined;
-
-      function onChange(event: MediaQueryListEvent): void {
+   useEventListener(
+      "change",
+      (event) => {
          if (event.matches) {
-            turnedAt = Date.now();
+            turnedAt.current = Date.now();
             return;
          }
-         if (turnedAt != null && Date.now() - turnedAt <= within) onFlipRef.current();
-         turnedAt = undefined;
-      }
-
-      landscape.addEventListener("change", onChange);
-      return () => landscape.removeEventListener("change", onChange);
-   }, [within]);
+         if (turnedAt.current != null && Date.now() - turnedAt.current <= within)
+            onFlip();
+         turnedAt.current = undefined;
+      },
+      () => window.matchMedia("(orientation: landscape)"),
+   );
 }
 
 type Piece = {
@@ -154,13 +134,91 @@ function makePieces(width: number, height: number): Array<Piece> {
 }
 
 /**
+ * Ref callback that runs one shower of pieces on `canvas` and stops it when
+ * the canvas is removed. Module-level so its identity is stable and React
+ * only calls it when a new canvas mounts.
+ */
+function rain(canvas: HTMLCanvasElement): () => void {
+   const context = canvas.getContext("2d");
+   if (!context) return () => {};
+
+   const scale = window.devicePixelRatio || 1;
+   let width = 0;
+   let height = 0;
+   function resize(): void {
+      if (!context) return;
+      width = window.innerWidth;
+      height = window.innerHeight;
+      canvas.width = width * scale;
+      canvas.height = height * scale;
+      context.setTransform(scale, 0, 0, scale, 0, 0);
+   }
+   resize();
+   window.addEventListener("resize", resize);
+
+   const pieces = makePieces(width, height);
+   const start = performance.now();
+   let last = start;
+   let frame = requestAnimationFrame(draw);
+
+   function draw(now: number): void {
+      if (!context) return;
+      const elapsed = now - start;
+      const dt = Math.min(now - last, 50);
+      last = now;
+      context.clearRect(0, 0, width, height);
+
+      let visible = 0;
+      for (const piece of pieces) {
+         if (elapsed < piece.delay) {
+            visible++;
+            continue;
+         }
+         piece.y += piece.vy * dt;
+         piece.x += piece.vx * dt;
+         piece.angle += piece.spin * dt;
+         if (piece.y - piece.size > height) continue;
+         visible++;
+
+         const x = piece.x + Math.sin(elapsed * piece.swaySpeed) * piece.sway;
+         context.save();
+         context.translate(x, piece.y);
+         context.rotate(piece.sprite ? Math.sin(piece.angle) * 0.5 : piece.angle);
+         if (piece.sprite) {
+            const size = piece.size * 1.3;
+            context.drawImage(piece.sprite, -size / 2, -size / 2, size, size);
+         } else {
+            // Squash the rectangle as it turns so it reads as a flipping paper strip.
+            context.scale(1, Math.cos(piece.angle * 3));
+            context.fillStyle = piece.colour;
+            context.fillRect(
+               -piece.size / 2,
+               -piece.size / 4,
+               piece.size,
+               piece.size / 2,
+            );
+         }
+         context.restore();
+      }
+
+      if (visible > 0) frame = requestAnimationFrame(draw);
+      else context.clearRect(0, 0, width, height);
+   }
+
+   return () => {
+      cancelAnimationFrame(frame);
+      window.removeEventListener("resize", resize);
+      context.clearRect(0, 0, width, height);
+   };
+}
+
+/**
  * Hold Alt/Option for five seconds, or turn a phone sideways and straight
  * back, and rings, suits, flowers and confetti rain over the whole viewport. Does nothing for visitors who prefer reduced
  * motion.
  */
 export function WeddingRain(): JSX.Element | null {
    const [runId, setRunId] = React.useState(0);
-   const canvasRef = React.useRef<HTMLCanvasElement>(null);
 
    const start = React.useCallback(() => {
       if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
@@ -169,85 +227,12 @@ export function WeddingRain(): JSX.Element | null {
    useAltHold(start);
    useFlipBack(start);
 
-   React.useEffect(() => {
-      const canvas = canvasRef.current;
-      const context = canvas?.getContext("2d");
-      if (runId === 0 || !canvas || !context) return;
-
-      const scale = window.devicePixelRatio || 1;
-      let width = 0;
-      let height = 0;
-      function resize(): void {
-         if (!canvas || !context) return;
-         width = window.innerWidth;
-         height = window.innerHeight;
-         canvas.width = width * scale;
-         canvas.height = height * scale;
-         context.setTransform(scale, 0, 0, scale, 0, 0);
-      }
-      resize();
-      window.addEventListener("resize", resize);
-
-      const pieces = makePieces(width, height);
-      const start = performance.now();
-      let last = start;
-      let frame = requestAnimationFrame(draw);
-
-      function draw(now: number): void {
-         if (!context) return;
-         const elapsed = now - start;
-         const dt = Math.min(now - last, 50);
-         last = now;
-         context.clearRect(0, 0, width, height);
-
-         let visible = 0;
-         for (const piece of pieces) {
-            if (elapsed < piece.delay) {
-               visible++;
-               continue;
-            }
-            piece.y += piece.vy * dt;
-            piece.x += piece.vx * dt;
-            piece.angle += piece.spin * dt;
-            if (piece.y - piece.size > height) continue;
-            visible++;
-
-            const x = piece.x + Math.sin(elapsed * piece.swaySpeed) * piece.sway;
-            context.save();
-            context.translate(x, piece.y);
-            context.rotate(piece.sprite ? Math.sin(piece.angle) * 0.5 : piece.angle);
-            if (piece.sprite) {
-               const size = piece.size * 1.3;
-               context.drawImage(piece.sprite, -size / 2, -size / 2, size, size);
-            } else {
-               // Squash the rectangle as it turns so it reads as a flipping paper strip.
-               context.scale(1, Math.cos(piece.angle * 3));
-               context.fillStyle = piece.colour;
-               context.fillRect(
-                  -piece.size / 2,
-                  -piece.size / 4,
-                  piece.size,
-                  piece.size / 2,
-               );
-            }
-            context.restore();
-         }
-
-         if (visible > 0) frame = requestAnimationFrame(draw);
-         else context.clearRect(0, 0, width, height);
-      }
-
-      return () => {
-         cancelAnimationFrame(frame);
-         window.removeEventListener("resize", resize);
-         context.clearRect(0, 0, width, height);
-      };
-   }, [runId]);
-
    if (runId === 0) return null;
    return (
       <canvas
-         ref={canvasRef}
+         // A fresh canvas per run, so its ref callback starts the animation.
+         key={runId}
+         ref={rain}
          aria-hidden="true"
          className="pointer-events-none fixed inset-0 z-50 size-full"
       />

@@ -1,4 +1,5 @@
 import React, { type JSX } from "react";
+import { flushSync } from "react-dom";
 import { toast } from "sonner";
 import {
    type WishInput,
@@ -11,6 +12,7 @@ import {
    useWithdrawContribution,
 } from "~/hooks/useSupabase";
 import { WeddingRain } from "~/components/WeddingRain";
+import { useMountEffect } from "~/hooks/useMountEffect";
 import { WishDescription } from "~/components/WishDescription";
 import { Skeleton } from "~/components/ui/Skeleton";
 import { SlidingPill } from "~/components/ui/SlidingPill";
@@ -118,18 +120,6 @@ function useVisitor(): {
       visitor = { name, language };
    }
 
-   const language = visitor?.language;
-   React.useEffect(() => {
-      if (language == null) return;
-      // Put the root layout's lang back when leaving, so other pages aren't
-      // announced as German.
-      const previous = document.documentElement.lang;
-      document.documentElement.lang = language;
-      return () => {
-         document.documentElement.lang = previous;
-      };
-   }, [language]);
-
    const setName = React.useCallback((value: string | null) => {
       writeStorage(nameKey, value);
    }, []);
@@ -139,6 +129,22 @@ function useVisitor(): {
    }, []);
 
    return { visitor, setName, setLanguage };
+}
+
+/**
+ * Sets the page's lang while mounted, and puts the root layout's back on
+ * unmount so other pages aren't announced as German. Keyed on the language,
+ * so switching remounts it.
+ */
+function DocumentLang({ lang }: { lang: Language }): null {
+   useMountEffect(() => {
+      const previous = document.documentElement.lang;
+      document.documentElement.lang = lang;
+      return () => {
+         document.documentElement.lang = previous;
+      };
+   });
+   return null;
 }
 
 export default function WishlistPage(): JSX.Element {
@@ -179,6 +185,9 @@ export default function WishlistPage(): JSX.Element {
                   />
                )}
             </>
+         )}
+         {visitor != null && (
+            <DocumentLang key={visitor.language} lang={visitor.language} />
          )}
          <WeddingRain />
       </div>
@@ -441,26 +450,11 @@ function PageSkeleton(): JSX.Element {
 
 /**
  * Asks the server to translate whatever is still untranslated: new wishes,
- * edited ones, and any a previous attempt missed. If a run fails or gets
- * nowhere, it waits until the set of pending wishes changes before trying
- * again, so a wish that can't be translated doesn't cause a request loop.
+ * edited ones, and any a previous attempt missed.
  */
 function useTranslatePending(wishes: Array<Wish> | undefined): void {
-   const { mutate, isPending } = useTranslateWishes();
-   const pendingCount = wishes?.filter((w) => w.language == null).length ?? 0;
-   const stalledAt = React.useRef<number | null>(null);
-
-   React.useEffect(() => {
-      if (pendingCount === 0 || isPending || stalledAt.current === pendingCount) return;
-      mutate(undefined, {
-         onSuccess: ({ translated }) => {
-            stalledAt.current = translated === 0 ? pendingCount : null;
-         },
-         onError: () => {
-            stalledAt.current = pendingCount;
-         },
-      });
-   }, [pendingCount, isPending, mutate]);
+   const pendingIds = (wishes ?? []).filter((w) => w.language == null).map((w) => w.id);
+   useTranslateWishes(pendingIds);
 }
 
 function WishCard({
@@ -861,17 +855,14 @@ function AddWish({
    // and the list is what people come for.
    const [open, setOpen] = React.useState(false);
    const toggleRef = React.useRef<HTMLButtonElement>(null);
-   const wasOpen = React.useRef(false);
-
-   // Closing unmounts the focused form, so hand focus back to the button.
-   React.useEffect(() => {
-      if (wasOpen.current && !open) toggleRef.current?.focus();
-      wasOpen.current = open;
-   }, [open]);
 
    const close = (): void => {
-      setOpen(false);
-      setClaimNow(false);
+      flushSync(() => {
+         setOpen(false);
+         setClaimNow(false);
+      });
+      // Closing unmounts the focused form, so hand focus back to the button.
+      toggleRef.current?.focus();
    };
 
    const add = async (input: WishInput): Promise<void> => {

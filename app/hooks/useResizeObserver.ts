@@ -1,20 +1,22 @@
 import React from "react";
 
+/**
+ * Calls `onResize` whenever `element` changes size, and once when it is
+ * first observed. The latest `onResize` is always used, so an inline
+ * function is fine.
+ */
 export function useResizeObserver(
-   element: HTMLElement | null,
+   element: Element | null,
    onResize: (entries: Array<ResizeObserverEntry>) => void,
 ): void {
-   const onResizeRef = React.useRef(onResize);
-   React.useEffect(() => {
-      onResizeRef.current = onResize;
-   });
+   const onResizeEvent = React.useEffectEvent(onResize);
 
    React.useEffect(() => {
       if (!element) {
          return;
       }
 
-      const observer = new ResizeObserver((entries) => onResizeRef.current(entries));
+      const observer = new ResizeObserver((entries) => onResizeEvent(entries));
       observer.observe(element);
 
       return () => observer.disconnect();

@@ -6,15 +6,11 @@ import React from "react";
  * so an inline function is fine and won't reset the cadence on every render.
  */
 export function useInterval(callback: () => void, delayMs: number | null): void {
-   const savedCallback = React.useRef(callback);
-
-   React.useEffect(() => {
-      savedCallback.current = callback;
-   }, [callback]);
+   const onTick = React.useEffectEvent(callback);
 
    React.useEffect(() => {
       if (delayMs == null) return;
-      const id = setInterval(() => savedCallback.current(), delayMs);
+      const id = setInterval(() => onTick(), delayMs);
       return () => clearInterval(id);
    }, [delayMs]);
 }

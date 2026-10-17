@@ -12,6 +12,8 @@ import { type ReactNode } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "sonner";
 
+import { initPostHog } from "~/posthog";
+
 // @sentry/react is the browser SDK. On the server its web-vitals code reaches
 // for `document`, which crashes Bun at startup, so only start it in the browser.
 if (import.meta.env.PROD && !import.meta.env.SSR) {
@@ -27,6 +29,8 @@ if (import.meta.env.PROD && !import.meta.env.SSR) {
       replaysOnErrorSampleRate: 1.0, // If you're not already sampling the entire session, change the sample rate to 100% when sampling sessions where errors occur.
    });
 }
+
+initPostHog();
 
 import type { Route } from "./+types/root";
 import "./app.css";

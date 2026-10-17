@@ -1,4 +1,5 @@
 import {
+   keepPreviousData,
    useMutation,
    type UseMutationResult,
    useQuery,
@@ -7,6 +8,9 @@ import {
 } from "@tanstack/react-query";
 import { supabase } from "../supabaseClient";
 import type {
+   BlogDailyViews,
+   BlogTopPage,
+   BlogTopReferrer,
    Enum,
    Name,
    Team,
@@ -19,6 +23,9 @@ import type {
    Wish,
 } from "~/model/types";
 import {
+   BlogDailyViewsSchema,
+   BlogTopPageSchema,
+   BlogTopReferrerSchema,
    NameGender,
    NameSchema,
    TeamEloSchema,
@@ -31,6 +38,7 @@ import {
 import { useSession } from "./useSession";
 import { z } from "zod";
 import { BASE_ELO, updateEloRatings } from "~/utils/elo";
+import { BLOG_TOP_ROWS, type BlogStatsRange } from "~/utils/blog-stats";
 
 export function useNames({
    page,
@@ -722,5 +730,73 @@ export function useTranslateWishes(): UseMutationResult<
          translated > 0
             ? queryClient.invalidateQueries({ queryKey: ["wishes"] })
             : undefined,
+   });
+}
+
+// ninoan.com's page views, from the blog_* report functions. They only return rows
+// to Nino's account; anyone else gets empty results. Because the results depend on
+// who's signed in, the query keys include the user: the query cache outlives
+// signing out. Switching ranges keeps the previous range on screen until the new
+// one arrives.
+
+export function useBlogDailyViews(
+   userId: string,
+   { fromDay, toDay }: BlogStatsRange,
+): UseQueryResult<Array<BlogDailyViews>> {
+   return useQuery({
+      queryKey: ["blogDailyViews", userId, fromDay, toDay],
+      placeholderData: keepPreviousData,
+      queryFn: async () => {
+         const { data, error } = await supabase.rpc("blog_daily_views", {
+            from_day: fromDay,
+            to_day: toDay,
+         });
+         if (error) {
+            throw error;
+         }
+         return z.array(BlogDailyViewsSchema).parse(data);
+      },
+   });
+}
+
+export function useBlogTopPages(
+   userId: string,
+   { fromDay, toDay }: BlogStatsRange,
+): UseQueryResult<Array<BlogTopPage>> {
+   return useQuery({
+      queryKey: ["blogTopPages", userId, fromDay, toDay],
+      placeholderData: keepPreviousData,
+      queryFn: async () => {
+         const { data, error } = await supabase.rpc("blog_top_pages", {
+            from_day: fromDay,
+            to_day: toDay,
+            max_rows: BLOG_TOP_ROWS,
+         });
+         if (error) {
+            throw error;
+         }
+         return z.array(BlogTopPageSchema).parse(data);
+      },
+   });
+}
+
+export function useBlogTopReferrers(
+   userId: string,
+   { fromDay, toDay }: BlogStatsRange,
+): UseQueryResult<Array<BlogTopReferrer>> {
+   return useQuery({
+      queryKey: ["blogTopReferrers", userId, fromDay, toDay],
+      placeholderData: keepPreviousData,
+      queryFn: async () => {
+         const { data, error } = await supabase.rpc("blog_top_referrers", {
+            from_day: fromDay,
+            to_day: toDay,
+            max_rows: BLOG_TOP_ROWS,
+         });
+         if (error) {
+            throw error;
+         }
+         return z.array(BlogTopReferrerSchema).parse(data);
+      },
    });
 }

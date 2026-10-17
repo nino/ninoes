@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, expect, test, vi } from "vitest";
+import { afterEach, beforeEach, expect, test, vi } from "bun:test";
 import { cleanup, fireEvent, renderHook } from "@testing-library/react";
 import { flipWindow, holdDuration, useAltHold, useFlipBack } from "./WeddingRain";
 
@@ -6,9 +6,12 @@ beforeEach(() => {
    vi.useFakeTimers();
 });
 
+const realMatchMedia = window.matchMedia;
+
 afterEach(() => {
    cleanup();
    vi.useRealTimers();
+   window.matchMedia = realMatchMedia;
 });
 
 test("holding Alt for five seconds triggers the callback once", () => {
@@ -50,13 +53,17 @@ test("pressing another key while holding Alt cancels it", () => {
 
 function fakeOrientation(): (landscape: boolean) => void {
    const listeners = new Set<(event: MediaQueryListEvent) => void>();
-   vi.stubGlobal("matchMedia", (query: string) => ({
-      media: query,
-      addEventListener: (_: string, listener: (event: MediaQueryListEvent) => void) =>
-         listeners.add(listener),
-      removeEventListener: (_: string, listener: (event: MediaQueryListEvent) => void) =>
-         listeners.delete(listener),
-   }));
+   // oxlint-disable-next-line typescript/consistent-type-assertions -- only these members are used
+   window.matchMedia = (query: string) =>
+      ({
+         media: query,
+         addEventListener: (_: string, listener: (event: MediaQueryListEvent) => void) =>
+            listeners.add(listener),
+         removeEventListener: (
+            _: string,
+            listener: (event: MediaQueryListEvent) => void,
+         ) => listeners.delete(listener),
+      }) as unknown as MediaQueryList;
    return (landscape) => {
       // oxlint-disable-next-line typescript/consistent-type-assertions -- only `matches` is read
       const event = { matches: landscape } as MediaQueryListEvent;
@@ -74,7 +81,6 @@ test("turning the phone sideways and straight back triggers the callback", () =>
    rotate(false);
 
    expect(onFlip).toHaveBeenCalledTimes(1);
-   vi.unstubAllGlobals();
 });
 
 test("staying sideways for too long doesn't trigger it", () => {
@@ -87,7 +93,6 @@ test("staying sideways for too long doesn't trigger it", () => {
    rotate(false);
 
    expect(onFlip).not.toHaveBeenCalled();
-   vi.unstubAllGlobals();
 });
 
 test("starting sideways and turning upright doesn't trigger it", () => {
@@ -98,5 +103,4 @@ test("starting sideways and turning upright doesn't trigger it", () => {
    rotate(false);
 
    expect(onFlip).not.toHaveBeenCalled();
-   vi.unstubAllGlobals();
 });

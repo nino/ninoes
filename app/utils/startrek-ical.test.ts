@@ -1,4 +1,4 @@
-import { expect, test } from "vitest";
+import { expect, test } from "bun:test";
 import { buildCalendar, escapeText, foldLine } from "./startrek-ical";
 import { allSeries, findSeries, type Series } from "./startrek";
 

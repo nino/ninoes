@@ -12,7 +12,9 @@ import { type ReactNode } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "sonner";
 
-if (import.meta.env.PROD) {
+// @sentry/react is the browser SDK. On the server its web-vitals code reaches
+// for `document`, which crashes Bun at startup, so only start it in the browser.
+if (import.meta.env.PROD && !import.meta.env.SSR) {
    Sentry.init({
       dsn: "https://6dedc280f764a89de4caa4d2af92ff01@o4508201817407488.ingest.de.sentry.io/4508789873180752",
       integrations: [Sentry.browserTracingIntegration(), Sentry.replayIntegration()],

@@ -1,4 +1,4 @@
-import { expect, test } from "vitest";
+import { expect, test } from "bun:test";
 import { renderHook } from "@testing-library/react";
 import { usePreviousValue } from "./usePreviousValue";
 

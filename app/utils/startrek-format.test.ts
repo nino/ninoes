@@ -1,4 +1,4 @@
-import { expect, test } from "vitest";
+import { expect, test } from "bun:test";
 import { formatAirDate, formatGap, formatShortDate } from "./startrek-format";
 
 test("formats calendar dates without depending on the runtime's ICU", () => {

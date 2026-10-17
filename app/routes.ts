@@ -24,4 +24,6 @@ export default [
    // Its own header and favicon, outside the app layout.
    route("/wishlist", "routes/wishlist.tsx"),
    route("/wishlist/translate", "routes/wishlist-translate.ts"),
+   // PostHog's endpoints, for this site and Nino's other apps.
+   route("/relay/*", "routes/relay.ts"),
 ] satisfies RouteConfig;

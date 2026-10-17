@@ -1,4 +1,4 @@
-import { expect, test } from "vitest";
+import { expect, test } from "bun:test";
 import { shiftFeed, shiftPubDate } from "./last-year";
 
 function item(title: string, pubDate: string): string {

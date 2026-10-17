@@ -1,0 +1,5 @@
+[test]
+root = "app"
+# happy-dom has to be registered before Testing Library is imported, since
+# `screen` binds to document.body at import time. Hence two files.
+preload = ["./app/test/happy-dom.ts", "./app/test/testing-library.ts"]

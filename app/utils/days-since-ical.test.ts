@@ -1,4 +1,4 @@
-import { expect, test } from "vitest";
+import { expect, test } from "bun:test";
 import { buildDaysSinceCalendar, parseCalendarParams } from "./days-since-ical";
 
 const now = new Date("2026-09-26T09:00:00Z");

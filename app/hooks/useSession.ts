@@ -1,6 +1,7 @@
 import * as React from "react";
 import { createBrowserClient } from "@supabase/ssr";
 import type { Session, SupabaseClient } from "@supabase/supabase-js";
+import { env } from "~/env";
 
 export type UseSessionReturn = {
    session: Session | null;
@@ -12,10 +13,7 @@ export function useSession(): UseSessionReturn {
    const [session, setSession] = React.useState<Session | null>(null);
    const [isLoading, setIsLoading] = React.useState(true);
    const [supabase] = React.useState(() =>
-      createBrowserClient(
-         import.meta.env.VITE_SUPABASE_URL,
-         import.meta.env.VITE_SUPABASE_ANON_KEY,
-      ),
+      createBrowserClient(env.VITE_SUPABASE_URL, env.VITE_SUPABASE_ANON_KEY),
    );
 
    React.useEffect(() => {

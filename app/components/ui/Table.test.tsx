@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, expect, test, vi } from "vitest";
+import { afterEach, beforeEach, expect, test, vi } from "bun:test";
 import { render, screen } from "@testing-library/react";
 import { Table, type TableColumnDef } from "./Table";
 
@@ -22,9 +22,9 @@ const pageTwo: Array<Row> = Array.from({ length: 10 }, (_, i) => ({
 const BODY_HEIGHT = 320;
 
 beforeEach(() => {
-   // jsdom does no layout, so measured heights are always 0. Pretend the
+   // happy-dom does no layout, so measured heights are always 0. Pretend the
    // table body is BODY_HEIGHT pixels tall. (The method lives on
-   // Element.prototype in jsdom, so spy there.)
+   // Element.prototype in happy-dom, so spy there.)
    vi.spyOn(Element.prototype, "getBoundingClientRect").mockReturnValue({
       height: BODY_HEIGHT,
       width: 600,

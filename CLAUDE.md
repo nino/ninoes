@@ -8,14 +8,16 @@ Ninoes is mainly a name voting/ranking app. Users vote on names (up/down and ELO
 
 ## Commands
 
-- `pnpm dev` — start dev server with HMR (`.claude/launch.json` runs it on port 5199 with `--strictPort`)
-- `pnpm build` — production build (client + server)
-- `pnpm typecheck` — TypeScript type checking
-- `pnpm lint` / `pnpm lint:fix` — oxlint (type-aware; config in `.oxlintrc.json`)
-- `pnpm format` — Prettier formatting
-- `pnpm test` — Vitest (jsdom + Testing Library); test files live next to their subject as `*.test.{ts,tsx}`
+Bun is the package manager, the runtime (dev server, build and production server) and the test runner. Always go through `bun run <script>`: `bun build` and `bun test` are Bun's own bundler and test runner and skip the package.json scripts.
 
-CI runs `pnpm typecheck`, `pnpm lint`, `pnpm test` and `pnpm build`, in that order. Run the same before pushing.
+- `bun run dev` — start dev server with HMR (`.claude/launch.json` runs it on port 5199 with `--strictPort`). The script runs React Router's bin by path because Bun drops `--conditions=development` when it resolves a bin by name, and React Router needs that condition to start in dev mode.
+- `bun run build` — production build (client + server)
+- `bun run typecheck` — TypeScript type checking
+- `bun run lint` / `bun run lint:fix` — oxlint (type-aware; config in `.oxlintrc.json`)
+- `bun run format` — Prettier formatting
+- `bun run test` — `bun test` with happy-dom and Testing Library, preloaded from `app/test/` (see `bunfig.toml`); test files live next to their subject as `*.test.{ts,tsx}` and import from `bun:test`. Its `vi` covers `fn`, `spyOn` and fake timers but not `stubGlobal`.
+
+CI runs `bun run typecheck`, `bun run lint`, `bun run test` and `bun run build`, in that order. Run the same before pushing.
 
 ## Environment
 

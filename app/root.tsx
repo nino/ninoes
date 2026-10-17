@@ -7,28 +7,12 @@ import {
    ScrollRestoration,
    useNavigation,
 } from "react-router";
-import * as Sentry from "@sentry/react";
 import { type ReactNode } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "sonner";
 
-import { initPostHog } from "~/posthog";
-
-// @sentry/react is the browser SDK. On the server its web-vitals code reaches
-// for `document`, which crashes Bun at startup, so only start it in the browser.
-if (import.meta.env.PROD && !import.meta.env.SSR) {
-   Sentry.init({
-      dsn: "https://6dedc280f764a89de4caa4d2af92ff01@o4508201817407488.ingest.de.sentry.io/4508789873180752",
-      integrations: [Sentry.browserTracingIntegration(), Sentry.replayIntegration()],
-      // Tracing
-      tracesSampleRate: 1.0, //  Capture 100% of the transactions
-      // Set 'tracePropagationTargets' to control for which URLs distributed tracing should be enabled
-      tracePropagationTargets: ["localhost", /^https:\/\/yourserver\.io\/api/],
-      // Session Replay
-      replaysSessionSampleRate: 0.1, // This sets the sample rate at 10%. You may want to change it to 100% while in development and then sample at a lower rate in production.
-      replaysOnErrorSampleRate: 1.0, // If you're not already sampling the entire session, change the sample rate to 100% when sampling sessions where errors occur.
-   });
-}
+import { useMountEffect } from "~/hooks/useMountEffect";
+import { initPostHog, reportError } from "~/posthog";
 
 initPostHog();
 
@@ -99,6 +83,14 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps): ReactNode {
    let message = "Oops!";
    let details = "An unexpected error occurred.";
    let stack: string | undefined;
+
+   // The boundary catches route errors, so nothing else reports them. A
+   // response the app threw on purpose (a 404) isn't a bug.
+   useMountEffect(() => {
+      if (!isRouteErrorResponse(error) || error.status >= 500) {
+         reportError(error);
+      }
+   });
 
    if (isRouteErrorResponse(error)) {
       message = error.status === 404 ? "404" : "Error";

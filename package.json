@@ -19,8 +19,6 @@
       "@js-temporal/polyfill": "^0.5.1",
       "@react-router/node": "^8.4.0",
       "@react-router/serve": "^8.4.0",
-      "@sentry/react": "^11.7.0",
-      "@sentry/vite-plugin": "^5.4.1",
       "@supabase/ssr": "^0.12.7",
       "@supabase/supabase-js": "^2.117.3",
       "@tanstack/react-query": "^5.104.2",
@@ -29,6 +27,7 @@
       "date-fns": "^4.4.0",
       "isbot": "^5.2.2",
       "posthog-js": "^1.438.12",
+      "posthog-node": "^5.56.2",
       "react": "^19.3.0",
       "react-dom": "^19.3.0",
       "react-hook-form": "^7.90.0",
@@ -64,7 +63,6 @@
       "uuid": "^11.1.1"
    },
    "trustedDependencies": [
-      "@sentry/cli",
       "esbuild"
    ]
 }

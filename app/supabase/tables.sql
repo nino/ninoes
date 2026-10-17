@@ -104,3 +104,18 @@ CREATE TABLE public.wish_contributions (
 ALTER TABLE public.wishes
   DROP COLUMN claimed_by,
   DROP COLUMN claimed_at;
+
+-- 2026-10-17-blog-page-views.sql (in its own schema, not exposed through the API;
+-- a trigger keeps only utm_* query parameters and strips referrer query strings)
+CREATE SCHEMA analytics;
+
+CREATE TABLE analytics.page_views (
+  ts timestamp WITH time zone NOT NULL,
+  path text NOT NULL,
+  query text NULL,
+  status smallint NOT NULL,
+  referrer text NULL,
+  referrer_host text NULL,
+  user_agent text NULL,
+  visitor_hash text NOT NULL
+) TABLESPACE pg_default;

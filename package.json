@@ -18,7 +18,7 @@
       "@hookform/resolvers": "^5.9.1",
       "@js-temporal/polyfill": "^0.5.1",
       "@react-router/node": "^8.4.0",
-      "@react-router/serve": "^8.3.0",
+      "@react-router/serve": "^8.4.0",
       "@sentry/react": "^11.7.0",
       "@sentry/vite-plugin": "^5.4.1",
       "@supabase/ssr": "^0.12.7",

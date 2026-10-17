@@ -189,19 +189,20 @@ function XAxis({
    scale: d3.ScaleLinear<number, number>;
    transform?: string;
 }): ReactNode {
-   const ref = React.useRef<SVGGElement>(null);
-
-   React.useEffect(() => {
-      if (ref.current) {
+   // A new callback whenever the scale changes, so React redraws the axis.
+   const ref = React.useCallback(
+      (node: SVGGElement | null) => {
+         if (node == null) return;
          // Create geographic ticks
          const ticks = d3.range(24, 38, 2);
          const axis = d3
             .axisBottom(scale)
             .tickValues(ticks)
             .tickFormat((d) => `${Number(d)}°E`);
-         d3.select(ref.current).call(axis);
-      }
-   }, [scale]);
+         d3.select(node).call(axis);
+      },
+      [scale],
+   );
 
    return <g ref={ref} transform={transform} />;
 }
@@ -217,10 +218,10 @@ function YAxis({
    tickFormat?: (domainValue: d3.NumberValue, index: number) => string;
    tickValues?: Array<number>;
 }): ReactNode {
-   const ref = React.useRef<SVGGElement>(null);
-
-   React.useEffect(() => {
-      if (ref.current) {
+   // A new callback whenever an input changes, so React redraws the axis.
+   const ref = React.useCallback(
+      (node: SVGGElement | null) => {
+         if (node == null) return;
          // Fall back to d3's own ticks for the scale's domain; a hardcoded
          // default here would silently render out-of-domain labels.
          const axis = d3.axisLeft(scale);
@@ -230,9 +231,10 @@ function YAxis({
          if (tickFormat) {
             axis.tickFormat(tickFormat);
          }
-         d3.select(ref.current).call(axis);
-      }
-   }, [scale, tickFormat, tickValues]);
+         d3.select(node).call(axis);
+      },
+      [scale, tickFormat, tickValues],
+   );
 
    return <g ref={ref} transform={transform} />;
 }

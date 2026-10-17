@@ -1,4 +1,5 @@
 import {
+   useIsFetching,
    useMutation,
    type UseMutationResult,
    useQuery,
@@ -701,26 +702,36 @@ export function useWithdrawContribution(): UseMutationResult<
 }
 
 /**
- * Runs the server action that machine-translates wishes still waiting for a
- * translation. Resolves to how many it managed.
+ * Asks the server to translate the given untranslated wishes. Keyed on their
+ * ids, so a run that fails or gets nowhere isn't repeated until the set of
+ * pending wishes changes, and a wish that can't be translated doesn't cause
+ * a request loop. Only one run happens at a time; a set that changes mid-run
+ * is picked up once it finishes.
  */
-export function useTranslateWishes(): UseMutationResult<
-   { translated: number; failed: number },
-   Error,
-   void
-> {
+export function useTranslateWishes(
+   pendingIds: Array<string>,
+): UseQueryResult<{ translated: number; failed: number }> {
    const queryClient = useQueryClient();
-   return useMutation({
-      mutationFn: async () => {
+   const running = useIsFetching({ queryKey: ["translate-wishes"] });
+   return useQuery({
+      queryKey: ["translate-wishes", pendingIds],
+      enabled: pendingIds.length > 0 && running === 0,
+      staleTime: Infinity,
+      // Dropped as soon as the set moves on, so the same wish being edited
+      // again later is translated again rather than answered from cache.
+      gcTime: 0,
+      retry: false,
+      refetchOnWindowFocus: false,
+      queryFn: async () => {
          const response = await fetch("/wishlist/translate", { method: "POST" });
          if (!response.ok) throw new Error(`Translation failed: ${response.status}`);
-         return z
+         const result = z
             .object({ translated: z.number(), failed: z.number() })
             .parse(await response.json());
+         if (result.translated > 0) {
+            await queryClient.invalidateQueries({ queryKey: ["wishes"] });
+         }
+         return result;
       },
-      onSuccess: ({ translated }) =>
-         translated > 0
-            ? queryClient.invalidateQueries({ queryKey: ["wishes"] })
-            : undefined,
    });
 }

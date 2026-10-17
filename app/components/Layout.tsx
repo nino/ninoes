@@ -105,7 +105,6 @@ interface PillPosition {
 }
 
 function DesktopNav({ pathname }: { pathname: string }): React.ReactNode {
-   const navRef = React.useRef<HTMLElement>(null);
    const [pill, setPill] = React.useState<PillPosition | null>(null);
    const [dir, setDir] = React.useState<1 | -1>(1);
    // Bumped on every tab change so the pill's wiggle replays, but not on first render.
@@ -113,37 +112,46 @@ function DesktopNav({ pathname }: { pathname: string }): React.ReactNode {
    // Off until the pill has been placed once, so it doesn't slide in from the left
    // edge on page load.
    const [animate, setAnimate] = React.useState(false);
-   const previousPath = React.useRef(pathname);
+   const [previousPath, setPreviousPath] = React.useState(pathname);
 
-   React.useLayoutEffect(() => {
-      const from = navItems.findIndex((item) => item.path === previousPath.current);
+   if (pathname !== previousPath) {
+      setPreviousPath(pathname);
+      const from = navItems.findIndex((item) => item.path === previousPath);
       const to = navItems.findIndex((item) => item.path === pathname);
-      previousPath.current = pathname;
-      if (from !== to && from !== -1 && to !== -1) {
+      if (from !== -1 && to !== -1) {
          setDir(to > from ? 1 : -1);
          setSwitches((n) => n + 1);
       }
+   }
 
-      const nav = navRef.current;
-      if (nav == null) return;
-      const measure = (): void => {
-         const link = nav.querySelector<HTMLElement>('[aria-current="page"]');
-         setPill(
-            link == null ? null : { left: link.offsetLeft, width: link.offsetWidth },
-         );
-      };
-      measure();
-      // Tab widths change once the web font loads.
-      const observer = new ResizeObserver(measure);
-      observer.observe(nav);
-      return () => observer.disconnect();
-   }, [pathname]);
-
-   React.useLayoutEffect(() => {
-      if (pill == null || animate) return;
-      const frame = requestAnimationFrame(() => setAnimate(true));
-      return () => cancelAnimationFrame(frame);
-   }, [pill, animate]);
+   // A new callback per page, so React measures the newly active tab before
+   // painting.
+   const navRef = React.useCallback(
+      (nav: HTMLElement) => {
+         let frame: number | undefined;
+         const measure = (): void => {
+            const link = nav.querySelector<HTMLElement>(
+               `a[href="${CSS.escape(pathname)}"]`,
+            );
+            setPill(
+               link == null ? null : { left: link.offsetLeft, width: link.offsetWidth },
+            );
+            // Turn transitions on a frame after the pill is first placed.
+            if (link != null && frame == null) {
+               frame = requestAnimationFrame(() => setAnimate(true));
+            }
+         };
+         measure();
+         // Tab widths change once the web font loads.
+         const observer = new ResizeObserver(measure);
+         observer.observe(nav);
+         return () => {
+            observer.disconnect();
+            if (frame != null) cancelAnimationFrame(frame);
+         };
+      },
+      [pathname],
+   );
 
    return (
       <nav

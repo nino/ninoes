@@ -31,6 +31,48 @@
       "typescript/no-unnecessary-condition": "error",
       "typescript/no-floating-promises": "error",
       "typescript/prefer-nullish-coalescing": "error",
-      "typescript/prefer-optional-chain": "error"
-   }
+      "typescript/prefer-optional-chain": "error",
+      "no-restricted-imports": [
+         "error",
+         {
+            "paths": [
+               {
+                  "name": "react",
+                  "importNames": ["useEffect", "useLayoutEffect", "useInsertionEffect"],
+                  "message": "Effects are banned outside the primitives in app/hooks (useMountEffect, useEventListener, useInterval, useResizeObserver, useSession). Derive state during render, do it in the event handler, use a ref callback, or remount with a key."
+               }
+            ]
+         }
+      ],
+      "no-restricted-properties": [
+         "error",
+         {
+            "object": "React",
+            "property": "useEffect",
+            "message": "Effects are banned outside the primitives in app/hooks (useMountEffect, useEventListener, useInterval, useResizeObserver, useSession). Derive state during render, do it in the event handler, use a ref callback, or remount with a key."
+         },
+         {
+            "object": "React",
+            "property": "useLayoutEffect",
+            "message": "Effects are banned outside the primitives in app/hooks (useMountEffect, useEventListener, useInterval, useResizeObserver, useSession). Derive state during render, do it in the event handler, use a ref callback, or remount with a key."
+         },
+         {
+            "object": "React",
+            "property": "useInsertionEffect",
+            "message": "Effects are banned outside the primitives in app/hooks (useMountEffect, useEventListener, useInterval, useResizeObserver, useSession). Derive state during render, do it in the event handler, use a ref callback, or remount with a key."
+         }
+      ]
+   },
+   "overrides": [
+      {
+         "files": [
+            "app/hooks/useMountEffect.ts",
+            "app/hooks/useEventListener.ts",
+            "app/hooks/useInterval.ts",
+            "app/hooks/useResizeObserver.ts",
+            "app/hooks/useSession.ts"
+         ],
+         "rules": { "no-restricted-imports": "off", "no-restricted-properties": "off" }
+      }
+   ]
 }

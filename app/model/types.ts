@@ -99,3 +99,28 @@ export const WishSchema = z.object({
    contributions: z.array(ContributionSchema).optional(),
 });
 export type Wish = z.infer<typeof WishSchema>;
+
+// Rows from the blog_* report functions over analytics.page_views (see
+// app/supabase/migrations/2026-10-17-blog-page-views.sql). Days are UTC dates.
+// visitor_days counts a visitor once per day they visited, since the visitor
+// hash only lasts a day.
+export const BlogDailyViewsSchema = z.object({
+   day: z.iso.date(),
+   views: z.number().int().nonnegative(),
+   visitors: z.number().int().nonnegative(),
+});
+export type BlogDailyViews = z.infer<typeof BlogDailyViewsSchema>;
+
+export const BlogTopPageSchema = z.object({
+   path: z.string(),
+   views: z.number().int().nonnegative(),
+   visitor_days: z.number().int().nonnegative(),
+});
+export type BlogTopPage = z.infer<typeof BlogTopPageSchema>;
+
+export const BlogTopReferrerSchema = z.object({
+   referrer_host: z.string(),
+   views: z.number().int().nonnegative(),
+   visitor_days: z.number().int().nonnegative(),
+});
+export type BlogTopReferrer = z.infer<typeof BlogTopReferrerSchema>;

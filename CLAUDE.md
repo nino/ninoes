@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What is this?
 
-Ninoes is mainly a name voting/ranking app. Users vote on names (up/down and ELO-style head-to-head), view leaderboards, and organize into teams. It also hosts a few unrelated pages: a wedding gift wishlist (`/wishlist`), bus times (`/bus`), Star Trek and calendar ICS feeds, and `/control`. Built with React Router v8 (SSR) + Supabase + TypeScript.
+Ninoes is mainly a name voting/ranking app. Users vote on names (up/down and ELO-style head-to-head), view leaderboards, and organize into teams. It also hosts a few unrelated pages: a wedding gift wishlist (`/wishlist`), bus times (`/bus`), Star Trek and calendar ICS feeds, `/control`, and page-view stats for ninoan.com (`/blog-stats`, reading `analytics.page_views`, which the blog's log shipper fills). Built with React Router v8 (SSR) + Supabase + TypeScript.
 
 ## Commands
 

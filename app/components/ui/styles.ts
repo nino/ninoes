@@ -1,5 +1,5 @@
-// Class strings shared by the Button and Input components and the wishlist,
-// which builds its own controls from them.
+// Class strings shared by the Button and Input components, the filters, and the
+// wishlist, which builds its own controls from them.
 
 export const focusRing =
    "outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:shadow-glow";
@@ -26,3 +26,12 @@ export const inputClass =
    "w-full min-w-0 rounded-md border border-input bg-field px-3 text-base shadow-xs transition-[color,box-shadow] outline-none placeholder:text-muted-fg focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:shadow-glow aria-invalid:border-danger aria-invalid:ring-danger/20 sm:text-sm";
 
 export const cardClass = "rounded-xl border border-border bg-card shadow-xs";
+
+/** A pill that toggles on and off, as in the gender and date-range filters. */
+export function chipClass(selected: boolean): string {
+   return `h-8 rounded-full border px-3 text-sm font-medium transition-colors ${focusRing} ${
+      selected
+         ? "border-primary bg-primary text-primary-fg"
+         : "border-border bg-card text-muted-fg shadow-xs hover:bg-muted hover:text-fg"
+   }`;
+}

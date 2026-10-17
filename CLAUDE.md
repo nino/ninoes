@@ -15,7 +15,7 @@ Bun is the package manager, the runtime (dev server, build and production server
 - `bun run typecheck` — TypeScript type checking
 - `bun run lint` / `bun run lint:fix` — oxlint (type-aware; config in `.oxlintrc.json`)
 - `bun run format` — Prettier formatting
-- `bun run test` — `bun test` with happy-dom and Testing Library, preloaded from `app/test/` (see `bunfig.toml`); test files live next to their subject as `*.test.{ts,tsx}` and import from `bun:test`. Its `vi` covers `fn`, `spyOn` and fake timers but not `stubGlobal`.
+- `bun run test` — `bun test` with happy-dom and Testing Library, preloaded from `app/test/` (see `bunfig.toml`); test files live next to their subject as `*.test.{ts,tsx}` and import from `bun:test`. Its `vi` covers `fn`, `spyOn` and fake timers but not `stubGlobal`. All test files share one process and `mock.module` can't be undone, so mock only modules the test owns (render inside a memory router rather than mocking `react-router`), call `mock.module` before importing the subject with `await import()`, and restore any global you replace in `afterEach`.
 
 CI runs `bun run typecheck`, `bun run lint`, `bun run test` and `bun run build`, in that order. Run the same before pushing.
 

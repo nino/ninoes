@@ -1,9 +1,10 @@
 import posthog from "posthog-js";
+import { relayPrefix } from "~/utils/posthog-relay";
 
 // PostHog records page views and uncaught exceptions. The key and host come in
 // at build time (Fly build args set in fly-deploy.yml) and are only set for
 // production deploys: dev builds and PR previews leave them out, so they send
-// nothing. It only starts in the browser; server errors go through
+// nothing. The browser sends through `/relay` rather than to the host itself. It only starts in the browser; server errors go through
 // `app/server/posthog.server.ts`.
 const key: string | undefined = import.meta.env.VITE_POSTHOG_KEY;
 const host: string | undefined = import.meta.env.VITE_POSTHOG_HOST;
@@ -13,7 +14,11 @@ export function initPostHog(): void {
       return;
    }
    posthog.init(key, {
-      api_host: host,
+      // Through this site's own relay (`routes/relay.ts`), so tracker blockers
+      // that stop requests to posthog.com don't stop these.
+      api_host: relayPrefix,
+      // Links into PostHog's own UI (the toolbar) still go to the EU app.
+      ui_host: "https://eu.posthog.com",
       // React Router navigates client-side, so count a page view on every
       // history change rather than only on full page loads.
       capture_pageview: "history_change",

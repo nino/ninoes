@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, expect, test, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import type { UseQueryResult } from "@tanstack/react-query";
 import {
@@ -7,6 +7,7 @@ import {
    useBlogTopReferrers,
 } from "~/hooks/useSupabase";
 import type { BlogDailyViews, BlogTopPage, BlogTopReferrer } from "~/model/types";
+import { stubResizeObserver } from "~/test/stubResizeObserver";
 import BlogStats from "./blog-stats";
 
 vi.mock("~/hooks/useSupabase", () => ({
@@ -15,23 +16,31 @@ vi.mock("~/hooks/useSupabase", () => ({
    useBlogTopReferrers: vi.fn(),
 }));
 vi.mock("~/server/guards.server", () => ({ requireUser: vi.fn() }));
+vi.mock("react-router", async (importOriginal) => ({
+   ...(await importOriginal<typeof import("react-router")>()),
+   useLoaderData: () => ({ userId: "user-1" }),
+}));
 
-function result<T>(state: {
+type QueryState<T> = {
    data?: T;
    isPending?: boolean;
    isError?: boolean;
-}): UseQueryResult<T> {
+   isPlaceholderData?: boolean;
+};
+
+function result<T>(state: QueryState<T>): UseQueryResult<T> {
    return {
       data: state.data,
       isPending: state.isPending ?? false,
       isError: state.isError ?? false,
+      isPlaceholderData: state.isPlaceholderData ?? false,
    } as unknown as UseQueryResult<T>;
 }
 
 const DAYS: Array<BlogDailyViews> = [
-   { day: "2026-10-15", views: 12, visitors: 5 },
-   { day: "2026-10-16", views: 0, visitors: 0 },
-   { day: "2026-10-17", views: 6, visitors: 4 },
+   { day: "2027-03-13", views: 12, visitors: 5 },
+   { day: "2027-03-14", views: 0, visitors: 0 },
+   { day: "2027-03-15", views: 6, visitors: 4 },
 ];
 const PAGES: Array<BlogTopPage> = [
    { path: "/waves/", views: 10, visitor_days: 4 },
@@ -42,41 +51,27 @@ const REFERRERS: Array<BlogTopReferrer> = [
 ];
 
 function respondWith({
-   days = DAYS,
-   pages = PAGES,
-   referrers = REFERRERS,
-   isError = false,
+   daily = { data: DAYS },
+   pages = { data: PAGES },
+   referrers = { data: REFERRERS },
 }: {
-   days?: Array<BlogDailyViews>;
-   pages?: Array<BlogTopPage>;
-   referrers?: Array<BlogTopReferrer>;
-   isError?: boolean;
+   daily?: QueryState<Array<BlogDailyViews>>;
+   pages?: QueryState<Array<BlogTopPage>>;
+   referrers?: QueryState<Array<BlogTopReferrer>>;
 } = {}): void {
-   vi.mocked(useBlogDailyViews).mockReturnValue(result({ data: days, isError }));
-   vi.mocked(useBlogTopPages).mockReturnValue(result({ data: pages }));
-   vi.mocked(useBlogTopReferrers).mockReturnValue(result({ data: referrers }));
+   vi.mocked(useBlogDailyViews).mockReturnValue(result(daily));
+   vi.mocked(useBlogTopPages).mockReturnValue(result(pages));
+   vi.mocked(useBlogTopReferrers).mockReturnValue(result(referrers));
+}
+
+function setToday(iso: string): void {
+   vi.setSystemTime(new Date(iso));
 }
 
 beforeEach(() => {
    vi.useFakeTimers({ toFake: ["Date"] });
-   vi.setSystemTime(new Date("2026-10-17T12:00:00Z"));
-   // jsdom has no layout, so report a fixed width for the chart.
-   vi.stubGlobal(
-      "ResizeObserver",
-      class {
-         callback: ResizeObserverCallback;
-         constructor(callback: ResizeObserverCallback) {
-            this.callback = callback;
-         }
-         observe(): void {
-            const entry = {
-               contentRect: { width: 600 },
-            } as unknown as ResizeObserverEntry;
-            this.callback([entry], this as unknown as ResizeObserver);
-         }
-         disconnect(): void {}
-      },
-   );
+   setToday("2027-03-15T12:00:00Z");
+   stubResizeObserver(600);
 });
 
 afterEach(() => {
@@ -86,61 +81,126 @@ afterEach(() => {
    vi.clearAllMocks();
 });
 
-test("shows totals, a bar per day, and linked tables", () => {
+test("shows totals, the chart, and the top pages and referring sites", () => {
    respondWith();
    render(<BlogStats />);
 
    expect(screen.getByText("Page views").nextSibling?.textContent).toBe("18");
-   expect(screen.getByText("Visitors per day").nextSibling?.textContent).toBe("3");
+   // Today (the 15th) isn't over, so the average is (5 + 0) / 2.
+   expect(screen.getByText("Visitors per day").nextSibling?.textContent).toBe("2.5");
 
-   const chart = screen.getByRole("img", { name: /Views and visitors per day/ });
-   expect(chart.getAttribute("aria-label")).toBe(
-      "Views and visitors per day, 15 Oct 2026 to 17 Oct 2026",
-   );
-   // Days with no views still get a hover tooltip.
-   expect(within(chart).getByText("16 Oct 2026: 0 views, 0 visitors")).toBeTruthy();
-   expect(within(chart).getByText("15 Oct 2026: 12 views, 5 visitors")).toBeTruthy();
+   expect(screen.getByRole("img", { name: /Views and visitors per day/ })).toBeTruthy();
 
    expect(screen.getByRole("link", { name: "/waves/" }).getAttribute("href")).toBe(
       "https://ninoan.com/waves/",
    );
-   expect(
-      screen.getByRole("link", { name: "news.ycombinator.com" }).getAttribute("href"),
-   ).toBe("https://news.ycombinator.com");
+   expect(screen.getByRole("heading", { name: "Top pages" })).toBeTruthy();
+   expect(screen.getAllByText("The 25 with the most views.")).toHaveLength(2);
 });
 
-test("asks for the last 30 days by default, and other ranges when picked", () => {
+test("shows referring sites as text, not links", () => {
    respondWith();
    render(<BlogStats />);
 
-   expect(useBlogDailyViews).toHaveBeenLastCalledWith({
-      fromDay: "2026-09-18",
-      toDay: "2026-10-17",
-   });
-   expect(
-      screen.getByRole("button", { name: "30 days" }).getAttribute("aria-pressed"),
-   ).toBe("true");
+   expect(screen.getByText("news.ycombinator.com")).toBeTruthy();
+   expect(screen.queryByRole("link", { name: "news.ycombinator.com" })).toBeNull();
+});
 
-   fireEvent.click(screen.getByRole("button", { name: "7 days" }));
+test("keeps the tables in the database's order: their headers don't sort", () => {
+   respondWith();
+   render(<BlogStats />);
 
-   expect(useBlogDailyViews).toHaveBeenLastCalledWith({
-      fromDay: "2026-10-11",
-      toDay: "2026-10-17",
+   const pagesTable = screen
+      .getAllByRole("table")
+      .find((table) => within(table).queryByText("/waves/"));
+   if (!pagesTable) throw new Error("no pages table");
+   fireEvent.click(within(pagesTable).getByText("Visitors"));
+
+   const paths = within(pagesTable)
+      .getAllByRole("link")
+      .map((link) => link.textContent);
+   expect(paths).toEqual(["/waves/", "/latex/"]);
+});
+
+describe("date ranges", () => {
+   test("asks for the last 30 days by default, for the signed-in user", () => {
+      respondWith();
+      render(<BlogStats />);
+
+      expect(useBlogDailyViews).toHaveBeenLastCalledWith("user-1", {
+         fromDay: "2027-02-14",
+         toDay: "2027-03-15",
+      });
+      expect(
+         screen.getByRole("button", { name: "30 days" }).getAttribute("aria-pressed"),
+      ).toBe("true");
    });
-   expect(useBlogTopPages).toHaveBeenLastCalledWith({
-      fromDay: "2026-10-11",
-      toDay: "2026-10-17",
+
+   test("asks every query for the new range when another is picked", () => {
+      respondWith();
+      render(<BlogStats />);
+
+      fireEvent.click(screen.getByRole("button", { name: "7 days" }));
+
+      const expected = { fromDay: "2027-03-09", toDay: "2027-03-15" };
+      expect(useBlogDailyViews).toHaveBeenLastCalledWith("user-1", expected);
+      expect(useBlogTopPages).toHaveBeenLastCalledWith("user-1", expected);
+      expect(useBlogTopReferrers).toHaveBeenLastCalledWith("user-1", expected);
    });
-   expect(
-      screen.getByRole("button", { name: "7 days" }).getAttribute("aria-pressed"),
-   ).toBe("true");
+
+   test("doesn't reach back before recording started", () => {
+      setToday("2026-10-20T12:00:00Z");
+      respondWith();
+      render(<BlogStats />);
+
+      expect(useBlogDailyViews).toHaveBeenLastCalledWith("user-1", {
+         fromDay: "2026-10-17",
+         toDay: "2026-10-20",
+      });
+   });
+
+   test("moves on to the new day when the page regains focus after midnight", () => {
+      setToday("2027-03-15T23:59:00Z");
+      respondWith();
+      render(<BlogStats />);
+
+      setToday("2027-03-16T00:01:00Z");
+      fireEvent.focus(window);
+
+      expect(useBlogDailyViews).toHaveBeenLastCalledWith("user-1", {
+         fromDay: "2027-02-15",
+         toDay: "2027-03-16",
+      });
+   });
+});
+
+test("keeps showing the previous range, dimmed, while a new one loads", () => {
+   respondWith({ daily: { data: DAYS, isPlaceholderData: true } });
+   const { container } = render(<BlogStats />);
+
+   expect(screen.getByText("Page views").nextSibling?.textContent).toBe("18");
+   expect(container.querySelector("[aria-busy=true]")).not.toBeNull();
+});
+
+test("shows placeholders while the first load is in progress", () => {
+   respondWith({
+      daily: { isPending: true },
+      pages: { isPending: true },
+      referrers: { isPending: true },
+   });
+   render(<BlogStats />);
+
+   // The stats and chart placeholder, plus the tables' own.
+   expect(screen.getAllByRole("status").length).toBeGreaterThanOrEqual(1);
+   expect(screen.queryByText("Page views")).toBeNull();
+   expect(screen.queryByText("No pages viewed in this range.")).toBeNull();
 });
 
 test("says so when a range has no views, instead of drawing an empty chart", () => {
    respondWith({
-      days: DAYS.map((d) => ({ ...d, views: 0, visitors: 0 })),
-      pages: [],
-      referrers: [],
+      daily: { data: DAYS.map((d) => ({ ...d, views: 0, visitors: 0 })) },
+      pages: { data: [] },
+      referrers: { data: [] },
    });
    render(<BlogStats />);
 
@@ -150,10 +210,16 @@ test("says so when a range has no views, instead of drawing an empty chart", () 
    expect(screen.getByText("No visits from other sites in this range.")).toBeTruthy();
 });
 
-test("shows a message if the stats can't be loaded", () => {
-   respondWith({ isError: true });
-   render(<BlogStats />);
+describe("errors", () => {
+   test.each(["daily", "pages", "referrers"] as const)(
+      "shows a message if the %s query fails",
+      (failing) => {
+         respondWith({ [failing]: { isError: true } });
+         render(<BlogStats />);
 
-   expect(screen.getByText("Couldn’t load the stats.")).toBeTruthy();
-   expect(screen.queryByRole("table")).toBeNull();
+         expect(screen.getByText("Couldn’t load the stats.")).toBeTruthy();
+         expect(screen.queryByRole("table")).toBeNull();
+         expect(screen.queryByText("Page views")).toBeNull();
+      },
+   );
 });

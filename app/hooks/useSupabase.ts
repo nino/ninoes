@@ -1,4 +1,5 @@
 import {
+   keepPreviousData,
    useMutation,
    type UseMutationResult,
    useQuery,
@@ -37,7 +38,7 @@ import {
 import { useSession } from "./useSession";
 import { z } from "zod";
 import { BASE_ELO, updateEloRatings } from "~/utils/elo";
-import type { BlogStatsRange } from "~/utils/blog-stats";
+import { BLOG_TOP_ROWS, type BlogStatsRange } from "~/utils/blog-stats";
 
 export function useNames({
    page,
@@ -733,16 +734,18 @@ export function useTranslateWishes(): UseMutationResult<
 }
 
 // ninoan.com's page views, from the blog_* report functions. They only return rows
-// to Nino's account; anyone else gets empty results.
+// to Nino's account; anyone else gets empty results. Because the results depend on
+// who's signed in, the query keys include the user: the query cache outlives
+// signing out. Switching ranges keeps the previous range on screen until the new
+// one arrives.
 
-const BLOG_TOP_ROWS = 25;
-
-export function useBlogDailyViews({
-   fromDay,
-   toDay,
-}: BlogStatsRange): UseQueryResult<Array<BlogDailyViews>> {
+export function useBlogDailyViews(
+   userId: string,
+   { fromDay, toDay }: BlogStatsRange,
+): UseQueryResult<Array<BlogDailyViews>> {
    return useQuery({
-      queryKey: ["blogDailyViews", fromDay, toDay],
+      queryKey: ["blogDailyViews", userId, fromDay, toDay],
+      placeholderData: keepPreviousData,
       queryFn: async () => {
          const { data, error } = await supabase.rpc("blog_daily_views", {
             from_day: fromDay,
@@ -756,12 +759,13 @@ export function useBlogDailyViews({
    });
 }
 
-export function useBlogTopPages({
-   fromDay,
-   toDay,
-}: BlogStatsRange): UseQueryResult<Array<BlogTopPage>> {
+export function useBlogTopPages(
+   userId: string,
+   { fromDay, toDay }: BlogStatsRange,
+): UseQueryResult<Array<BlogTopPage>> {
    return useQuery({
-      queryKey: ["blogTopPages", fromDay, toDay],
+      queryKey: ["blogTopPages", userId, fromDay, toDay],
+      placeholderData: keepPreviousData,
       queryFn: async () => {
          const { data, error } = await supabase.rpc("blog_top_pages", {
             from_day: fromDay,
@@ -776,12 +780,13 @@ export function useBlogTopPages({
    });
 }
 
-export function useBlogTopReferrers({
-   fromDay,
-   toDay,
-}: BlogStatsRange): UseQueryResult<Array<BlogTopReferrer>> {
+export function useBlogTopReferrers(
+   userId: string,
+   { fromDay, toDay }: BlogStatsRange,
+): UseQueryResult<Array<BlogTopReferrer>> {
    return useQuery({
-      queryKey: ["blogTopReferrers", fromDay, toDay],
+      queryKey: ["blogTopReferrers", userId, fromDay, toDay],
+      placeholderData: keepPreviousData,
       queryFn: async () => {
          const { data, error } = await supabase.rpc("blog_top_referrers", {
             from_day: fromDay,

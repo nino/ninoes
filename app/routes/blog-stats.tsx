@@ -1,19 +1,24 @@
 import React from "react";
-import { DailyViewsChart } from "~/components/DailyViewsChart";
+import { useLoaderData } from "react-router";
+import { DailyViewsChart, DailyViewsChartSkeleton } from "~/components/DailyViewsChart";
 import { Skeleton } from "~/components/ui/Skeleton";
-import { focusRing } from "~/components/ui/styles";
+import { cardClass, chipClass, focusRing } from "~/components/ui/styles";
 import { Table, type TableColumnDef } from "~/components/ui/Table";
 import {
    useBlogDailyViews,
    useBlogTopPages,
    useBlogTopReferrers,
 } from "~/hooks/useSupabase";
+import { useUtcToday } from "~/hooks/useUtcToday";
 import type { BlogTopPage, BlogTopReferrer } from "~/model/types";
 import { requireUser } from "~/server/guards.server";
 import {
+   BLOG_TOP_ROWS,
+   formatDay,
    RANGE_OPTIONS,
    type RangeDays,
-   rangeEndingToday,
+   rangeEndingOn,
+   RECORDING_STARTED,
    summarise,
 } from "~/utils/blog-stats";
 import type { Route } from "./+types/blog-stats";
@@ -26,65 +31,61 @@ export function meta({}: Route.MetaArgs): ReturnType<Route.MetaFunction> {
    return [{ title: "ninoan.com stats" }];
 }
 
-export const loader = async ({ request }: Route.LoaderArgs): Promise<null> => {
-   await requireUser(request);
-   return null;
+export const loader = async ({
+   request,
+}: Route.LoaderArgs): Promise<{ userId: string }> => {
+   const { user } = await requireUser(request);
+   return { userId: user.id };
 };
 
-const linkStyles = `underline decoration-border underline-offset-2 hover:decoration-fg ${focusRing}`;
+/** The Views and Visitors columns both tables share. */
+function countColumns<T extends { views: number; visitor_days: number }>(): Array<
+   TableColumnDef<T>
+> {
+   return [
+      {
+         id: "views",
+         header: "Views",
+         enableSorting: false,
+         accessorFn: (row) => row.views,
+         cell: ({ row }) => row.original.views.toLocaleString(),
+      },
+      {
+         id: "visitors",
+         header: "Visitors",
+         enableSorting: false,
+         accessorFn: (row) => row.visitor_days,
+         cell: ({ row }) => row.original.visitor_days.toLocaleString(),
+      },
+   ];
+}
 
+// Not sortable: the database returns the top rows by views, so sorting by
+// anything else would only reorder those.
 const pageColumns: Array<TableColumnDef<BlogTopPage>> = [
    {
       accessorKey: "path",
       header: "Page",
+      enableSorting: false,
       cell: ({ row }) => (
          <a
             href={`https://ninoan.com${row.original.path}`}
             target="_blank"
             rel="noopener noreferrer"
-            className={linkStyles}
+            className={`underline decoration-border underline-offset-2 hover:decoration-fg ${focusRing}`}
          >
             {row.original.path}
          </a>
       ),
    },
-   {
-      accessorKey: "views",
-      header: "Views",
-      cell: ({ row }) => row.original.views.toLocaleString(),
-   },
-   {
-      accessorKey: "visitor_days",
-      header: "Visitors",
-      cell: ({ row }) => row.original.visitor_days.toLocaleString(),
-   },
+   ...countColumns<BlogTopPage>(),
 ];
 
+// Plain text rather than links: anyone can send a Referer header, and spammers
+// do, hoping for a link back.
 const referrerColumns: Array<TableColumnDef<BlogTopReferrer>> = [
-   {
-      accessorKey: "referrer_host",
-      header: "Site",
-      cell: ({ row }) => (
-         <a
-            href={`https://${row.original.referrer_host}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={linkStyles}
-         >
-            {row.original.referrer_host}
-         </a>
-      ),
-   },
-   {
-      accessorKey: "views",
-      header: "Views",
-      cell: ({ row }) => row.original.views.toLocaleString(),
-   },
-   {
-      accessorKey: "visitor_days",
-      header: "Visitors",
-      cell: ({ row }) => row.original.visitor_days.toLocaleString(),
-   },
+   { accessorKey: "referrer_host", header: "Site", enableSorting: false },
+   ...countColumns<BlogTopReferrer>(),
 ];
 
 function RangePicker({
@@ -94,20 +95,13 @@ function RangePicker({
    value: RangeDays;
    onChange: (days: RangeDays) => void;
 }): React.ReactNode {
-   const chipStyles = (selected: boolean): string =>
-      `h-8 rounded-full border px-3 text-sm font-medium transition-colors ${focusRing} ${
-         selected
-            ? "border-primary bg-primary text-primary-fg"
-            : "border-border bg-card text-muted-fg shadow-xs hover:bg-muted hover:text-fg"
-      }`;
-
    return (
       <div role="group" aria-label="Date range" className="flex flex-wrap gap-2">
          {RANGE_OPTIONS.map((days) => (
             <button
                key={days}
                type="button"
-               className={chipStyles(days === value)}
+               className={chipClass(days === value)}
                aria-pressed={days === value}
                onClick={() => onChange(days)}
             >
@@ -118,36 +112,49 @@ function RangePicker({
    );
 }
 
-function Stat({ label, value }: { label: string; value: string }): React.ReactNode {
+function Stat({
+   label,
+   value,
+   note,
+}: {
+   label: string;
+   value: string;
+   note?: string;
+}): React.ReactNode {
    return (
-      <div className="rounded-lg border border-border bg-card px-4 py-3 shadow-xs">
+      <div className={`${cardClass} px-4 py-3`}>
          <div className="text-sm text-muted-fg">{label}</div>
          <div className="font-title text-3xl tabular-nums">{value}</div>
+         {note && <div className="text-xs text-faint-fg">{note}</div>}
       </div>
    );
 }
 
 export default function BlogStats(): React.ReactNode {
+   const { userId } = useLoaderData<typeof loader>();
+   const today = useUtcToday();
    const [days, setDays] = React.useState<RangeDays>(30);
-   const range = React.useMemo(() => rangeEndingToday(days), [days]);
+   const range = React.useMemo(() => rangeEndingOn(today, days), [today, days]);
 
-   const daily = useBlogDailyViews(range);
-   const pages = useBlogTopPages(range);
-   const referrers = useBlogTopReferrers(range);
+   const daily = useBlogDailyViews(userId, range);
+   const pages = useBlogTopPages(userId, range);
+   const referrers = useBlogTopReferrers(userId, range);
 
-   const [pageSorting, setPageSorting] = React.useState([{ id: "views", desc: true }]);
-   const [referrerSorting, setReferrerSorting] = React.useState([
-      { id: "views", desc: true },
-   ]);
-
-   const summary = React.useMemo(() => summarise(daily.data ?? []), [daily.data]);
+   const summary = React.useMemo(
+      () => summarise(daily.data ?? [], today),
+      [daily.data, today],
+   );
+   // While a new range loads, the previous one stays on screen, dimmed.
+   const updating =
+      daily.isPlaceholderData || pages.isPlaceholderData || referrers.isPlaceholderData;
 
    return (
       <div className="space-y-8">
          <div className="space-y-2">
             <h1 className="font-title text-3xl">ninoan.com stats</h1>
             <p className="text-muted-fg">
-               Page views from browsers, recorded since 17 October 2026. Days are in UTC.
+               Page views from browsers, recorded since{" "}
+               {formatDay(RECORDING_STARTED, { withYear: true })}. Days are in UTC.
             </p>
          </div>
 
@@ -156,15 +163,18 @@ export default function BlogStats(): React.ReactNode {
          {daily.isError || pages.isError || referrers.isError ? (
             <p className="text-muted-fg">Couldn&rsquo;t load the stats.</p>
          ) : (
-            <>
+            <div
+               aria-busy={updating}
+               className={`space-y-8 transition-opacity ${updating ? "opacity-60" : ""}`}
+            >
                {daily.isPending ? (
                   <div role="status" className="space-y-4">
                      <span className="sr-only">Loading</span>
                      <div className="grid grid-cols-2 gap-4">
-                        <Skeleton className="h-20" />
-                        <Skeleton className="h-20" />
+                        <Skeleton className="h-24" />
+                        <Skeleton className="h-24" />
                      </div>
-                     <Skeleton className="h-[220px]" />
+                     <DailyViewsChartSkeleton />
                   </div>
                ) : (
                   <div className="space-y-4">
@@ -179,6 +189,7 @@ export default function BlogStats(): React.ReactNode {
                               undefined,
                               { maximumFractionDigits: 1 },
                            )}
+                           note="Average over complete days"
                         />
                      </div>
                      {summary.views === 0 ? (
@@ -191,21 +202,29 @@ export default function BlogStats(): React.ReactNode {
 
                <div className="grid gap-8 lg:grid-cols-2">
                   <section className="space-y-3">
-                     <h2 className="font-title text-xl">Pages</h2>
+                     <div>
+                        <h2 className="font-title text-xl">Top pages</h2>
+                        <p className="text-sm text-muted-fg">
+                           The {BLOG_TOP_ROWS} with the most views.
+                        </p>
+                     </div>
                      {!pages.isPending && pages.data.length === 0 ? (
                         <p className="text-muted-fg">No pages viewed in this range.</p>
                      ) : (
                         <Table
                            data={pages.data ?? []}
                            columns={pageColumns}
-                           sorting={pageSorting}
-                           setSorting={setPageSorting}
                            isLoading={pages.isPending}
                         />
                      )}
                   </section>
                   <section className="space-y-3">
-                     <h2 className="font-title text-xl">Referring sites</h2>
+                     <div>
+                        <h2 className="font-title text-xl">Top referring sites</h2>
+                        <p className="text-sm text-muted-fg">
+                           The {BLOG_TOP_ROWS} with the most views.
+                        </p>
+                     </div>
                      {!referrers.isPending && referrers.data.length === 0 ? (
                         <p className="text-muted-fg">
                            No visits from other sites in this range.
@@ -214,8 +233,6 @@ export default function BlogStats(): React.ReactNode {
                         <Table
                            data={referrers.data ?? []}
                            columns={referrerColumns}
-                           sorting={referrerSorting}
-                           setSorting={setReferrerSorting}
                            isLoading={referrers.isPending}
                         />
                      )}
@@ -227,7 +244,7 @@ export default function BlogStats(): React.ReactNode {
                   back on three days counts three times. Most sites only send their
                   domain, so referrers are sites rather than individual links.
                </p>
-            </>
+            </div>
          )}
       </div>
    );

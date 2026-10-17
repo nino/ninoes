@@ -10,32 +10,49 @@ export type BlogStatsRange = { fromDay: string; toDay: string };
 export const RANGE_OPTIONS = [7, 30, 90, 365] as const;
 export type RangeDays = (typeof RANGE_OPTIONS)[number];
 
+/** The first UTC day the blog's log shipper recorded page views. */
+export const RECORDING_STARTED = "2026-10-17";
+
+/** How many pages and referring sites the report functions return. */
+export const BLOG_TOP_ROWS = 25;
+
 const DAY_MS = 24 * 60 * 60 * 1000;
 
-function utcDay(date: Date): string {
+export function utcDay(date: Date): string {
    return date.toISOString().slice(0, 10);
 }
 
-/** The last `days` UTC days, ending with today. */
-export function rangeEndingToday(days: number, now: Date = new Date()): BlogStatsRange {
-   return {
-      fromDay: utcDay(new Date(now.getTime() - (days - 1) * DAY_MS)),
-      toDay: utcDay(now),
-   };
+/**
+ * The last `days` UTC days up to and including `today`, but not reaching back
+ * before recording started: those days would only add empty bars and drag the
+ * averages down.
+ */
+export function rangeEndingOn(today: string, days: number): BlogStatsRange {
+   const from = utcDay(new Date(Date.parse(`${today}T00:00:00Z`) - (days - 1) * DAY_MS));
+   // ISO dates compare correctly as strings.
+   const earliest = RECORDING_STARTED < today ? RECORDING_STARTED : today;
+   return { fromDay: from < earliest ? earliest : from, toDay: today };
 }
 
 export type BlogStatsSummary = {
    views: number;
-   /** Distinct visitors per day, averaged over the range. */
+   /** Distinct visitors per day, averaged over the range's complete days. */
    averageDailyVisitors: number;
 };
 
-export function summarise(daily: Array<BlogDailyViews>): BlogStatsSummary {
+export function summarise(
+   daily: Array<BlogDailyViews>,
+   today: string,
+): BlogStatsSummary {
    const views = daily.reduce((sum, day) => sum + day.views, 0);
-   const visitors = daily.reduce((sum, day) => sum + day.visitors, 0);
+   // Today isn't over yet, so it would pull the average down. Leave it out,
+   // unless it's the only day there is.
+   const complete = daily.filter((day) => day.day !== today);
+   const counted = complete.length > 0 ? complete : daily;
+   const visitors = counted.reduce((sum, day) => sum + day.visitors, 0);
    return {
       views,
-      averageDailyVisitors: daily.length === 0 ? 0 : visitors / daily.length,
+      averageDailyVisitors: counted.length === 0 ? 0 : visitors / counted.length,
    };
 }
 

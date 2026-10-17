@@ -9,4 +9,4 @@ if [ "${CLAUDE_CODE_REMOTE:-}" != "true" ]; then
 fi
 
 cd "$CLAUDE_PROJECT_DIR"
-pnpm install --frozen-lockfile
+bun install --frozen-lockfile

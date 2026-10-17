@@ -1,4 +1,4 @@
-import { afterEach, expect, test } from "vitest";
+import { afterEach, expect, test } from "bun:test";
 import { cleanup, render, screen } from "@testing-library/react";
 import { WishDescription } from "./WishDescription";
 

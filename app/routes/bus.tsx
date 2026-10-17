@@ -1,6 +1,7 @@
 import React, { type JSX } from "react";
 import { useLoaderData, useRevalidator } from "react-router";
 import { useInterval } from "~/hooks/useInterval";
+import { formatExpectedArrival, formatTimeToStation } from "~/utils/bus-format";
 import {
    type BusArrival,
    type BusStop,
@@ -8,16 +9,6 @@ import {
    busStops,
    getBusArrivals,
 } from "~/utils/tfl-api";
-
-const relativeTimeFormat = new Intl.RelativeTimeFormat(undefined, {
-   numeric: "auto",
-   style: "short",
-});
-
-const timeFormat = new Intl.DateTimeFormat(undefined, {
-   hour: "2-digit",
-   minute: "2-digit",
-});
 
 const refreshIntervalMs = 15_000;
 
@@ -53,16 +44,6 @@ export const loader = async (): Promise<{ stations: Array<StationResult> }> => {
    );
    return { stations };
 };
-
-function formatTimeToStation(seconds: number): string {
-   if (seconds < 60) return "due";
-   const minutes = Math.floor(seconds / 60);
-   return relativeTimeFormat.format(minutes, "minute");
-}
-
-function formatExpectedArrival(iso: string): string {
-   return timeFormat.format(new Date(iso));
-}
 
 function ArrivalRow({ arrival }: { arrival: BusArrival }): JSX.Element {
    const timeToStation = formatTimeToStation(arrival.timeToStation);

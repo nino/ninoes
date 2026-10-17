@@ -1,13 +1,12 @@
-import { afterEach, describe, expect, test } from "vitest";
-import { vi } from "vitest";
+import { afterEach, describe, expect, test } from "bun:test";
 import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import type { BlogDailyViews } from "~/model/types";
-import { stubResizeObserver } from "~/test/stubResizeObserver";
+import { restoreResizeObserver, stubResizeObserver } from "~/test/stubResizeObserver";
 import { DailyViewsChart } from "./DailyViewsChart";
 
 afterEach(() => {
    cleanup();
-   vi.unstubAllGlobals();
+   restoreResizeObserver();
 });
 
 /** `count` consecutive days from 1 March 2027, with views = day number. */

@@ -1,5 +1,5 @@
-# pnpm rewrites this on every install; formatting it just causes churn.
-pnpm-lock.yaml
+# bun rewrites this on every install; formatting it just causes churn.
+bun.lock
 
 # Build output and generated types.
 build/

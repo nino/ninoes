@@ -1,4 +1,4 @@
-import { afterEach, expect, test, vi } from "vitest";
+import { afterEach, expect, test, vi } from "bun:test";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { GenderFilter } from "./GenderFilter";
 import { NameGender } from "~/model/types";

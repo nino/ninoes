@@ -2,13 +2,12 @@
    "name": "ninoes",
    "private": true,
    "type": "module",
-   "packageManager": "pnpm@10.33.0",
    "scripts": {
-      "build": "react-router build",
-      "dev": "react-router dev",
-      "start": "react-router-serve ./build/server/index.js",
+      "build": "bun --bun react-router build",
+      "dev": "bun --conditions=development node_modules/@react-router/dev/bin.cjs dev",
+      "start": "bun --bun react-router-serve ./build/server/index.js",
       "typecheck": "react-router typegen && tsc",
-      "test": "vitest run",
+      "test": "bun test",
       "lint": "oxlint --type-aware",
       "lint:fix": "oxlint --type-aware --fix",
       "format": "prettier --write ."
@@ -40,32 +39,31 @@
       "zod": "^4.6.5"
    },
    "devDependencies": {
+      "@happy-dom/global-registrator": "^21.0.3",
       "@react-router/dev": "^8.3.0",
       "@tailwindcss/vite": "^4.3.3",
       "@testing-library/dom": "^10.4.2",
       "@testing-library/react": "^16.3.3",
+      "@types/bun": "^1.4.3",
       "@types/d3": "^7.4.3",
       "@types/node": "^26.6.4",
       "@types/react": "^19.3.0",
       "@types/react-dom": "^19.3.0",
-      "jsdom": "^30.1.2",
       "oxlint": "^1.87.0",
       "oxlint-tsgolint": "^7.0.2003",
       "react-router-devtools": "^6.2.3",
       "tailwindcss": "^4.3.3",
       "typescript": "^7.0.2",
-      "vite": "^8.3.4",
-      "vitest": "^5.0.3"
+      "vite": "^8.3.4"
    },
-   "pnpm": {
-      "onlyBuiltDependencies": [
-         "@sentry/cli",
-         "esbuild"
-      ],
-      "overrides": {
-         "morgan": "^1.12.0",
-         "qs": "^6.16.0",
-         "uuid": "^11.1.1"
-      }
-   }
+   "packageManager": "bun@1.4.0",
+   "overrides": {
+      "morgan": "^1.12.0",
+      "qs": "^6.16.0",
+      "uuid": "^11.1.1"
+   },
+   "trustedDependencies": [
+      "@sentry/cli",
+      "esbuild"
+   ]
 }

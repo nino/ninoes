@@ -11,7 +11,6 @@ import { type ReactNode } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "sonner";
 
-import { useMountEffect } from "~/hooks/useMountEffect";
 import { initPostHog, reportError } from "~/posthog";
 
 initPostHog();
@@ -84,13 +83,15 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps): ReactNode {
    let details = "An unexpected error occurred.";
    let stack: string | undefined;
 
-   // The boundary catches route errors, so nothing else reports them. A
-   // response the app threw on purpose (a 404) isn't a bug.
-   useMountEffect(() => {
+   // The boundary catches route errors, so nothing else reports them. It can
+   // stay mounted while the error changes, so this runs on every commit and
+   // `reportError` skips what it already sent. A response the app threw on
+   // purpose (a 404) isn't a bug.
+   const report = (): void => {
       if (!isRouteErrorResponse(error) || error.status >= 500) {
          reportError(error);
       }
-   });
+   };
 
    if (isRouteErrorResponse(error)) {
       message = error.status === 404 ? "404" : "Error";
@@ -104,7 +105,12 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps): ReactNode {
    }
 
    return (
-      <main className="container mx-auto flex flex-col gap-2 p-4 pt-16">
+      <main
+         ref={(element) => {
+            if (element) report();
+         }}
+         className="container mx-auto flex flex-col gap-2 p-4 pt-16"
+      >
          <h1 className="font-title text-3xl">{message}</h1>
          <p className="text-muted-fg">{details}</p>
          {stack != null && (

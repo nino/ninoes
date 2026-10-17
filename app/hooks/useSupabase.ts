@@ -7,6 +7,9 @@ import {
 } from "@tanstack/react-query";
 import { supabase } from "../supabaseClient";
 import type {
+   BlogDailyViews,
+   BlogTopPage,
+   BlogTopReferrer,
    Enum,
    Name,
    Team,
@@ -19,6 +22,9 @@ import type {
    Wish,
 } from "~/model/types";
 import {
+   BlogDailyViewsSchema,
+   BlogTopPageSchema,
+   BlogTopReferrerSchema,
    NameGender,
    NameSchema,
    TeamEloSchema,
@@ -31,6 +37,7 @@ import {
 import { useSession } from "./useSession";
 import { z } from "zod";
 import { BASE_ELO, updateEloRatings } from "~/utils/elo";
+import type { BlogStatsRange } from "~/utils/blog-stats";
 
 export function useNames({
    page,
@@ -722,5 +729,69 @@ export function useTranslateWishes(): UseMutationResult<
          translated > 0
             ? queryClient.invalidateQueries({ queryKey: ["wishes"] })
             : undefined,
+   });
+}
+
+// ninoan.com's page views, from the blog_* report functions. They only return rows
+// to Nino's account; anyone else gets empty results.
+
+const BLOG_TOP_ROWS = 25;
+
+export function useBlogDailyViews({
+   fromDay,
+   toDay,
+}: BlogStatsRange): UseQueryResult<Array<BlogDailyViews>> {
+   return useQuery({
+      queryKey: ["blogDailyViews", fromDay, toDay],
+      queryFn: async () => {
+         const { data, error } = await supabase.rpc("blog_daily_views", {
+            from_day: fromDay,
+            to_day: toDay,
+         });
+         if (error) {
+            throw error;
+         }
+         return z.array(BlogDailyViewsSchema).parse(data);
+      },
+   });
+}
+
+export function useBlogTopPages({
+   fromDay,
+   toDay,
+}: BlogStatsRange): UseQueryResult<Array<BlogTopPage>> {
+   return useQuery({
+      queryKey: ["blogTopPages", fromDay, toDay],
+      queryFn: async () => {
+         const { data, error } = await supabase.rpc("blog_top_pages", {
+            from_day: fromDay,
+            to_day: toDay,
+            max_rows: BLOG_TOP_ROWS,
+         });
+         if (error) {
+            throw error;
+         }
+         return z.array(BlogTopPageSchema).parse(data);
+      },
+   });
+}
+
+export function useBlogTopReferrers({
+   fromDay,
+   toDay,
+}: BlogStatsRange): UseQueryResult<Array<BlogTopReferrer>> {
+   return useQuery({
+      queryKey: ["blogTopReferrers", fromDay, toDay],
+      queryFn: async () => {
+         const { data, error } = await supabase.rpc("blog_top_referrers", {
+            from_day: fromDay,
+            to_day: toDay,
+            max_rows: BLOG_TOP_ROWS,
+         });
+         if (error) {
+            throw error;
+         }
+         return z.array(BlogTopReferrerSchema).parse(data);
+      },
    });
 }

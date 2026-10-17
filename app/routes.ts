@@ -7,6 +7,7 @@ export default [
       route("/votes", "routes/votes.tsx"),
       route("/leaderboard", "routes/leaderboard.tsx"),
       route("/banned", "routes/banned.tsx"),
+      route("/blog-stats", "routes/blog-stats.tsx"),
       route("/elo", "routes/elo.tsx"),
       route("/teams", "routes/teams.tsx"),
       route("/data", "routes/data.tsx"),

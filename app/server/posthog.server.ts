@@ -19,6 +19,8 @@ export function reportServerError(error: unknown, request: Request): void {
    const url = new URL(request.url);
    client.captureException(error, "server", {
       $process_person_profile: false,
+      // Which app sent it: all of Nino's apps share one PostHog project.
+      app: "ninoes",
       method: request.method,
       path: url.pathname,
    });

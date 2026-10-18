@@ -31,6 +31,8 @@ export function initPostHog(): void {
       // No session replays: they would use up the free tier.
       disable_session_recording: true,
    });
+   // Sent with every event: all of Nino's apps share one PostHog project.
+   posthog.register({ app: "ninoes" });
 }
 
 // What `reportError` has already sent, so a boundary that renders the same

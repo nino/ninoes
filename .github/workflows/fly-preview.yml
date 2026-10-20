@@ -82,6 +82,7 @@ jobs:
               --config fly.preview.toml --app "$APP_NAME"
               --build-arg VITE_SUPABASE_URL="${{ secrets.VITE_SUPABASE_URL }}"
               --build-arg VITE_SUPABASE_ANON_KEY="${{ secrets.VITE_SUPABASE_ANON_KEY }}"
+              --build-arg PREVIEW_HOST="$APP_NAME.fly.dev"
          - name: Comment deployed
            if: success() && steps.token.outputs.present == 'true'
            run: .github/scripts/preview-comment.sh deployed

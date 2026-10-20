@@ -6,7 +6,6 @@ import {
    useSubmit,
 } from "react-router";
 import { z } from "zod";
-import { AuthError } from "@supabase/supabase-js";
 import type { ReactNode } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -21,12 +20,12 @@ type LoginFormData = z.infer<typeof LoginSchema>;
 
 export async function action({
    request,
-}: ActionFunctionArgs): Promise<Response | { error: AuthError }> {
+}: ActionFunctionArgs): Promise<Response | { error: string }> {
    const formData = await request.formData();
    const data = Object.fromEntries(formData);
    const parsedData = LoginSchema.safeParse(data);
    if (!parsedData.success) {
-      return { error: new AuthError("Invalid input") };
+      return { error: "Invalid input" };
    }
 
    const { email, password } = parsedData.data;
@@ -34,7 +33,9 @@ export async function action({
    const { supabase, headers } = getSupabaseServerClient(request, headersToSet);
    const { error } = await supabase.auth.signInWithPassword({ email, password });
    if (error) {
-      return { error };
+      // Only the message: an Error in action data reaches the browser as
+      // React Router's generic "Unexpected Server Error" in production.
+      return { error: error.message };
    }
 
    return redirect("/", { headers });
@@ -58,7 +59,7 @@ export default function LoginPage(): ReactNode {
       void submit(formData, { method: "post" });
    };
 
-   const errorMessage = actionData?.error != null ? actionData.error.message : null;
+   const errorMessage = actionData?.error ?? null;
 
    if (errorMessage) {
       showToast("error", errorMessage);

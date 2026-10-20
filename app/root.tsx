@@ -11,8 +11,9 @@ import { type ReactNode } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "sonner";
 
-import { useMountEffect } from "~/hooks/useMountEffect";
 import { initPostHog, reportError } from "~/posthog";
+
+initPostHog();
 
 import type { Route } from "./+types/root";
 import "./app.css";
@@ -29,12 +30,6 @@ export const links: Route.LinksFunction = () => [
 
 export function Layout({ children }: { children: ReactNode }): ReactNode {
    const nav = useNavigation();
-   // Not at import time: PostHog adds <script> tags to <body>, and if they are
-   // there before hydration, React takes them for its own scripts. It then
-   // removes them on a later render and loses track of its real nodes, which
-   // broke the page after signing in. After mount React has claimed its
-   // nodes and leaves PostHog's alone.
-   useMountEffect(initPostHog);
    return (
       <html lang="en">
          <head>

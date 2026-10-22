@@ -2,7 +2,8 @@ import { useNames, useVotes } from "./hooks/useSupabase";
 import type { Enum, Name, NameGender, VoteWithExtras } from "./model/types";
 import React, { type ReactNode } from "react";
 import { Table, type TableColumnDef } from "~/components/ui/Table";
-import { GENDER_LABELS, GenderFilter } from "~/components/GenderFilter";
+import { GenderFilter } from "~/components/GenderFilter";
+import { GenderScale } from "~/components/GenderScale";
 
 export function NamesRanking(): ReactNode {
    const [genders, setGenders] = React.useState<Array<Enum<typeof NameGender>>>([]);
@@ -28,8 +29,7 @@ export function NamesRanking(): ReactNode {
          accessorKey: "gender",
          header: "Gender",
          enableSorting: false,
-         cell: ({ row }) =>
-            row.original.gender != null ? GENDER_LABELS[row.original.gender] : "—",
+         cell: ({ row }) => <GenderScale gender={row.original.gender} />,
       },
       {
          accessorKey: "created_at",

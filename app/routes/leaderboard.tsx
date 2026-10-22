@@ -5,7 +5,8 @@ import { Table, type TableColumnDef } from "~/components/ui/Table";
 import { Pager } from "~/components/ui/Pager";
 import { usePageSize } from "~/hooks/usePageSize";
 import { usePreviousValue } from "~/hooks/usePreviousValue";
-import { GENDER_LABELS, GenderFilter } from "~/components/GenderFilter";
+import { GenderFilter } from "~/components/GenderFilter";
+import { GenderScale } from "~/components/GenderScale";
 import type { Enum, NameGender } from "~/model/types";
 
 export default function Leaderboard(): ReactNode {
@@ -37,8 +38,7 @@ export default function Leaderboard(): ReactNode {
          accessorKey: "gender",
          header: "Gender",
          enableSorting: false,
-         cell: ({ row }) =>
-            row.original.gender != null ? GENDER_LABELS[row.original.gender] : "—",
+         cell: ({ row }) => <GenderScale gender={row.original.gender} />,
       },
       {
          accessorKey: "score",

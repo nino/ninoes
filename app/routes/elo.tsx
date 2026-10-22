@@ -6,7 +6,8 @@ import { Table, type TableColumnDef } from "~/components/ui/Table";
 import { type SortingState } from "@tanstack/react-table";
 import { Pager } from "~/components/ui/Pager";
 import { usePageSize } from "~/hooks/usePageSize";
-import { GENDER_LABELS, GenderFilter } from "~/components/GenderFilter";
+import { GenderFilter } from "~/components/GenderFilter";
+import { GenderScale } from "~/components/GenderScale";
 
 export default function Leaderboard(): React.ReactNode {
    const [pageIndex, setPageIndex] = React.useState(0);
@@ -39,10 +40,7 @@ export default function Leaderboard(): React.ReactNode {
          accessorKey: "name.gender",
          header: "Gender",
          enableSorting: false,
-         cell: ({ row }) =>
-            row.original.name.gender != null
-               ? GENDER_LABELS[row.original.name.gender]
-               : "—",
+         cell: ({ row }) => <GenderScale gender={row.original.name.gender} />,
       },
    ];
 

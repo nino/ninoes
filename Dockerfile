@@ -1,9 +1,9 @@
-FROM oven/bun:1.4.0-alpine AS development-dependencies-env
+FROM oven/bun:1.4.4-alpine AS development-dependencies-env
 COPY package.json bun.lock /app/
 WORKDIR /app
 RUN bun install --frozen-lockfile
 
-FROM oven/bun:1.4.0-alpine AS build-env
+FROM oven/bun:1.4.4-alpine AS build-env
 # Define build arguments
 ARG VITE_SUPABASE_URL
 ARG VITE_SUPABASE_ANON_KEY
@@ -21,7 +21,7 @@ COPY --from=development-dependencies-env /app/node_modules /app/node_modules
 WORKDIR /app
 RUN bun run build
 
-FROM oven/bun:1.4.0-alpine
+FROM oven/bun:1.4.4-alpine
 ENV NODE_ENV=production
 # Define build arguments again for the final stage
 ARG VITE_SUPABASE_URL

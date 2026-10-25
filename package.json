@@ -15,7 +15,7 @@
    "dependencies": {
       "@anthropic-ai/sdk": "^0.134.0",
       "@headlessui/react": "^2.2.10",
-      "@hookform/resolvers": "^5.9.1",
+      "@hookform/resolvers": "^6.0.0",
       "@js-temporal/polyfill": "^0.5.1",
       "@react-router/node": "^8.4.0",
       "@react-router/serve": "^8.5.0",

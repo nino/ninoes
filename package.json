@@ -27,7 +27,7 @@
       "date-fns": "^4.4.0",
       "isbot": "^5.2.2",
       "posthog-js": "^1.438.12",
-      "posthog-node": "^5.56.2",
+      "posthog-node": "^5.56.4",
       "react": "^19.3.0",
       "react-dom": "^19.3.0",
       "react-hook-form": "^7.90.0",

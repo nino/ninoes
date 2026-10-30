@@ -27,6 +27,7 @@ describe("generateName", () => {
          middle: null,
          family: english.family[0],
          style: "given-first",
+         lang: "en",
          real: true,
       });
    });
@@ -99,6 +100,7 @@ describe("formatName", () => {
             middle: null,
             family: "Lovelace",
             style: "given-first",
+            lang: "en",
             real: true,
          }),
       ).toBe("Ada Lovelace");
@@ -108,6 +110,7 @@ describe("formatName", () => {
             middle: "Bảo",
             family: "Nguyễn",
             style: "family-first",
+            lang: "vi",
             real: true,
          }),
       ).toBe("Nguyễn Bảo An");
@@ -117,6 +120,7 @@ describe("formatName", () => {
             middle: null,
             family: "王",
             style: "cjk",
+            lang: "zh-Hans",
             real: true,
          }),
       ).toBe("王浩然");

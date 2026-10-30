@@ -1,7 +1,7 @@
 import { type ReactNode, useState } from "react";
 import { useToast } from "~/components/ui/Toast";
 import { cardClass, outlineButton, primaryButton } from "~/components/ui/styles";
-import { formatName, generateName } from "~/utils/name-generator";
+import { formatName, type GeneratedName, generateName } from "~/utils/name-generator";
 import type { Route } from "./+types/new-name";
 
 export function meta({}: Route.MetaArgs): ReturnType<Route.MetaFunction> {
@@ -9,18 +9,19 @@ export function meta({}: Route.MetaArgs): ReturnType<Route.MetaFunction> {
 }
 
 // The first name comes from the server so the page doesn't change on hydration.
-export function loader(): { name: string } {
-   return { name: formatName(generateName()) };
+export function loader(): { name: GeneratedName } {
+   return { name: generateName() };
 }
 
 export default function NewName({ loaderData }: Route.ComponentProps): ReactNode {
-   const [name, setName] = useState(loaderData.name);
+   const [generated, setGenerated] = useState(loaderData.name);
+   const name = formatName(generated);
    const { showToast } = useToast();
 
    const next = (): void => {
-      let fresh = formatName(generateName());
-      while (fresh === name) fresh = formatName(generateName());
-      setName(fresh);
+      let fresh = generateName();
+      while (formatName(fresh) === name) fresh = generateName();
+      setGenerated(fresh);
    };
 
    const copy = async (): Promise<void> => {
@@ -44,6 +45,7 @@ export default function NewName({ loaderData }: Route.ComponentProps): ReactNode
             <p
                className="text-center font-title text-3xl break-words sm:text-5xl"
                aria-live="polite"
+               lang={generated.lang ?? undefined}
             >
                {name}
             </p>

@@ -204,3 +204,37 @@ body {
       --skeleton-shine: oklch(0.36 0.024 235);
    }
 }
+
+/* Bevan has no Chinese, Japanese or Korean characters, so names in those
+   languages fall back to Noto Serif Black, which is close to Bevan in weight.
+   The files hold only the characters in the /new-name lists; rebuild them with
+   `bun run fonts:cjk`. Noto fonts are under the SIL Open Font License. */
+@font-face {
+   font-family: "Noto Serif SC Names";
+   src: url("/fonts/noto-serif-sc-names.woff2") format("woff2");
+   font-display: swap;
+}
+
+@font-face {
+   font-family: "Noto Serif JP Names";
+   src: url("/fonts/noto-serif-jp-names.woff2") format("woff2");
+   font-display: swap;
+}
+
+@font-face {
+   font-family: "Noto Serif KR Names";
+   src: url("/fonts/noto-serif-kr-names.woff2") format("woff2");
+   font-display: swap;
+}
+
+.font-title:lang(zh-Hans) {
+   font-family: Bevan, "Noto Serif SC Names", serif;
+}
+
+.font-title:lang(ja) {
+   font-family: Bevan, "Noto Serif JP Names", serif;
+}
+
+.font-title:lang(ko) {
+   font-family: Bevan, "Noto Serif KR Names", serif;
+}

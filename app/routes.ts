@@ -16,6 +16,7 @@ export default [
       route("/control", "routes/control.tsx"),
       route("/error-test", "routes/error-test.tsx"),
       route("/bus", "routes/bus.tsx"),
+      route("/new-name", "routes/new-name.tsx"),
       route("/startrek", "routes/startrek.tsx"),
       route("/startrek.ics", "routes/startrek-ics.ts"),
       route("/calendar", "routes/calendar-ics.ts"),

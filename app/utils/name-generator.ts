@@ -21,6 +21,12 @@ export type NameStyle = "given-first" | "family-first" | "cjk";
 
 export interface NameCulture {
    language: string;
+   /**
+    * Language tag for the page's `lang` attribute, so screen readers pronounce
+    * the name and Chinese and Japanese get their own glyph shapes. Left out for
+    * the mixed Nordic list.
+    */
+   lang?: string;
    style: NameStyle;
    /** How often this culture comes up, relative to the others. */
    weight: number;
@@ -31,6 +37,7 @@ export interface NameCulture {
 export const cultures: ReadonlyArray<NameCulture> = [
    {
       language: "English",
+      lang: "en",
       style: "given-first",
       weight: 4,
       given: [
@@ -91,6 +98,7 @@ export const cultures: ReadonlyArray<NameCulture> = [
    },
    {
       language: "German",
+      lang: "de",
       style: "given-first",
       weight: 1,
       given: [
@@ -124,6 +132,7 @@ export const cultures: ReadonlyArray<NameCulture> = [
    },
    {
       language: "French",
+      lang: "fr",
       style: "given-first",
       weight: 1,
       given: [
@@ -157,6 +166,7 @@ export const cultures: ReadonlyArray<NameCulture> = [
    },
    {
       language: "Spanish",
+      lang: "es",
       style: "given-first",
       weight: 1,
       given: [
@@ -190,6 +200,7 @@ export const cultures: ReadonlyArray<NameCulture> = [
    },
    {
       language: "Portuguese",
+      lang: "pt",
       style: "given-first",
       weight: 1,
       given: [
@@ -250,6 +261,7 @@ export const cultures: ReadonlyArray<NameCulture> = [
    },
    {
       language: "Polish",
+      lang: "pl",
       style: "given-first",
       weight: 1,
       given: [
@@ -275,6 +287,7 @@ export const cultures: ReadonlyArray<NameCulture> = [
    },
    {
       language: "Czech",
+      lang: "cs",
       style: "given-first",
       weight: 1,
       given: [
@@ -300,6 +313,7 @@ export const cultures: ReadonlyArray<NameCulture> = [
    },
    {
       language: "Turkish",
+      lang: "tr",
       style: "given-first",
       weight: 1,
       given: [
@@ -329,6 +343,7 @@ export const cultures: ReadonlyArray<NameCulture> = [
    },
    {
       language: "Vietnamese",
+      lang: "vi",
       style: "family-first",
       weight: 1,
       given: [
@@ -364,6 +379,7 @@ export const cultures: ReadonlyArray<NameCulture> = [
    },
    {
       language: "Chinese",
+      lang: "zh-Hans",
       style: "cjk",
       weight: 1,
       given: [
@@ -384,6 +400,7 @@ export const cultures: ReadonlyArray<NameCulture> = [
    },
    {
       language: "Japanese",
+      lang: "ja",
       style: "cjk",
       weight: 1,
       given: [
@@ -417,6 +434,7 @@ export const cultures: ReadonlyArray<NameCulture> = [
    },
    {
       language: "Korean",
+      lang: "ko",
       style: "cjk",
       weight: 1,
       given: [
@@ -483,6 +501,8 @@ export interface GeneratedName {
    middle: string | null;
    family: string;
    style: NameStyle;
+   /** Language tag, for real names from a single language. */
+   lang: string | null;
    /** True when the parts come from the real-name lists. */
    real: boolean;
 }
@@ -516,6 +536,7 @@ export function generateName(random: Random = Math.random): GeneratedName {
                : null,
          family: pick(culture.family, random),
          style: culture.style,
+         lang: culture.lang ?? null,
          real,
       };
    }
@@ -524,6 +545,7 @@ export function generateName(random: Random = Math.random): GeneratedName {
       middle: hasMiddle ? inventWord(1, 2, random) : null,
       family: inventWord(2, 3, random),
       style: "given-first",
+      lang: null,
       real,
    };
 }

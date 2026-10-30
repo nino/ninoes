@@ -10,7 +10,8 @@
       "test": "bun test",
       "lint": "oxlint --type-aware",
       "lint:fix": "oxlint --type-aware --fix",
-      "format": "prettier --write ."
+      "format": "prettier --write .",
+      "fonts:cjk": "bun scripts/subset-cjk-fonts.ts"
    },
    "dependencies": {
       "@anthropic-ai/sdk": "^1.1.0",

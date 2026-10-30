@@ -33,23 +33,13 @@ CREATE TABLE public."Votes" (
   name_id uuid NOT NULL,
   user_id uuid NOT NULL,
   vote_type public.vote_type NOT NULL,
+  -- The other half of a head-to-head pair (up ↔ down).
+  linked_vote uuid NULL,
   CONSTRAINT Votes_pkey PRIMARY KEY (id),
   CONSTRAINT Votes_name_id_fkey FOREIGN KEY (name_id) REFERENCES "Names" (id) ON UPDATE CASCADE ON DELETE CASCADE,
   CONSTRAINT Votes_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users (id) ON UPDATE CASCADE ON DELETE CASCADE,
-  CONSTRAINT Votes_user_id_fkey1 FOREIGN KEY (user_id) REFERENCES "Users" (id) ON UPDATE CASCADE ON DELETE CASCADE
-) TABLESPACE pg_default;
-
-CREATE TABLE public.team_elo (
-  id uuid NOT NULL DEFAULT gen_random_uuid (),
-  created_at timestamp WITH time zone NOT NULL DEFAULT NOW(),
-  team_id uuid NOT NULL,
-  name_id uuid NOT NULL,
-  elo double precision NULL,
-  updated_at timestamp WITH time zone NULL,
-  CONSTRAINT team_elo_pkey PRIMARY KEY (id),
-  CONSTRAINT team_elo_team_id_name_id_key UNIQUE (team_id, name_id),
-  CONSTRAINT team_elo_name_id_fkey FOREIGN KEY (name_id) REFERENCES "Names" (id) ON UPDATE CASCADE ON DELETE CASCADE,
-  CONSTRAINT team_elo_team_id_fkey FOREIGN KEY (team_id) REFERENCES teams (id) ON UPDATE CASCADE ON DELETE CASCADE
+  CONSTRAINT Votes_user_id_fkey1 FOREIGN KEY (user_id) REFERENCES "Users" (id) ON UPDATE CASCADE ON DELETE CASCADE,
+  CONSTRAINT Votes_linked_vote_fkey FOREIGN KEY (linked_vote) REFERENCES "Votes" (id) ON UPDATE CASCADE ON DELETE SET NULL
 ) TABLESPACE pg_default;
 
 CREATE TABLE public.teams (
@@ -119,3 +109,28 @@ CREATE TABLE analytics.page_views (
   user_agent text NULL,
   visitor_hash text NOT NULL
 ) TABLESPACE pg_default;
+
+-- 2026-10-30-derived-elo.sql. Elo ratings derived from votes. Only the triggers
+-- in that migration write these (authenticated users can read their own, their
+-- teams' and their teammates'). The old team_elo is kept, unreadable, as
+-- team_elo_before_derived until a later migration drops it. Head-to-head pairs
+-- come from the elo_matches view; `vote(winner, loser)` records one.
+CREATE TABLE public.team_elo (
+  team_id uuid NOT NULL REFERENCES public.teams (id) ON UPDATE CASCADE ON DELETE CASCADE,
+  name_id uuid NOT NULL REFERENCES public."Names" (id) ON UPDATE CASCADE ON DELETE CASCADE,
+  elo integer NOT NULL,
+  wins integer NOT NULL DEFAULT 0,
+  losses integer NOT NULL DEFAULT 0,
+  updated_at timestamp WITH time zone NOT NULL DEFAULT NOW(),
+  CONSTRAINT team_elo_derived_pkey PRIMARY KEY (team_id, name_id)
+);
+
+CREATE TABLE public.user_elo (
+  user_id uuid NOT NULL REFERENCES public."Users" (id) ON UPDATE CASCADE ON DELETE CASCADE,
+  name_id uuid NOT NULL REFERENCES public."Names" (id) ON UPDATE CASCADE ON DELETE CASCADE,
+  elo integer NOT NULL,
+  wins integer NOT NULL DEFAULT 0,
+  losses integer NOT NULL DEFAULT 0,
+  updated_at timestamp WITH time zone NOT NULL DEFAULT NOW(),
+  CONSTRAINT user_elo_pkey PRIMARY KEY (user_id, name_id)
+);

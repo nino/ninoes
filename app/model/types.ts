@@ -63,15 +63,33 @@ export const TeamMembershipWithTeamSchema = TeamMemberShipSchema.extend({
 });
 export type TeamMembershipWithTeam = z.infer<typeof TeamMembershipWithTeamSchema>;
 
-export const TeamEloSchema = z.object({
-   name_id: z.string(),
+// A name's Elo rating on one leaderboard: a user's own, or a team's. Derived
+// from votes by database triggers; the app only reads them.
+export const EloScoreSchema = z.object({
+   name_id: z.uuid(),
    elo: z.number(),
-   team_id: z.string(),
+   wins: z.number().int().nonnegative(),
+   losses: z.number().int().nonnegative(),
 });
-export type TeamElo = z.infer<typeof TeamEloSchema>;
+export type EloScore = z.infer<typeof EloScoreSchema>;
 
-export const TeamEloWithNameSchema = TeamEloSchema.extend({ name: NameSchema });
-export type TeamEloWithName = z.infer<typeof TeamEloWithNameSchema>;
+export const EloScoreWithNameSchema = EloScoreSchema.extend({ name: NameSchema });
+export type EloScoreWithName = z.infer<typeof EloScoreWithNameSchema>;
+
+/** Whose votes an Elo leaderboard is built from. */
+export type EloScope =
+   | { kind: "team"; teamId: string }
+   | { kind: "user"; userId: string };
+
+// Rows from my_elo_leaderboards(): the signed-in user (team null), each of their
+// teams (user null), and each member of each team (both set).
+export const EloLeaderboardRowSchema = z.object({
+   team_id: z.uuid().nullable(),
+   team_name: z.string().nullable(),
+   user_id: z.uuid().nullable(),
+   user_name: z.string().nullable(),
+});
+export type EloLeaderboardRow = z.infer<typeof EloLeaderboardRowSchema>;
 
 export const ContributionSchema = z.object({
    id: z.uuid(),

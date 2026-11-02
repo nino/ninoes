@@ -12,6 +12,8 @@
  * A third tuple element is how many episode slots one broadcast filled, for the
  * feature-length premieres and finales that ran as a single night's television.
  */
+import { stargateSeries } from "./stargate-data";
+
 export type EpisodeRecord = [
    originalAirDate: string,
    title: string,
@@ -834,4 +836,5 @@ export const seriesData: Array<SeriesData> = [
    ds9Data,
    voyData,
    entData,
+   ...stargateSeries,
 ];

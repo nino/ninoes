@@ -117,11 +117,11 @@ export function buildCalendar(
    // these two values free of commas and semicolons sidesteps that entirely.
    const name =
       series === null
-         ? "Star Trek (delayed)"
+         ? "Star Trek and Stargate (delayed)"
          : `${series.fullName} (${series.delayYears} years delayed)`;
    const description =
       series === null
-         ? "Every Star Trek episode on its delayed anniversary. TOS is 60 years delayed. Everything else is 45."
+         ? "Every Star Trek and Stargate episode on its delayed anniversary. TOS is 60 years delayed. Everything else is 45."
          : `Every episode of ${series.fullName} — ${series.delayYears} years delayed.`;
 
    const dtstamp = formatTimestamp(now);

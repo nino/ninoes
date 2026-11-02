@@ -78,7 +78,7 @@ test("wraps the feed in a valid VCALENDAR", () => {
    expect(unfolded[0]).toBe("BEGIN:VCALENDAR");
    expect(unfolded).toContain("VERSION:2.0");
    expect(unfolded).toContain("CALSCALE:GREGORIAN");
-   expect(unfolded).toContain("X-WR-CALNAME:Star Trek (delayed)");
+   expect(unfolded).toContain("X-WR-CALNAME:Star Trek and Stargate (delayed)");
    // A trailing CRLF closes the final line, so the last entry is empty.
    expect(unfolded.at(-1)).toBe("");
    expect(unfolded.at(-2)).toBe("END:VCALENDAR");

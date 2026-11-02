@@ -32,11 +32,11 @@ import type { Route } from "./+types/startrek";
 
 export function meta({}: Route.MetaArgs): ReturnType<Route.MetaFunction> {
    return [
-      { title: "Star Trek in real time" },
+      { title: "Star Trek (etc) in real time" },
       {
          name: "description",
          content:
-            "Five Star Trek series on a delayed schedule — which episodes are out so far.",
+            "Star Trek and Stargate on a delayed schedule — which episodes are out so far.",
       },
    ];
 }
@@ -472,7 +472,7 @@ export default function StarTrek(): JSX.Element {
    return (
       <div className="space-y-8">
          <header className="space-y-2">
-            <h1 className="font-title text-3xl">Star Trek, in real time</h1>
+            <h1 className="font-title text-3xl">Star Trek (etc), in real time</h1>
             <p className="max-w-2xl text-muted-fg">
                TOS 60 years delayed, everything else 45 years delayed
             </p>
@@ -506,7 +506,7 @@ export default function StarTrek(): JSX.Element {
 
          <SubscribePanel
             feed={data.feed}
-            label={data.view === "fresh" ? "all five series" : data.schedule.fullName}
+            label={data.view === "fresh" ? "every series" : data.schedule.fullName}
          />
 
          {data.view === "fresh" ? (

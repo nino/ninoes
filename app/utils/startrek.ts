@@ -3,8 +3,10 @@
  * its original broadcast, a fixed number of years delayed. The Original Series
  * is 60 years delayed; everything from The Next Generation on is 45 years
  * delayed, which keeps the later shows overlapping exactly as they first did.
+ * The Stargate shows are also 45 years delayed.
  */
 import { type SeriesData, seriesData } from "./startrek-data";
+import { stargateSummaries } from "./stargate-summaries";
 import { episodeSummaries } from "./startrek-summaries";
 
 /**
@@ -54,8 +56,13 @@ function runYears(firstDate: string, lastDate: string): string {
    return `${first}–${first.slice(0, 2) === last.slice(0, 2) ? last.slice(2) : last}`;
 }
 
+const allSummaries: Partial<Record<string, Record<string, string>>> = {
+   ...episodeSummaries,
+   ...stargateSummaries,
+};
+
 function buildSeries(data: SeriesData): Series {
-   const summaries = episodeSummaries[data.id] ?? {};
+   const summaries = allSummaries[data.id] ?? {};
    const episodes = data.seasons.flatMap((season, seasonIndex) => {
       let slot = 1;
       return season.map(([originalAirDate, title, episodeSlots = 1]): Episode => {

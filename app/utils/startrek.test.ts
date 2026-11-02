@@ -12,6 +12,8 @@ import {
    type Series,
    todayOnSchedule,
 } from "./startrek";
+import { stargateSeries } from "./stargate-data";
+import { stargateSummaries } from "./stargate-summaries";
 import { episodeSummaries } from "./startrek-summaries";
 
 function series(id: string): Series {
@@ -25,11 +27,27 @@ const tng = series("tng");
 const ds9 = series("ds9");
 const voy = series("voy");
 const ent = series("ent");
+const trek = [tos, tng, ds9, voy, ent];
+const trekIds = new Set(trek.map((s) => s.id));
+const allSummaries: Partial<Record<string, Record<string, string>>> = {
+   ...episodeSummaries,
+   ...stargateSummaries,
+};
 
-test("tracks five series with their delays", () => {
-   expect(allSeries.map((s) => s.id)).toStrictEqual(["tos", "tng", "ds9", "voy", "ent"]);
-   expect(allSeries.map((s) => s.delayYears)).toStrictEqual([60, 45, 45, 45, 45]);
-   expect(allSeries.map((s) => s.shortName)).toStrictEqual([
+test("tracks the Star Trek series, then the Stargate ones", () => {
+   expect(allSeries.map((s) => s.id)).toStrictEqual([
+      "tos",
+      "tng",
+      "ds9",
+      "voy",
+      "ent",
+      ...stargateSeries.map((s) => s.id),
+   ]);
+   expect(allSeries.map((s) => s.delayYears)).toStrictEqual([
+      60,
+      ...allSeries.slice(1).map(() => 45),
+   ]);
+   expect(trek.map((s) => s.shortName)).toStrictEqual([
       "TOS",
       "TNG",
       "DS9",
@@ -45,8 +63,8 @@ test("holds the canonical episode count for each series", () => {
    expect(voy.episodeCount).toBe(172);
    expect(ent.episodeCount).toBe(98);
    // 703 episodes over 692 broadcasts — the difference is the feature-length ones.
-   expect(allSeries.reduce((n, s) => n + s.episodeCount, 0)).toBe(703);
-   expect(allSeries.reduce((n, s) => n + s.episodes.length, 0)).toBe(692);
+   expect(trek.reduce((n, s) => n + s.episodeCount, 0)).toBe(703);
+   expect(trek.reduce((n, s) => n + s.episodes.length, 0)).toBe(692);
 });
 
 test("counts the expected episodes per season", () => {
@@ -80,7 +98,7 @@ test("keeps every series in date order with unique episode keys", () => {
       expect(dates).toStrictEqual(dates.toSorted());
       for (const episode of s.episodes) keys.add(episode.key);
    }
-   expect(keys.size).toBe(692);
+   expect(keys.size).toBe(allSeries.reduce((n, s) => n + s.episodes.length, 0));
 });
 
 test("numbers seasons contiguously from 1, allowing for double episodes", () => {
@@ -164,7 +182,9 @@ test("keeps the later series overlapping as they originally did", () => {
    // Mid-2040: TOS and TNG are done, DS9 and Voyager are both running weekly,
    // and Enterprise has not started.
    const fresh = buildFreshView("2040-06-01");
-   const status = Object.fromEntries(fresh.series.map((s) => [s.id, s.status]));
+   const status = Object.fromEntries(
+      fresh.series.filter((s) => trekIds.has(s.id)).map((s) => [s.id, s.status]),
+   );
    expect(status).toStrictEqual({
       tos: "finished",
       tng: "finished",
@@ -208,14 +228,25 @@ test("has nothing fresh before the very first premiere", () => {
    expect(fresh.series.every((s) => s.status === "upcoming")).toBe(true);
 });
 
+test("finishes Star Trek with the Enterprise finale", () => {
+   const schedule = buildSchedule(ent, "2050-05-13");
+   expect(schedule.status).toBe("finished");
+   expect(schedule.latest).toMatchObject({ title: "These Are the Voyages..." });
+});
+
 test("has nothing upcoming once every series has finished", () => {
-   const fresh = buildFreshView("2050-05-13");
+   const lastAirDate = allSeries
+      .flatMap((s) =>
+         s.episodes.map((episode) =>
+            delayedAirDate(episode.originalAirDate, s.delayYears),
+         ),
+      )
+      .toSorted()
+      .at(-1);
+   const fresh = buildFreshView(lastAirDate ?? "");
    expect(fresh.upcoming).toHaveLength(0);
    expect(fresh.series.every((s) => s.status === "finished")).toBe(true);
-   expect(fresh.recent[0]).toMatchObject({
-      title: "These Are the Voyages...",
-      seriesShortName: "ENT",
-   });
+   expect(fresh.recent[0].airDate).toBe(lastAirDate ?? "");
 });
 
 test("reads today in the schedule's timezone, not UTC", () => {
@@ -238,7 +269,7 @@ test("has a summary for every episode, and none for episodes that don't exist", 
       expect(missing.map((episode) => episode.title)).toStrictEqual([]);
 
       const titles = new Set(s.episodes.map((episode) => episode.title));
-      const orphans = Object.keys(episodeSummaries[s.id] ?? {}).filter(
+      const orphans = Object.keys(allSummaries[s.id] ?? {}).filter(
          (title) => !titles.has(title),
       );
       expect(orphans).toStrictEqual([]);

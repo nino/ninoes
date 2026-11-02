@@ -5,7 +5,7 @@ import { externalOrigin } from "~/utils/request";
 
 /**
  * The delayed schedule as a subscribable calendar feed. `?series=tng` narrows
- * it to one show; without it the feed carries all five.
+ * it to one show; without it the feed carries every series.
  */
 export const loader = ({ request }: LoaderFunctionArgs): Response => {
    const url = new URL(request.url);

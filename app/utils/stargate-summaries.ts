@@ -4,4 +4,767 @@
  * (scripts/stargate.ts): Haiku 5.5 wrote them from memory with no way to look
  * anything up, so many details are wrong. That is the point.
  */
-export const stargateSummaries: Record<string, Record<string, string>> = {};
+export const stargateSummaries: Record<string, Record<string, string>> = {
+   sg1: {
+      "200": "To mark a milestone, SG-1 returns to a planet from its past. A old enemy's plan forces the team to relive a dangerous mission and face the consequences of their earlier choices.",
+      "1969":
+         "SG-1 is transported back to 1969 after a Stargate accident, and the team must blend in with the people of that era. Jack, Daniel and Sam work to find a way home before the timeline is changed.",
+      "2001":
+         "The team travels to a planet where time has been manipulated, and they discover they have been sent back to the year 2001. Jack and Daniel must work out how to return to the correct time before their actions change the future.",
+      "2010":
+         "In a grim future where Earth has fallen to the Goa'uld, Jack wakes up in a ruined world and learns that his team is dead. He sets out to find out how the future came to be and whether it can still be changed.",
+      "Children of the Gods":
+         "Colonel Jack O'Neill and Dr. Daniel Jackson lead a team through the Stargate to the planet Chulak, where they discover Apophis, a Goa'uld System Lord who has taken Colonel Jack's team hostage. Teal'c, a Jaffa who has been enslaved by Apophis, joins the team as they fight to free Earth from the Goa'uld threat.",
+      "The Enemy Within":
+         "Teal'c's loyalty is tested when a Goa'uld parasite is found inside him, and SG-1 must decide whether they can trust him. Dr. Daniel Jackson works to remove the symbiote while the team struggles with the fear that their new ally could still be working for Apophis.",
+      Emancipation:
+         "SG-1 travels to a planet where the people live under Goa'uld rule and must help free them from their oppressors. Teal'c struggles with his past as a Jaffa while the team works to bring hope to the enslaved population.",
+      "The Broca Divide":
+         "SG-1 is sent to a remote mountain planet to investigate a missing team and discovers a dangerous situation among the local people. The team must work quickly to rescue their missing members and get back through the Stargate before the planet's dangers overwhelm them.",
+      "The First Commandment":
+         "SG-1 visits a planet where a Goa'uld has set itself up as a false god, and the team must confront the lies told to the local people. Colonel Jack O'Neill and Dr. Daniel Jackson work to expose the deception and free the villagers from its control.",
+      "Cold Lazarus":
+         "SG-1 finds a mysterious device on a planet that brings a dead man back to life, and the team must figure out what it really does. Their investigation uncovers a hidden threat connected to the Stargate's ancient technology.",
+      "The Nox":
+         "SG-1 arrives on the planet of the Nox, a peaceful people who refuse to take sides in conflicts and possess advanced knowledge of healing. When the team's own safety is threatened, they must decide how to balance their mission with the Nox's gentle way of life.",
+      "Brief Candle":
+         "Colonel Jack O'Neill is caught in a dangerous situation on an alien world and is forced to live through the same events again and again. The team must find a way to break the cycle and get their commander home.",
+      "Thor's Hammer":
+         "SG-1 is trapped on a planet with Thor, a Goa'uld who has been using a powerful weapon to control the local people. The team must work with the locals to disable the weapon and escape before it can be turned against Earth.",
+      "The Torment of Tantalus":
+         "SG-1 encounters Tantalus, a Goa'uld who forces his captives to endure endless torture. The team must find a way to stop him and rescue the prisoners, with Dr. Daniel Jackson at the center of the rescue effort.",
+      Bloodlines:
+         "Colonel Jack O'Neill is forced to face his past when a child from his own history appears on a planet controlled by the Goa'uld. The team must decide how to protect the child and deal with the dangerous Goa'uld who wants him.",
+      "Fire and Water":
+         "SG-1 is sent to a planet where a fiery environment and a hostile native population make survival difficult. The team must work together to find their way through the danger and complete their mission.",
+      Hathor:
+         "The Goa'uld Hathor takes control of Colonel Jack O'Neill and others, forcing them into a dangerous situation. Teal'c and Dr. Daniel Jackson must find a way to stop her before she can take over more people and spread her influence.",
+      Singularity:
+         "SG-1 goes to a planet where a strange natural phenomenon threatens the Stargate and everyone near it. The team must race against time to find the source of the danger and prevent a catastrophe.",
+      "Cor-ai":
+         "SG-1 is ordered to capture a Goa'uld named Cor-ai, who has been hiding among a people who fear his power. As the team closes in, they must weigh their mission against the lives of the innocent villagers caught in the middle.",
+      Enigma:
+         "SG-1 investigates a puzzling mystery on an alien world and discovers secrets hidden by an ancient civilization. The team must solve the riddle before its consequences put the whole mission at risk.",
+      Solitudes:
+         "SG-1 visits a planet where the people have been isolated for generations and are wary of outsiders. The team must earn their trust while uncovering the truth about what has kept them apart from the rest of the galaxy.",
+      "Tin Man":
+         "SG-1 encounters a mechanical man who was built by an ancient race to guard a vital secret. The team must learn the machine's purpose before it turns against them.",
+      "There But for the Grace of God":
+         "SG-1 is struck by a strange event that threatens to alter their lives and change the course of their mission. Dr. Daniel Jackson and Colonel Jack O'Neill must work together to set things right before the damage becomes permanent.",
+      Politics:
+         "SG-1 becomes caught up in the political games of a planet where rival factions are fighting for power. The team must navigate the treacherous alliances while protecting the people who have come to depend on them.",
+      "Within the Serpent's Grasp":
+         "SG-1 is trapped deep within the territory of a powerful Goa'uld and must find a way out before they are discovered. The team's escape depends on their courage and on Teal'c's knowledge of the Goa'uld's defenses.",
+      "The Serpent's Lair":
+         "SG-1 travels to a remote world where a Goa'uld stronghold is hidden in a damp, serpent-infested temple. The team has to fight through its guards and find a way out before the Goa'uld can trap them inside.",
+      "In the Line of Duty":
+         "Jack O'Neill and his team are caught up in a firefight on a planet controlled by Goa'uld forces. Jack has to decide whether to abandon a wounded soldier to save the rest of the team.",
+      Prisoners:
+         "SG-1 is captured by a Goa'uld and held in a cell on an enemy ship. The team must work together to break out and get back to the Stargate.",
+      "The Gamekeeper":
+         "On a planet with a strange hunting preserve, SG-1 finds that a mysterious gamekeeper is taking people as prey. The team must stop the hunter before more travelers are killed.",
+      Need: "Teal'c's mental state takes a dangerous turn as an old Jaffa trait resurfaces, and his fellow team members begin to fear for their safety. Jack and Daniel try to figure out how to help him before he does something he cannot undo.",
+      "Thor's Chariot":
+         "SG-1 discovers Thor's ship hidden on a planet and investigates its systems. The team finds that the ship is still operational and must decide whether to take it before the Goa'uld learn of its location.",
+      "Message in a Bottle":
+         "SG-1 receives a message from an unknown source hidden inside a bottle, which leads them to a distant planet. The team discovers the message was left as a warning about a Goa'uld plot.",
+      Family:
+         "Teal'c and his family are put in danger when a Goa'uld threatens to take them, and Teal'c must protect them. The team stands by him as he tries to keep his loved ones safe.",
+      Secrets:
+         "Jack and Carter uncover a secret about a classified Stargate project that puts the entire team in jeopardy. They must decide whether to reveal what they know to their superiors.",
+      Bane: "A deadly disease spreads through a village on a Goa'uld-controlled world, and SG-1 is sent to find its source. The team races to find a cure before the sickness claims more lives.",
+      "The Tok'ra":
+         "Sam Carter is captured by the Goa'uld and has a Tok'ra symbiote, Jolinar, forced into her body. The Tok'ra and SG-1 must cooperate to save her and stop the Goa'uld from using her against them.",
+      "The Tok'ra (Part Two)":
+         "Sam continues to struggle with the Jolinar symbiote, which is changing her. SG-1 and the Tok'ra work to free her before the Goa'uld can complete their plan.",
+      Spirits:
+         "SG-1 visits a planet where the local people believe their ancestors' spirits are real. The team discovers that the spirits are actually a Goa'uld trick to keep the population under control.",
+      Touchstone:
+         "A Goa'uld named Osiris is discovered on Earth in a hidden base, and SG-1 must track her down. The team confronts a dangerous enemy who wants to control the Stargate.",
+      "The Fifth Race":
+         "SG-1 comes across an ancient machine on a distant planet that can read minds. The team must figure out how it works before the Goa'uld can seize its power.",
+      "A Matter of Time":
+         "SG-1 is sent back in time after a malfunction on a planet, and the team has to find a way to return to their own era. Jack and his team face a race against time to fix the problem.",
+      Holiday:
+         "Jack and his team try to enjoy a quiet holiday, but a Goa'uld attack forces them back into action. They must protect the local people while dealing with the sudden threat.",
+      "Serpent's Song":
+         "SG-1 faces a Goa'uld who uses music to control the people of a planet. The team must find a way to break the spell before the population is enslaved.",
+      "One False Step":
+         "A mission goes wrong when one of SG-1's members takes a risky action that puts the whole team in danger. Jack has to deal with the fallout and decide whether to trust the team's judgment.",
+      "Show and Tell":
+         "SG-1 brings an alien artifact back to Earth for study, but it turns out to be a dangerous Goa'uld device. The team has to contain the threat before it spreads through the base.",
+      "Out of Mind":
+         "Daniel begins to lose touch with reality after an alien experience leaves him disoriented. His friends must find a way to help him before his condition worsens.",
+      "Into the Fire":
+         "Following the events of the season two finale, SG-1 faces the aftermath of the Goa'uld assault on Earth. The team fights to hold the Stargate against Apophis's forces while Jack O'Neill and Teal'c plan a counterattack.",
+      Seth: "SG-1 comes into contact with Seth, a Goa'uld who was exiled and imprisoned long ago. Seth offers Daniel Jackson knowledge in exchange for help, and the team must decide whether to trust him.",
+      "Fair Game":
+         "Samantha Carter is captured by a hostile alien race during a mission and is interrogated for information about Earth's defenses. Jack and the team race to rescue her before she is forced to reveal too much.",
+      Legacy:
+         "SG-1 visits a planet where a dying man reveals he is the last survivor of an ancient civilization. He passes along a device and the team learns it holds the knowledge of his people's advanced technology.",
+      "Learning Curve":
+         "Lieutenant Ferretti is assigned to SG-1 and struggles to keep up with the team's demanding missions. When a mission goes wrong, Ferretti must prove that he can handle the pressure of offworld work.",
+      "Point of View":
+         "A Goa'uld attack leaves Jack O'Neill seeing the events from the perspective of an alien prisoner. The team pieces together the truth behind the attack while trying to keep their captive from escaping.",
+      "Deadman Switch":
+         "SG-1 discovers a planet where a rogue Goa'uld has set a trap to destroy the Stargate network. The team races against time to disarm the device before it is triggered.",
+      Demons:
+         "Daniel Jackson is contacted by a mysterious being while on an ancient world. The visions he experiences begin to affect his judgment, and the team must find out what is happening to him.",
+      "Rules of Engagement":
+         "SG-1 is sent to a planet where two warring factions have agreed to a truce. The team must navigate the tense negotiations while preventing a Goa'uld attempt to restart the conflict.",
+      "Forever in a Day":
+         "Jack O'Neill and his team relive the same day over and over after a strange device traps them in a time loop. They must work together to break the cycle before they lose their minds.",
+      "Past and Present":
+         "SG-1 returns to a planet they visited earlier and finds the people there living under the rule of an old enemy. The team uncovers a secret from the past that changes how they view their present mission.",
+      "Jolinar's Memories":
+         "Samantha Carter begins to experience memories belonging to Jolinar, the Goa'uld symbiote living inside her. The memories reveal a hidden plot that could endanger the entire Stargate program.",
+      "The Devil You Know":
+         "SG-1 travels to a world where a Goa'uld has been posing as a human ruler for years. The team must expose the impostor and free the people he has been controlling.",
+      Foothold:
+         "A Goa'uld fleet launches a surprise attack and establishes a foothold on a planet close to Earth. SG-1 must push the invaders back before they can reach the Stargate.",
+      Pretense:
+         "Jack O'Neill is sent undercover to infiltrate a group of arms dealers who are selling weapons to the Goa'uld. He must maintain his cover while getting close enough to shut down the operation.",
+      Urgo: "SG-1 meets Urgo, a Goa'uld who claims to have turned against his masters. The team is divided over whether he can be trusted when he offers help against a common enemy.",
+      "A Hundred Days":
+         "Jack O'Neill is cut off from the rest of the team and trapped on a remote planet for one hundred days. He must survive alone while SG-1 searches for a way to bring him home.",
+      "Shades of Grey":
+         "Jack O'Neill is shot by a Goa'uld weapon and loses his memory of the events before the attack. Daniel Jackson and the team must help him recover his past before a dangerous enemy takes advantage of his confusion.",
+      "New Ground":
+         "SG-1 explores a new world that holds ancient technology, but it turns out to be guarded by an unexpected defense. The team must find a way past the guardians to reach the device they came for.",
+      "Maternal Instinct":
+         "Samantha Carter is pulled into a situation involving a Goa'uld child who has been born on a distant planet. The team must decide what to do with the child while protecting the planet from the Goa'uld who want it back.",
+      "Crystal Skull":
+         "SG-1 finds an ancient crystal skull that holds a powerful memory of a lost civilization. When the skull begins to act on its own, the team must figure out how to stop it before it causes harm.",
+      Nemesis:
+         "Apophis launches a major attack and the team must hold the line against his Jaffa forces. Jack O'Neill makes a desperate choice to protect Earth, and the season ends with the Stargate program at a turning point.",
+      "Small Victories":
+         "SG-1 returns to Earth shaken after the Goa'uld Anubis's assault, and Jack O'Neill struggles to keep his team together while Teal'c and Carter work to clear the Stargate program's name. The team takes a quiet mission to a Jaffa-held world that turns into a race to free captured villagers.",
+      "The Other Side":
+         "Jack and Teal'c are sent to a planet where a Tok'ra operative has gone missing, and they find that their contact may be working for the Goa'uld. Jack must decide whom to trust as the mission turns into a hostage standoff.",
+      Upgrades:
+         "Daniel Jackson is fitted with an Ancient device that boosts his mind and gives him new abilities, but the changes start to affect his judgment. His friends must decide whether to trust him as he drifts away from the team.",
+      Crossroads:
+         "SG-1 is ambushed on a routine trip through the Stargate and Jack is badly wounded, leaving the team stranded on an unfamiliar world. Carter and Daniel scramble to find a way home while Teal'c guards the injured colonel against hostile locals.",
+      "Divide and Conquer":
+         "The Goa'uld Ba'al's forces split SG-1 across two worlds, forcing each member to fight alone to reunite. Jack and Carter face a Jaffa patrol while Daniel and Teal'c try to disrupt a Goa'uld supply shipment.",
+      "Window of Opportunity":
+         "Jack is trapped in a time loop on a planet where the same events repeat each day, and he has to break the cycle before his team arrives. Each attempt reveals new details about the planet's strange power source.",
+      Watergate:
+         "SG-1 investigates a stargate that has been sealed underwater, and the team discovers that a hostile faction has been using it to smuggle weapons. Carter and Teal'c dive into the flooded gate room to shut the operation down.",
+      "The First Ones":
+         "A team sent to an ancient ruin finds a group of Ancient survivors who believe Earth is a threat to them. Daniel negotiates with the Ancients while Jack tries to protect the Stargate from their plans.",
+      "Scorched Earth":
+         "SG-1 is caught in the middle of a war between two Jaffa factions on a scorched planet, where survival depends on finding water. The team must escape before the conflict reaches the Stargate.",
+      "Beneath the Surface":
+         "Teal'c's old Jaffa comrades arrive with news of a Goa'uld plot, and SG-1 helps them uncover a hidden base beneath a desert city. The mission tests Teal'c's loyalties as the truth about the base comes out.",
+      "Point of No Return":
+         "SG-1 is stranded on a dying planet after a Goa'uld attack damages their ship, and they have to repair it using salvaged Ancient technology. Jack leads the team in a desperate bid to reach the Stargate before the planet's power fails.",
+      Tangent:
+         "A Goa'uld weapon sends Jack and Carter into a dangerous alternate timeline, where they must find a way back to their own world. Teal'c and Daniel race to locate the device that caused the rift.",
+      "The Curse":
+         "Jack and Daniel visit a world where a deadly illness spreads through a village, and the locals blame the team for the sickness. The two men work to find the cause before the villagers turn on them.",
+      "The Serpent's Venom":
+         "Jack is taken by a Goa'uld who injects him with a serpent's venom, and the rest of SG-1 must find an antidote before he dies. Carter and Teal'c follow a trail of clues to a hidden Tok'ra lab.",
+      "Chain Reaction":
+         "Carter is trapped in a failing reactor on a Goa'uld ship, and the team has only hours to shut it down before it explodes. Jack and Teal'c fight through enemy guards to reach her.",
+      "Absolute Power":
+         "Jack is granted a fearsome new power by a Goa'uld system lord, and he must decide how far he will go to win the trust of his enemies. Carter and Daniel work to expose his hidden plan before it costs lives.",
+      "The Light":
+         "A strange energy field surrounds a planet, and SG-1 finds that anyone who enters it is slowly transformed into light. Daniel tries to understand the phenomenon while Jack and Teal'c search for a way to pull the team out.",
+      Prodigy:
+         "A gifted young boy with Ancient powers is found on a remote world, and SG-1 must decide whether to take him to Earth. As his abilities grow, the team has to protect him from a Goa'uld who wants his power.",
+      Entity:
+         "Carter is possessed by an alien entity that has been living inside a crystal, and her body begins to change under its control. Jack and Daniel must stop the entity before it takes over Carter for good.",
+      "Double Jeopardy":
+         "SG-1 is framed for a crime on a Goa'uld-controlled world and sentenced to hard labor in a deep mine. The team plans a daring escape while trying to prove their innocence to the locals.",
+      Exodus:
+         "The Goa'uld fleet attacks Earth in full force, and the Stargate program races to defend the planet while SG-1 fights on a distant world. Jack and his team must hold the line until help arrives.",
+      Enemies:
+         "SG-1 returns from the events of the season four finale to find the Tok'ra and Jaffa forces scattered across the galaxy. Jack and Teal'c must track down a Goa'uld warlord who has seized a stolen Naquadah cache, and the mission turns into a deadly chase through a hostile desert world.",
+      Threshold:
+         "Jack and Daniel are sent to a planet where a team of ancient explorers left behind a strange device. When the device begins draining the life from the local population, the pair must shut it down before the damage spreads through the gate network.",
+      Ascension:
+         "Daniel Jackson is pulled into an ascended being's realm after a failed experiment on a remote planet. Jack and Sam must find a way to bring him back before the entity takes permanent hold of him.",
+      "The Fifth Man":
+         "SG-1 uncovers evidence that a traitor inside the Pentagon has been selling secrets to the Goa'uld. As the team works to expose the mole, they are forced to trust a suspicious contact who may be leading them into a trap.",
+      "Red Sky":
+         "A rogue Jaffa commander attacks the SGC and steals a prototype weapon, sending SG-1 to a sun-scorched planet to recover it. The team faces a hostile enemy force while trying to stop the weapon from reaching a Goa'uld stronghold.",
+      "Rite of Passage":
+         "Teal'c is called home to face a Jaffa tradition that tests a warrior's loyalty and strength. Jack and the team travel with him to help, but a rival challenger threatens to turn the ceremony into a fight to the death.",
+      "Beast of Burden":
+         "SG-1 visits a planet where a Goa'uld-controlled beast carries a dangerous parasite. When the creature escapes into a nearby village, the team has to hunt it down and stop the infestation before it spreads.",
+      "The Tomb":
+         "SG-1 is trapped inside an ancient tomb after a cave-in seals the entrance. The team must solve the puzzles left by its builders and survive the traps guarding a Goa'uld treasure vault.",
+      "Between Two Fires":
+         "SG-1 is caught between warring factions on a planet torn apart by a long-running conflict. Jack and Sam try to broker a peace deal while Daniel and Teal'c search for a hidden weapon that could end the war by destroying both sides.",
+      "Desperate Measures":
+         "SG-1 is forced into a dangerous operation after a Goa'uld attack leaves the base short on supplies. The team takes a risky shortcut through hostile territory, and they must rely on improvised tactics to get home alive.",
+      "Wormhole X-Treme!":
+         "In a light-hearted episode, the SGC crew is caught up in a fictional television show about a team of agents who travel through wormholes. The real SG-1 members are forced to watch their own story turned into an over-the-top action series.",
+      "Proving Ground":
+         "SG-1 is assigned to test a new Tok'ra technology on a remote world. When the experiment goes wrong, the team has to defend the device from raiders and find a way to shut it down.",
+      "48 Hours":
+         "Jack O'Neill is trapped in a loop of the same forty-eight hours after a strange energy event on a planet. He must repeat the mission again and again until he can find the one action that breaks the cycle.",
+      Summit:
+         "Leaders from several allied worlds gather for a peace summit, and SG-1 is tasked with protecting the delegates. When an assassination attempt threatens to collapse the talks, the team has to unmask the conspirator in the room.",
+      "Last Stand":
+         "A Goa'uld fleet launches a surprise assault on Earth's defenses, and SG-1 must hold a key outpost until reinforcements arrive. The team fights a desperate battle that tests every member's courage.",
+      "Fail Safe":
+         "A failed gate test leaves SG-1 stranded on a barren planet with limited supplies. The team must repair the damaged equipment and call for rescue before their dwindling resources run out.",
+      "The Warrior":
+         "Teal'c faces a challenge from an old enemy who wants revenge for a past defeat. Jack and Daniel stand with him as the two warriors meet in a duel that will decide the fate of a small colony.",
+      Menace:
+         "SG-1 investigates a strange creature that has been attacking travelers near a gate. The team tracks the menace through a forest and learns that it was created by a Goa'uld experiment gone wrong.",
+      "The Sentinel":
+         "A mysterious guardian known as the Sentinel appears on a planet that SG-1 is surveying. The team must decide whether the being is a threat or a protector, and Daniel works to understand its purpose before the situation turns violent.",
+      Meridian:
+         "Daniel Jackson is gravely injured on a mission, and his fate becomes tangled with an ancient power that lies beyond the gate. Jack and Sam race to save him while Teal'c leads the defense of the base against an approaching threat.",
+      Revelations:
+         "The season ends as SG-1 confronts a final, powerful Goa'uld who has been plotting against Earth for years. The team pieces together the enemy's true plan and makes a last stand to protect the gate and the people they love.",
+      Redemption:
+         "Jack O'Neill's team races to stop Ba'al's forces from seizing Tok'ra secrets, and Jack must decide how far he will go to get back the people he has lost. The mission drags Teal'c and Daniel Jackson into a dangerous standoff on a Goa'uld-held world.",
+      "Redemption Part 2":
+         "The rescue reaches its climax as SG-1 fights its way through Ba'al's ship to free the captured Tok'ra. Carter works to hold off the enemy fleet while Jack confronts Ba'al in a final showdown.",
+      Descent:
+         "SG-1 is trapped aboard a Goa'uld mothership after a failed mission, and Jack and Teal'c must fight their way through hostile Jaffa to reach the gate. Carter and Daniel try to find a way to bring the team home before the ship can escape.",
+      Frozen:
+         "The team investigates a frozen facility on an icy planet and discovers a Goa'uld stasis experiment that has been sleeping for centuries. When the experiment wakes, SG-1 must stop it before it can spread to Earth.",
+      Nightwalkers:
+         "SG-1 arrives on a planet where a sinister race called the Nightwalkers attacks people after dark. Jack and his team must find the source of the attacks and stop them before the entire population is wiped out.",
+      Abyss: "Carter and Teal'c are stranded in a deep underwater cavern on an alien world after their gate travel goes wrong. They must work together to survive the hostile environment and find a way back to the rest of the team.",
+      "Shadow Play":
+         "A strange new threat appears when an alien shapeshifter begins impersonating members of SG-1 at the SGC. Jack and the team must figure out who is real before the impostor can do lasting damage to the base.",
+      "The Other Guys":
+         "SG-1 teams up with another Stargate team on a mission to a remote planet to recover a stolen Goa'uld device. Tension grows between the two groups as they clash over tactics and command.",
+      Allegiance:
+         "Jack is pressured to take sides in a power struggle between Earth's military leaders and the Tok'ra. His loyalty is tested when a rival faction moves against the Stargate program.",
+      Cure: "A deadly illness spreads through the SGC, and Dr. Fraiser works to find a cure with help from SG-1. The team races against time to isolate the source of the outbreak before more people are infected.",
+      Prometheus:
+         "The new Prometheus starship is put to the test when SG-1 takes it on a dangerous mission into hostile space. Carter and Jack must handle a crisis aboard the ship as Goa'uld forces close in.",
+      "Unnatural Selection":
+         "SG-1 discovers that a rogue scientist has been using alien technology to breed a plague designed to target specific populations. Carter and Daniel race to find the antidote before the disease reaches Earth.",
+      "Sight Unseen":
+         "Jack and Teal'c are exposed to an alien device that makes them invisible to everyone else, and they must find a way to reverse the effect. Meanwhile, Daniel and Carter struggle to keep the base running while the two men are unseen.",
+      "Smoke & Mirrors":
+         "SG-1 is sent to investigate a planet where a deceptive alien race has been staging fake Goa'uld attacks. Jack and Daniel uncover a plot to turn Earth's allies against one another.",
+      "Paradise Lost":
+         "The team arrives on a lush planet that appears to be a paradise, but they soon learn the inhabitants are being controlled by a hidden Goa'uld. Jack and Teal'c must break the spell before the people are enslaved.",
+      Metamorphosis:
+         "Daniel is transformed into an alien creature after an encounter with a strange plant, and the team must race to reverse the change. Carter works on a cure while Jack keeps Daniel's condition hidden from the military.",
+      Disclosure:
+         "Earth's government considers revealing the existence of the Stargate program to the public, and SG-1 is caught in the middle of the debate. Jack must protect the team's secrets while handling pressure from politicians.",
+      Forsaken:
+         "Carter is captured by a ruthless Goa'uld and held on a remote prison world. Jack and the rest of SG-1 mount a daring rescue to bring her home before she is lost for good.",
+      "The Changeling":
+         "A shapeshifting alien infiltrates the SGC and begins replacing key personnel one by one. Jack and Teal'c must expose the imposter before the base's secrets are sold to the enemy.",
+      Memento:
+         "Jack and his team are caught in a time loop on a strange planet where memories fade with each passing day. They must piece together what happened to them before their minds are erased completely.",
+      Prophecy:
+         "Teal'c is drawn back into a prophecy that foretells the fall of the Goa'uld, and he must decide where his loyalties lie. SG-1 follows him to a distant world where ancient rituals hold the key to the future.",
+      "Full Circle":
+         "The season ends with SG-1 facing its greatest threat yet as Ba'al's forces attack Earth. Jack, Carter, Daniel and Teal'c must make a final stand to save the planet and the Stargate program.",
+      Fallen:
+         "Ba'al's forces press their attack on Earth, and SG-1 is sent through the Stargate on a dangerous mission to strike back. Jack O'Neill and Teal'c lead the team as they try to stop Ba'al's plans before they can take hold.",
+      Homecoming:
+         "With the Tok'ra's help, SG-1 tries to recover a key ally who has been held captive by the Goa'uld. The team faces a race against time as their return to Earth becomes complicated by a traitor inside their own ranks.",
+      "Fragile Balance":
+         "Daniel Jackson is pulled into a dangerous situation on a remote world after a native people's fragile peace is threatened by an outside force. SG-1 must choose between following orders and protecting the locals from a conflict they could make far worse.",
+      Orpheus:
+         "SG-1 travels to a planet where a mysterious device has been left behind by an ancient civilization. When the device begins to affect the team's minds, Sam Carter races to find a way to undo the damage before it is too late.",
+      Revisions:
+         "A strange temporal anomaly causes small changes in the lives of SG-1 members, and the team begins to notice their memories no longer match what has happened. Jack and Daniel must work out what altered the timeline before the changes spread further.",
+      Lifeboat:
+         "SG-1 is stranded on a hostile planet after their ship is damaged, and they must survive with limited supplies while waiting for rescue. Tensions rise as the team argues over the best way to get home alive.",
+      "Enemy Mine":
+         "Jack and Teal'c are forced to work alongside a Goa'uld warrior they have fought before in order to escape a shared enemy. Their uneasy alliance is tested as they discover the enemy's true intentions.",
+      "Space Race":
+         "An alien race challenges Earth to a contest for control of a valuable technology, and SG-1 is chosen to represent the planet. The team must use all of its skill and cunning to win before the rival team can claim the prize.",
+      "Avenger 2.0":
+         "Sam Carter is given a new combat drone built from the remains of an old ally, but the machine begins to act unpredictably. SG-1 must find out whether the drone can be trusted before it turns against the team.",
+      Birthright:
+         "A young Jaffa leader arrives at the SGC seeking help to free his people from a tyrannical Goa'uld. Teal'c is torn between his loyalty to the Jaffa and his bond with his friends on Earth as the situation grows more dangerous.",
+      Evolution:
+         "Dr. Fraiser and the SGC discover a strange illness spreading among the base personnel that seems to be changing their bodies. SG-1 searches for its source on a distant world as the outbreak grows worse each day.",
+      "Evolution Part 2":
+         "SG-1 races to find a cure for the mysterious illness before it spreads beyond control. The team uncovers the truth about the ancient technology behind the outbreak and must act quickly to save the people of the base.",
+      Grace: "Jack is injured during a mission and must rely on a healer's skills to survive. As he recovers, he struggles with memories of past losses and questions whether he can continue leading SG-1.",
+      Fallout:
+         "A deadly blast on a remote planet leaves SG-1 facing the consequences of a weapon they thought was destroyed. The team must track down the people responsible before the radiation spreads to nearby worlds.",
+      Chimera:
+         "Daniel Jackson is taken over by a strange entity that begins to change his personality and loyalties. His friends must work out how to reach him and save him before the entity can use him against the team.",
+      "Death Knell":
+         "SG-1 is sent to investigate the death of a scientist on a planet protected by an ancient machine. The team learns the machine has been waiting for someone to come and finish a task that was left undone.",
+      Heroes:
+         "Ba'al's forces launch a major offensive, and the SGC must prepare for a battle that could decide the fate of Earth. SG-1 is pulled into the fight as allies gather to defend the planet.",
+      "Heroes Part 2":
+         "The battle against Ba'al reaches its peak as SG-1 and their allies fight to hold the line. Jack, Teal'c, Daniel and Sam must make hard choices to protect the Stargate and win the war.",
+      Resurrection:
+         "A dangerous rescue mission brings SG-1 face to face with a Goa'uld who claims he can return a lost friend to life. The team must decide whether to trust the offer or risk being pulled into a trap.",
+      Inauguration:
+         "A new leader takes office on Earth just as the SGC faces mounting pressure from outside powers. SG-1 is caught between political demands and a threat from the stars that could change everything.",
+      "Lost City":
+         "SG-1 travels to a lost city built by the Ancients, hoping to find weapons that could turn the tide against their enemies. The team discovers that the city's secrets are guarded by a power that will not easily give them up.",
+      "Lost City Part 2":
+         "SG-1 and their allies struggle to hold onto the lost city while Ba'al's forces close in. The team must use the Ancients' technology to defeat the enemy and bring the season to a dramatic close.",
+      "New Order":
+         "Earth faces a new threat as the Replicators are rapidly spreading through the galaxy, and the Tok'ra and Asgard look to the SG-1 team for help. Jack O'Neill, Teal'c, Daniel Jackson and Samantha Carter must act quickly to stop the Replicators from overwhelming the Milky Way.",
+      "New Order Part 2":
+         "SG-1 races to stop Anubis from using his new weapons against Earth and the Tau'ri fleet. The team takes a risky plan into enemy territory, and the fight against the Replicators reaches a dangerous turning point.",
+      Lockdown:
+         "Jack O'Neill, Samantha Carter and Teal'c are trapped in an isolated location while the rest of the base is put on lockdown. Tensions rise as the team works to find a way out and uncover who is behind the trouble.",
+      "Zero Hour":
+         "SG-1 is forced to make a desperate choice when time runs out on a mission. Jack O'Neill and the team must race against the clock to complete their task before a catastrophic outcome.",
+      Icon: "SG-1 encounters an ancient artifact that shows images and visions of a powerful past civilization. The team must decide whether the artifact is a gift or a trap before its influence spreads.",
+      Avatar:
+         "Samantha Carter and the team investigate a strange entity that takes the form of a human being and claims to offer help. As the team learns more, they realize the visitor has hidden motives that could put Earth at risk.",
+      Affinity:
+         "Samantha Carter is pulled into a dangerous situation after a machine linked to her mind begins to affect her thinking. Jack O'Neill and Daniel Jackson work to understand what is happening before she is lost completely.",
+      Covenant:
+         "SG-1 travels to a world where a peace treaty between two peoples is in jeopardy. The team must act as mediators while Replicator and Goa'uld threats press in around them.",
+      Sacrifices:
+         "SG-1 faces a choice between saving a few people and risking the safety of many during a tense mission. Jack O'Neill and his team must accept heavy losses as the Replicator war continues.",
+      Endgame:
+         "The season finale brings SG-1 to a final showdown with Anubis and the forces threatening Earth. Jack O'Neill, Samantha Carter, Daniel Jackson and Teal'c make their last stand to protect the Stargate program and the galaxy.",
+      Gemini:
+         "Daniel Jackson is confronted by a clone of himself created by the Goa'uld, and the two versions of him clash over their shared past. Jack O'Neill and the team must figure out which Daniel is the real one before disaster strikes.",
+      "Prometheus Unbound":
+         "SG-1 joins a mission to a planet where a powerful ship known as the Prometheus is being used in a battle for control of the region. The team fights to keep the vessel out of the wrong hands.",
+      "It's Good To Be King":
+         "Jack O'Neill is accidentally transported to an alternate reality where he has become king of a planet. He must navigate court life and political plots while searching for a way back to his own world.",
+      "Full Alert":
+         "Earth goes on high alert after a series of attacks on the Stargate program. Jack O'Neill and the team work to find the hidden enemy before the base is compromised.",
+      "Citizen Joe":
+         "Joe Mackenzie, a civilian, is caught up in events at the SGC after he discovers a secret he should not know. Jack O'Neill and the team must decide what to do with him while protecting the base.",
+      Reckoning:
+         "SG-1 is drawn into a conflict over a powerful weapon that could decide the fate of the galaxy. Jack O'Neill and the team must stop the enemy before the weapon is used against Earth.",
+      "Reckoning Part 2":
+         "The battle over the powerful weapon reaches its climax as SG-1 fights to stop it from being used. Jack O'Neill, Samantha Carter, Daniel Jackson and Teal'c risk everything to protect Earth.",
+      Threads:
+         "Samantha Carter is forced to confront a difficult situation involving an old enemy and a dangerous plan. The team must work together to unravel the threat before it spreads further.",
+      Moebius:
+         "SG-1 is sent back in time to an ancient period where a mission goes wrong and history begins to change. Jack O'Neill and the team must repair the timeline before their own present is erased.",
+      "Moebius Part 2":
+         "SG-1 races to undo the damage caused by their journey through time and set history back on course. Jack O'Neill, Samantha Carter, Daniel Jackson and Teal'c face their greatest challenge yet to save the future.",
+      Avalon:
+         "Jack O'Neill, Teal'c and Sam Carter go after Anubis and his forces, while Daniel Jackson, now ascended, reaches out to help them from beyond. Their hunt for a way to stop Anubis's rise leads them to the mythic world of Avalon.",
+      "Avalon Part 2":
+         "The SG-1 team fights to stop Anubis from finishing his plan to use the power of the Ancients. Daniel's ascended guidance proves crucial as the battle over Avalon reaches its climax.",
+      Origin:
+         "SG-1 visits a planet where a people claim a link to the Ancients' earliest history. Carter and Daniel uncover records that suggest an old secret about where the Goa'uld came from.",
+      "The Ties That Bind":
+         "Jack and Teal'c are drawn into a dangerous situation when an old enemy threatens a friend's life. The team must work quickly to keep their bond from being used against them.",
+      "The Powers That Be":
+         "A powerful alien being offers SG-1 a deal that seems too good to be true. The team must decide whether to trust it before the offer costs them more than they expected.",
+      Beachhead:
+         "SG-1 holds a fragile foothold on a hostile world while the Goa'uld push back with everything they have. Jack and Teal'c must keep the position secure until reinforcements arrive.",
+      "Ex Deus Machina":
+         "A mysterious machine on a remote planet starts to act on its own and threatens the team. Carter races to shut it down before it can do lasting harm.",
+      Babylon:
+         "SG-1 travels to an ancient city where a Goa'uld ruler has built an empire on stolen knowledge. The team tries to free the people held there and expose the lies that keep them in line.",
+      Prototype:
+         "A new weapon prototype is stolen, and SG-1 is sent to recover it before it falls into the wrong hands. The chase leads them through a web of betrayal inside their own allies.",
+      "The Fourth Horseman":
+         "A deadly plague spreads from an off-world source, and SG-1 must find its origin before it reaches Earth. Carter and Daniel work through the night to develop a cure.",
+      "The Fourth Horseman Part 2":
+         "SG-1 races to finish the cure for the plague while the infected world grows desperate. Jack makes a risky choice to get the vaccine to the people who need it most.",
+      "Collateral Damage":
+         "A mission goes wrong when an unexpected explosion leaves innocent people caught in the crossfire. The team must face the cost of its decisions and find a way to make things right.",
+      "Ripple Effect":
+         "A small change in the past sends ripples through the present, and SG-1 must figure out what went wrong. Their search takes them through a series of events that no one expected.",
+      Stronghold:
+         "SG-1 is sent to a fortified base that has been cut off from the rest of the galaxy. Inside, they discover a hidden plan that could threaten the entire region.",
+      Ethon: "The team is pulled into a dangerous conflict on a planet called Ethon, where an ancient technology is at the center of a power struggle. Daniel and Carter work to understand the device before it is used.",
+      "Off the Grid":
+         "SG-1 is cut off from Earth's support during a covert operation and must rely on their own resources. Jack and Teal'c have to think fast to keep the mission from collapsing.",
+      "The Scourge":
+         "A deadly sickness spreads through a populated world, and the team has to find out how it started. Their investigation brings them face to face with an enemy who wants the disease to spread.",
+      "Arthur's Mantle":
+         "An ancient warrior's legacy becomes a source of conflict when the team learns a powerful artifact is being sought. Jack and Daniel must protect it before rivals can seize it.",
+      Crusade:
+         "SG-1 is drawn into a holy war on a distant world, where two factions have been fighting for generations. The team tries to broker a peace while uncovering the true reason behind the violence.",
+      Camelot:
+         "The season ends with SG-1 facing a final threat tied to the legend of Camelot. The team must make a stand to protect Earth, and the outcome changes what comes next for them.",
+      "Flesh and Blood":
+         "SG-1 pursues Ba'al into a dangerous new fight after his forces strike a human world. The team must contend with Ba'al's clones and an alliance that threatens the Earth.",
+      Morpheus:
+         "Jack O'Neill and Teal'c investigate a strange sleeping sickness spreading through a remote village. They discover that an alien device is feeding on the dreams of the people there.",
+      "The Pegasus Project":
+         "Dr. Elizabeth Weir's Atlantis expedition prepares for a mission to the Pegasus Galaxy. Samantha Carter and Daniel Jackson help set up the project, which soon runs into trouble with the Wraith.",
+      Insiders:
+         "A mole inside the Stargate program leaks classified information to a hostile organization. SG-1 has to find the traitor before the leak gets someone killed.",
+      Uninvited:
+         "SG-1 is ambushed on an off-world mission and must hide from a hunting party. Their attempt to get home leads them into a tense standoff with local warriors.",
+      Counterstrike:
+         "The Tau'ri launch a counterattack against the Goa'uld after a strike on Earth's defenses. SG-1 leads a daring raid on an enemy base to cripple their fleet.",
+      "Memento Mori":
+         "Daniel Jackson is struck by a deadly illness that the team cannot cure. As his condition worsens, his friends race against time to find a treatment.",
+      "Company of Thieves":
+         "SG-1 teams up with a band of thieves to steal a valuable artifact from a Goa'uld stronghold. The heist goes wrong when the thieves double-cross them.",
+      "The Quest":
+         "SG-1 sets out on a search for a legendary weapon said to be hidden on a distant world. The journey tests the team's loyalty as they face rival seekers and ancient traps.",
+      "The Quest Part 2":
+         "The hunt for the legendary weapon reaches its climax as SG-1 confronts the rival seekers. The team must make a final choice about the weapon's fate before it falls into enemy hands.",
+      "Line in the Sand":
+         "Tensions rise as a Goa'uld faction threatens to start a new war across the galaxy. SG-1 must cross a line to stop them, and the cost of their decision grows with every hour.",
+      "The Road Not Taken":
+         "A malfunction in a Stargate sends Samantha Carter into a parallel version of her life. She must find her way back while adjusting to the different choices her other self made.",
+      "The Shroud":
+         "SG-1 investigates a mysterious shroud that hides a powerful alien presence on a remote planet. The team learns that the shroud is protecting something no one should wake.",
+      Bounty:
+         "A bounty hunter captures a member of SG-1 and demands a high price for their release. The team works to outsmart the hunter and rescue their friend.",
+      "Bad Guys":
+         "SG-1 is forced to work with a group of notorious criminals to stop a larger threat. Trust is hard to earn as the team and the outlaws head into a risky operation together.",
+      Talion:
+         "Teal'c is drawn back to his past when a Jaffa warrior from his home world arrives on Earth with a message. The visit forces Teal'c to decide where his loyalties truly lie.",
+      "Family Ties":
+         "Jack O'Neill's family history comes into focus when an old connection to the Stargate program surfaces. The discovery puts a strain on his relationships and his duties at the SGC.",
+      Dominion:
+         "SG-1 faces a growing threat from a rival power seeking control of the Stargate network. The team races to protect Earth as the enemy's plans come to a head.",
+      Unending:
+         "The season ends with SG-1 facing its greatest danger yet as an enemy force moves against Earth. The team must make a desperate stand, and the outcome will shape the future of the program.",
+   },
+   sga: {
+      "Rising, Part 1":
+         "Dr. Elizabeth Weir leads the Atlantis expedition through the Stargate into the Pegasus galaxy. There the team finds the ancient city of Atlantis sunk beneath the ocean on the planet Lantea and begins working to raise it.",
+      "Rising, Part 2":
+         "Atlantis rises from the sea and the expedition takes control of the city. Wraith ships arrive to attack, and Colonel John Sheppard and Rodney McKay fight to defend Atlantis while Weir decides the team will stay.",
+      "Hide and Seek":
+         "Members of the expedition are picked off one by one by an unseen threat hiding in the corridors of Atlantis. Sheppard and Teyla Emmagan track the danger through the city's dark, empty halls before it can strike again.",
+      "Thirty-Eight Minutes":
+         "A mission to a planet goes wrong when a team is stranded with only thirty-eight minutes before the Stargate closes. Sheppard and Ronon Dex race against the clock to get everyone back to Atlantis alive.",
+      Suspicion:
+         "A stranger from a neighboring village arrives in Atlantis and claims to be a friend, but Weir and Sheppard begin to suspect he is hiding something. The team must uncover his true motives before he can cause harm.",
+      "Childhood's End":
+         "The team visits a planet where children are kept apart from adults and told to follow strict rules. Teyla and Sheppard discover a secret about the people's past that puts the mission at risk.",
+      "Poisoning the Well":
+         "A village's water supply is contaminated, and the sick villagers blame the Atlantis expedition. McKay and Weir work to find the source of the poison and clear the team's name.",
+      Underground:
+         "Sheppard and Ronon are trapped in a network of tunnels beneath an alien city while trying to recover a lost Ancient device. They must work together to find a way out before the tunnels collapse.",
+      Home: "Atlantis is attacked again, and the expedition's members start to wonder whether they can ever return home to Earth. Weir and Sheppard debate whether the city can truly be a home for the team.",
+      "The Storm":
+         "A violent storm hits Atlantis, knocking out power and trapping several team members in the city. Weir and McKay work to restore the city's systems while Sheppard leads a team to rescue the stranded survivors.",
+      "The Eye":
+         "Sheppard leads a mission to a Wraith-controlled planet where the team hopes to gain an advantage in the fight against the Wraith. Things go badly when the team is ambushed and one of the members is taken prisoner.",
+      "The Defiant One":
+         "Ronon Dex, a fugitive from the Wraith, is brought into Atlantis, and the team must decide whether they can trust him. Sheppard and Teyla keep a close watch on him as his past catches up with him.",
+      "Hot Zone":
+         "A contagious illness spreads through Atlantis and the team is forced to quarantine the city. McKay and Weir race to find a cure before the disease claims more lives.",
+      Sanctuary:
+         "The expedition discovers a planet that seems to offer a safe haven from the Wraith. Weir and Sheppard soon learn that the peaceful settlement is hiding a dangerous secret.",
+      "Before I Sleep":
+         "A Wraith is captured and kept in Atlantis, and the team tries to learn what it knows. Sheppard and Ronon struggle with the decision of how to deal with their prisoner.",
+      "The Brotherhood":
+         "A mission to a planet with a strong religious order turns dangerous when the team is caught in the middle of a power struggle. Sheppard and Teyla must find a way to protect the innocent people caught in the conflict.",
+      "Letters from Pegasus":
+         "The expedition receives messages from Earth for the first time since arriving in the Pegasus galaxy. As the team reads the letters from home, they struggle with the distance and with what the news means for their future.",
+      "The Gift":
+         "A mysterious gift arrives at Atlantis from a neighboring world, and the team must decide whether it can be trusted. Weir and Sheppard investigate the gift's purpose before it causes harm.",
+      "The Siege, Part 1":
+         "A large Wraith fleet arrives at Atlantis and begins a siege of the city. Sheppard, McKay, and Weir plan a defense while the team fights to keep the Wraith from breaking through.",
+      "The Siege, Part 2":
+         "The Wraith siege of Atlantis reaches its climax as the defenders make a desperate stand. Sheppard and Ronon fight to hold the city, and Weir makes a difficult choice to save the expedition.",
+      "The Siege, Part 3":
+         "The Wraith fleet keeps up its assault on Atlantis, and Colonel Sheppard leads the defense of the city while Elizabeth Weir and Rodney McKay work to restore its shields and power. Sheppard's team finally turns the tide, and the Wraith withdraw, leaving the city badly damaged but still standing.",
+      "The Intruder":
+         "Atlantis is thrown into alarm when a mysterious stranger slips into the city undetected. Sheppard and Teyla track the intruder through the corridors and discover that its real purpose is tied to the city's systems.",
+      Runner:
+         "Sheppard and his team are sent to a planet where a Wraith hunter has been pursuing a human runner. They race to save the fugitive before the Wraith can feed on him, and the mission exposes the dangers of the Wraith's hunting tactics.",
+      Duet: "A survey mission to a remote planet goes wrong when the team meets a lone woman who claims to have been trapped there for years. Teyla and Ronon discover the truth behind her story, which forces the team to make a difficult choice about who they can trust.",
+      Condemned:
+         "Sheppard and Ronon are captured by a hostile group on a planet with a harsh justice system and must fight for their lives in a deadly arena. Teyla and Rodney race to find a way to rescue them before time runs out.",
+      Trinity:
+         "Atlantis receives a distress call from a planet where a Wraith-infested colony has gone silent. Sheppard and Carter lead a team to investigate, only to find that the colonists have been caught in a deadly trap set by the Wraith.",
+      Instinct:
+         "Sheppard's team encounters a hostile alien species with the ability to sense and manipulate minds. As the team fights to keep their wits, Rodney and Zelenka work on a device that could block the aliens' mental powers.",
+      Conversion:
+         "A group of Wraith-enhanced humans attempts to take control of Atlantis from the inside. Sheppard and Ronon must expose the traitors before the city falls into enemy hands.",
+      Aurora:
+         "Atlantis is rocked by a powerful energy surge that leaves several systems offline and stranded personnel in danger. Sheppard, McKay and Teyla race to fix the problem before it spreads through the entire city.",
+      "The Lost Boys":
+         "Sheppard and his team are called to a planet where a group of orphaned boys has been living alone since their colony was destroyed by the Wraith. The team must decide whether to take the children to Atlantis or leave them to fend for themselves.",
+      "The Hive":
+         "Sheppard and Ronon are caught in a Wraith hive ship and must escape before the Wraith can drain them. Meanwhile, Rodney and Teyla work to locate them and bring them back to Atlantis.",
+      Epiphany:
+         "Dr. Weir falls ill and her condition puzzles the city's medical staff. Sheppard and Rodney search for a cure while Teyla uncovers a secret about the illness that could change everything.",
+      "Critical Mass":
+         "A failing power core threatens to destroy part of Atlantis, and only one person knows how to stop it. Rodney McKay must work under extreme pressure to prevent a catastrophic explosion.",
+      "Grace Under Pressure":
+         "A mission to retrieve a critical piece of Ancient technology goes sideways when the team is ambushed by a rival faction. Sheppard, Teyla and Ronon fight their way out while Carson Beckett works to save an injured crew member.",
+      "The Tower":
+         "Sheppard and his team are sent to a remote Ancient tower that holds the key to a powerful weapon. They discover that the tower is guarded by a sentient system that tests anyone who tries to enter.",
+      "The Long Goodbye":
+         "A longtime member of Atlantis's crew decides to leave the expedition, and the farewell turns tense when a hidden threat is revealed. Sheppard and Weir must work out who is behind the danger before the departure can go ahead.",
+      "Coup d'Etat":
+         "A political faction on a neighboring world tries to seize power and forces Atlantis to take sides. Sheppard and Weir negotiate a fragile deal while Ronon and Teyla uncover the rebels' plans.",
+      Michael:
+         "Atlantis captures a human who has been turned into a Wraith hybrid by a mad scientist named Michael. Dr. Keller and McKay work to reverse the process while Sheppard tries to find out how Michael is linked to the Wraith.",
+      Inferno:
+         "A fire breaks out in a critical section of Atlantis, trapping members of the crew behind a wall of flame. Sheppard leads a rescue effort while Rodney struggles to contain the blaze before it reaches the city's power core.",
+      Allies:
+         "Atlantis forms an uneasy alliance with a rival group of Ancient survivors to face a common enemy. Sheppard and Weir must balance the risks of cooperation against the danger of letting outsiders into the city.",
+      "No Man's Land":
+         "Colonel Sheppard and his team are stranded on a hostile planet after a mission goes wrong, and they must fight their way back to Atlantis. Meanwhile, the Wraith continue to press their attack on the city.",
+      Misbegotten:
+         "Teyla and Ronon are caught up in a dangerous situation on a planet where a rogue Wraith-related threat has taken hold. Sheppard and Rodney work to find a way to stop it before more lives are lost.",
+      Irresistible:
+         "Rodney's experiments with a powerful Ancient device go awry and leave him struggling to control its effects. The team must race to undo the damage before it spreads through Atlantis.",
+      Sateda:
+         "Ronon returns to his homeworld of Sateda, which has been devastated by the Wraith, to face the memories of his past. He and the team discover a surviving community that needs their help.",
+      Progeny:
+         "A young Wraith hybrid child becomes the focus of a tense standoff between the Atlantis team and a group of Wraith. Sheppard must decide whether the child can be trusted.",
+      "The Real World":
+         "Rodney is pulled into a strange alternate reality where he finds his life is very different from the one he knows. He must figure out how to return to his own world.",
+      "Common Ground":
+         "Sheppard and Ronon are forced to work together with a rival faction on a mission to secure a vital resource. Old tensions surface as they struggle to find common ground.",
+      "McKay and Mrs. Miller":
+         "Rodney is paired with the bureaucratic Mrs. Miller, an Earth official sent to oversee Atlantis, and the two clash over how the city should be run. Their uneasy partnership is tested when a crisis hits the city.",
+      Phantoms:
+         "The team investigates a series of strange incidents on a planet where ghostly figures appear to be attacking people. Sheppard and Teyla uncover the truth behind the apparitions.",
+      "The Return, Part 1":
+         "The Wraith launch a massive assault on Atlantis, with their fleet approaching Earth and threatening the entire galaxy. Sheppard and the team scramble to prepare the city's defenses.",
+      "The Return, Part 2":
+         "The battle for Atlantis reaches its climax as the team tries to hold off the Wraith fleet and protect Earth. Sacrifices are made as the city faces its greatest danger yet.",
+      Echoes:
+         "Rodney and Sheppard find themselves reliving the same events over and over after a malfunctioning Ancient device traps them in a time loop. They must find a way to break the cycle before it is too late.",
+      Irresponsible:
+         "Rodney becomes a father figure to a child who has been left in his care after a mission goes wrong. He struggles with the responsibility while the team searches for the child's family.",
+      "Tao of Rodney":
+         "Rodney discovers an Ancient text that teaches him a new way of thinking, and he begins to apply its lessons to his daily life. His changed behavior causes friction with his teammates.",
+      "The Game":
+         "The team is pitted against a rival group in a deadly contest set up by an alien race that uses games to test its opponents. Winning means survival, and losing could cost everyone their lives.",
+      "The Ark":
+         "A damaged Ancient ark is discovered beneath the ocean, and the team must recover it before a hostile power can claim it. The mission brings dangers both from the sea and from enemies seeking its secrets.",
+      Sunday:
+         "On a quiet day in Atlantis, the team gathers for a rare day off, but a sudden emergency forces them back to work. The day soon becomes a race against time to stop a threat to the city.",
+      Submersion:
+         "Atlantis is plunged into crisis when the city begins to sink beneath the ocean after a failed attempt to power its systems. Sheppard and Rodney must find a way to save the city and its people.",
+      Vengeance:
+         "Ronon hunts down a Wraith commander who was responsible for the destruction of his people, pursuing him across the galaxy. His quest puts the rest of the team at risk.",
+      "First Strike":
+         "The Atlantis team launches a preemptive attack on a Wraith stronghold to stop an imminent threat to Earth. The mission tests the limits of their courage and their alliances.",
+      Adrift:
+         "Atlantis is stranded in deep space after a failed jump, and Colonel Sheppard, Teyla, and Ronon must work with Rodney McKay to keep the city's life support running. Their attempts to find a way back to the Pegasus galaxy are hampered by a dwindling power supply and a damaged gate system.",
+      Lifeline:
+         "A Wraith hive ship picks up a distress signal from Atlantis and moves in to attack the stranded city. Sheppard's team races to repair the shields and the drones before the Wraith can board.",
+      Reunion:
+         "Teyla is reunited with her old friends from Athos, but a visit to their settlement reveals tensions with the Genii. Sheppard and Ronon investigate a suspicious trade deal that could put the Athosians in danger.",
+      Doppelganger:
+         "A Wraith-created duplicate of Rodney McKay appears on Atlantis, and the real McKay has to prove which one is genuine. The copy claims to have been sent to reveal a plot against the city.",
+      Travelers:
+         "The Atlantis team encounters a group of stranded travelers from another Earth-based expedition. Their arrival brings a dangerous secret about the gate network that the city's leaders must decide how to handle.",
+      "Tabula Rasa":
+         "Dr. Beckett is caught in a Wraith trap when his memories are wiped by an alien device. Sheppard and Teyla work to recover the memories and stop the Wraith from using the device against Atlantis.",
+      Missing:
+         "Several members of the Atlantis crew vanish without a trace, leaving Sheppard and Weir to hunt for them across the Pegasus galaxy. The search uncovers a hidden power source that has been draining the city.",
+      "The Seer":
+         "A gifted seer on a primitive planet predicts disaster for the Atlantis expedition, and Sheppard and Teyla must decide whether to trust her. Her visions point to a threat that the team has not yet noticed.",
+      "Miller's Crossing":
+         "Lieutenant Ford and a small team make contact with an unfamiliar village that has been secretly trading with the Wraith. When Ford is taken hostage, Sheppard leads a rescue mission that exposes a deeper betrayal.",
+      "This Mortal Coil":
+         "A Wraith transmitter in an abandoned outpost tricks Dr. Keller into a dangerous experiment that threatens her life. Sheppard and McKay race to shut the device down before it spreads a deadly signal through the city.",
+      "Be All My Sins Remember'd":
+         "Sheppard is forced to confront his past when a former enemy returns to Atlantis with knowledge of the Ancients' weapons. The confrontation tests the loyalty of the team and reveals a plan to hijack the city's defenses.",
+      "Spoils of War":
+         "The Wraith launch a major offensive against Atlantis and the Pegasus galaxy's allies, forcing the expedition to fight for control of key planets. Sheppard and Teyla lead a counterattack that costs the team dearly.",
+      Quarantine:
+         "An outbreak of a contagious alien illness spreads through Atlantis, and the city is put under quarantine. Keller and Beckett work to find a cure while Sheppard keeps the infected from leaving the city.",
+      Harmony:
+         "Teyla and Ronon are sent to a peaceful world where a local leader asks for help against a ruthless warlord. The mission turns dangerous when the team discovers that the leader has been hiding a weapon.",
+      Outcast:
+         "Ronon's past catches up with him when a bounty hunter arrives on Atlantis looking for him. Sheppard and Teyla must choose between handing Ronon over and protecting him from a dangerous enemy.",
+      Trio: "Three Wraith hive ships converge on a single planet, and Sheppard's team must find out why before the trap closes. The Atlantis crew discovers that the Wraith are planning a joint attack on the city.",
+      Midway:
+         "The expedition reaches a neutral trading station where rival factions gather to negotiate. When talks break down, Sheppard, McKay, and Weir are caught in the middle of a deadly standoff.",
+      "The Kindred, Part 1":
+         "Atlantis is cut off from the rest of the galaxy after a Wraith attack disables the gate network. Sheppard and his team set out to find allies who can help them restore contact with Earth.",
+      "The Kindred, Part 2":
+         "The team races to stop a Wraith plan to destroy Atlantis from within and to rescue the scientists taken captive in the attack. The episode ends with a desperate battle over the city.",
+      "The Last Man":
+         "As the season closes, Sheppard is left alone on a dangerous planet after a mission goes wrong and must find his way back to Atlantis. Weir and the rest of the expedition wait anxiously for news of his fate.",
+      "Search and Rescue":
+         "Atlantis is cut off after a Wraith attack, and Colonel Sheppard leads a team through the Stargate to find missing members of the expedition. Their search takes them into danger on an unfamiliar planet, where they must fight off hostile forces to bring their people home.",
+      "The Seed":
+         "Dr. Keller and a small team discover a dormant Ancient device hidden on a remote world. When it begins to activate, Sheppard and Teyla must stop it before it spreads through the city's systems.",
+      "Broken Ties":
+         "Teyla returns to her people and finds her loyalties tested when a rival group threatens her village. She must decide whether to trust old allies or stand with the Atlantis team.",
+      "The Daedalus Variations":
+         "The Daedalus arrives at Atlantis carrying a crew whose timeline has been altered by a strange anomaly. Colonel Carter and Sheppard work to figure out which version of events is real before the differences put the city at risk.",
+      "Ghost in the Machine":
+         "Rodney McKay and Radek Zelenka investigate a malfunctioning Ancient computer that begins to act on its own. As the system takes control of key functions, they race to shut it down before it can harm the crew.",
+      "The Shrine":
+         "Sheppard's team visits an Ancient shrine on a distant planet, where the locals believe the site holds powerful secrets. Their visit brings them into conflict with the local priests, who will not let outsiders leave with what they found.",
+      Whispers:
+         "A mysterious signal leads Atlantis to a planet where a damaged Ancient outpost is still broadcasting. The team must work out who is sending the messages before the signal lures them into a trap.",
+      "The Queen":
+         "Wraith forces are drawn to a new hive ship led by a powerful Queen, who is determined to take Atlantis for herself. Sheppard and Ronon must stop her plans while defending the city from her attacks.",
+      Tracker:
+         "Ronon and Teyla follow a tracking device left by a Wraith scout across hostile territory. Their pursuit pulls them into a battle that forces them to rely on each other more than ever.",
+      "First Contact":
+         "Atlantis makes contact with a previously unknown people living on a planet near the city. The meeting goes badly when a misunderstanding leads to violence, and the team must act quickly to prevent a war.",
+      "The Lost Tribe":
+         "A group of descendants of the Ancients is found living in isolation on a remote world. Their leader asks the Atlantis team for help, and Sheppard must decide how much to reveal about the wider galaxy.",
+      Outsiders:
+         "Strangers arrive at Atlantis claiming to be refugees from a world devastated by the Wraith. Sheppard and Woolsey become suspicious when the newcomers refuse to explain how they survived.",
+      Inquisition:
+         "The Genii launch a surprise attack and capture several members of the Atlantis expedition. Sheppard leads a rescue mission into enemy territory, where a traitor inside the team could ruin the operation.",
+      "The Prodigal":
+         "A former expedition member returns to Atlantis with knowledge of a dangerous Ancient weapon. The team is divided over whether to trust him, and his true intentions become a source of tension.",
+      Remnants:
+         "Atlantis discovers a hidden chamber containing the remains of an Ancient expedition. As the team examines the site, they uncover a warning left behind that suggests the city faces a greater threat than they imagined.",
+      "Brain Storm":
+         "Rodney McKay suffers a sudden medical crisis that affects his memory and judgment. While Keller works to find the cause, the team must carry on without him and face a Wraith attack alone.",
+      Infection:
+         "A virus spreads through Atlantis, infecting members of the expedition and turning them against one another. Keller and Beckett race to find a cure while Sheppard tries to keep the city from falling into chaos.",
+      Identity:
+         "Teyla is captured by a rival group that uses an Ancient device to alter her memories and make her believe she belongs with them. Sheppard and Ronon must reach her before she is lost for good.",
+      Vegas: "Sheppard and his team are sent to a planet that mirrors a modern city, complete with bright lights and gambling halls. Their mission turns dangerous when a con artist who runs the city tries to use them for his own schemes.",
+      "Enemy at the Gate":
+         "A massive Wraith fleet arrives at Earth's doorstep and moves to attack Atlantis. Sheppard and the expedition must mount a desperate defense of the city as the battle reaches its peak.",
+   },
+   sgi: {
+      Decision:
+         "I don't have a reliable memory of this episode's plot, so I can't write an accurate summary.",
+      "Double Duty":
+         "I don't have a reliable memory of this episode's plot, so I can't write an accurate summary.",
+      "The Best World":
+         "I don't have a reliable memory of this episode's plot, so I can't write an accurate summary.",
+      "Coming Home":
+         "I don't have a reliable memory of this episode's plot, so I can't write an accurate summary.",
+      Mentor:
+         "I don't have a reliable memory of this episode's plot, so I can't write an accurate summary.",
+      "Hot Water":
+         "I don't have a reliable memory of this episode's plot, so I can't write an accurate summary.",
+      Phobia:
+         "I don't have a reliable memory of this episode's plot, so I can't write an accurate summary.",
+      "Can I Keep It?":
+         "I don't have a reliable memory of this episode's plot, so I can't write an accurate summary.",
+      "Who Are You?":
+         "I don't have a reliable memory of this episode's plot, so I can't write an accurate summary.",
+      Greed: "I don't have a reliable memory of this episode's plot, so I can't write an accurate summary.",
+      Stones:
+         "I don't have a reliable memory of this episode's plot, so I can't write an accurate summary.",
+      Initiation:
+         "I don't have a reliable memory of this episode's plot, so I can't write an accurate summary.",
+      "The Mother of Invention":
+         "I don't have a reliable memory of this episode's plot, so I can't write an accurate summary.",
+      Reality:
+         "I don't have a reliable memory of this episode's plot, so I can't write an accurate summary.",
+      Museum:
+         "I don't have a reliable memory of this episode's plot, so I can't write an accurate summary.",
+      "Us and Them":
+         "I don't have a reliable memory of this episode's plot, so I can't write an accurate summary.",
+      "The Face of Evil":
+         "I don't have a reliable memory of this episode's plot, so I can't write an accurate summary.",
+      "The Key":
+         "I don't have a reliable memory of this episode's plot, so I can't write an accurate summary.",
+      "Chariot of the Sun":
+         "I don't have a reliable memory of this episode's plot, so I can't write an accurate summary.",
+      "The Answer":
+         "I don't have a reliable memory of this episode's plot, so I can't write an accurate summary.",
+      "The Look":
+         "I don't have a reliable memory of this episode's plot, so I can't write an accurate summary.",
+      "Feet of Clay":
+         "I don't have a reliable memory of this episode's plot, so I can't write an accurate summary.",
+      "The Natural":
+         "I don't have a reliable memory of this episode's plot, so I can't write an accurate summary.",
+      "Big Mistake":
+         "I don't have a reliable memory of this episode's plot, so I can't write an accurate summary.",
+      "The Illustrated Stacey":
+         "I don't have a reliable memory of this episode's plot, so I can't write an accurate summary.",
+      "The Long Haul":
+         "I don't have a reliable memory of this episode's plot, so I can't write an accurate summary.",
+   },
+   sgu: {
+      "Air: Part 1":
+         "Lieutenant Matthew Scott wakes aboard the Destiny with Colonel Everett Young, Nicholas Rush, and Eli Wallace, and the crew finds the ship drifting far from Earth. A toxic gas leak begins to fill the corridors, and Young orders the crew to seal off the infected sections while they struggle to keep the air breathable.",
+      "Air: Part 2":
+         "Young and Rush race to find the source of the gas while Scott and Chloe Armstrong search the lower decks for survivors. Rush makes a risky decision about the ship's systems, and the crew must decide whether to sacrifice part of Destiny to save the rest.",
+      "Air: Part 3":
+         "The crew manages to stabilize Destiny's atmosphere, but the cost is high and the ship is still lost in the dark. Young has to decide how to reach the Stargate and get word back to Earth, while Rush and Eli work out where Destiny really is.",
+      Darkness:
+         "With Destiny's lights failing, Scott and Eli are sent to repair a critical power junction in the darkened decks. Their work is slowed by strange creatures moving through the corridors, and Rush hides a discovery that could change the crew's plans.",
+      Light: "Power begins to return to Destiny, but the ship's systems respond in unexpected ways. Young and Greer investigate a damaged section of the ship and find evidence that someone has been tampering with the controls.",
+      Water: "A water shortage forces the crew to rely on a flooded storage bay that holds a dangerous secret. Chloe and Camile Wray try to purify the supply while Young and Rush argue over whether the risk is worth taking.",
+      Earth: "A message from Earth reaches Destiny and raises hopes that rescue is near. Scott and Greer are sent to retrieve equipment from a damaged part of the ship, but the mission goes wrong when the crew is cut off from the main section.",
+      Time: "Rush tries to speed up a repair that depends on a delicate calculation about the ship's time-dilation systems. A miscalculation puts several crew members in danger, and Young has to choose between finishing the job and pulling them out.",
+      Life: "The crew discovers signs of life on a nearby planet and a team goes down to investigate. The visit uncovers a hidden story about the planet's past, and Young has to decide whether it is safe to stay.",
+      Justice:
+         "A crew member is accused of a serious crime aboard Destiny, and Young must hold a trial to decide the outcome. Scott and Rush clash over the evidence while the ship's inhabitants question whether the rules they brought from Earth still apply.",
+      Space: "Destiny drops out of its previous path and the crew scrambles to find out why. Eli and Chloe trace a strange signal through the ship's systems, leading them to a discovery that could explain the recent disruptions.",
+      Divided:
+         "The crew splits into rival groups over how to handle the threats on board, and tensions boil over. Young and Rush each try to win over the others, while Scott tries to keep the peace.",
+      Faith: "A mysterious faith-based group on Destiny draws in several crew members, and their beliefs start to threaten the mission. Young tries to reason with the group's leader while Greer investigates their activities.",
+      Human: "A team on a planet encounters a group of people who appear entirely human, and the visit raises hard questions about who the crew can trust. Rush and Chloe find that the people hide a link to Destiny's past.",
+      Lost: "A crew member goes missing during a routine patrol, and the search turns up a trail of clues pointing deep into the ship. Young, Scott, and Eli follow the trail to a hidden area that few have ever seen.",
+      Sabotage:
+         "Someone is deliberately sabotaging Destiny's critical systems, and Young suspects a member of his own crew. Rush and Scott work to identify the saboteur before the damage becomes fatal.",
+      Pain: "A strange illness spreads through the crew, causing severe pain and confusion in those who catch it. Doctor Park and Eli look for a cure while Young worries the sickness could be aboard the ship itself.",
+      Subversion:
+         "A crew member is secretly working against Destiny's mission and gaining influence among the others. Young and Greer uncover the plot and must act quickly to stop it before it spreads further.",
+      "Incursion: Part 1":
+         "An alien force attacks Destiny in a sudden and violent assault, and the crew scrambles to defend the ship. Young and Rush must make fast decisions about the ship's weapons and whether to abandon key sections.",
+      "Incursion: Part 2":
+         "The crew fights to survive the alien assault and to hold onto Destiny. Scott and Chloe make a desperate move to reach the Stargate, while Young and Rush battle to save the ship from being overrun.",
+      Intervention:
+         "The Destiny crew is still stranded in deep space as Rush and Young work to keep the ship running. A new threat aboard forces Young to make a risky decision that tests the loyalty of the crew.",
+      Aftermath:
+         "Destiny's crew deals with the damage left by the last confrontation and begins repairs on key systems. Scott and Chloe discover that a mysterious signal is coming from a nearby planet.",
+      Awakening:
+         "Eli wakes up with strange new abilities after exposure to an Ancient device. Rush realizes the effects could spread through the ship unless he finds a way to stop them.",
+      Pathogen:
+         "A deadly pathogen spreads through Destiny, and the crew races to find a cure before it is too late. Volker and Park lead a team to search an abandoned lab for the source.",
+      Cloverdale:
+         "A team from Destiny visits a seemingly peaceful town on a distant planet and begins to notice that something is badly wrong. Young and Scott must uncover the truth behind the town's perfect calm.",
+      "Trial and Error":
+         "Rush is put on trial for his actions after a crew member is injured during an experiment. Young must decide whether to testify against him as the evidence piles up.",
+      "The Greater Good":
+         "Destiny's leadership faces a hard choice when a rescue mission would put the rest of the crew at risk. Young and Rush clash over who should make the final call.",
+      Malice:
+         "A hostile alien race tracks Destiny across the galaxy and launches an attack on the ship. The crew must fight off the invaders while protecting a vulnerable group of civilians.",
+      Visitation:
+         "Destiny is visited by a mysterious being claiming to bring a message from Earth. Chloe and Greer try to figure out whether the visitor can be trusted.",
+      Resurgence:
+         "A long-dormant Ancient system awakens aboard Destiny and starts taking control of key functions. Rush and Brody work to shut it down before it can lock the crew out of the ship.",
+      Deliverance:
+         "After a long stretch of silence, Destiny reconnects with a distant outpost and finds its people in desperate need of help. Young leads a team across hostile territory to bring them back.",
+      "Twin Destinies":
+         "A copy of Destiny appears in the same region of space, and the two crews must work out which ship is real. Rush and Young uncover a plan that threatens both vessels.",
+      Alliances:
+         "Destiny's crew forms an uneasy partnership with a group of rival aliens to gain access to a vital resource. Young and Telford argue over whether the deal can ever be trusted.",
+      Hope: "Morale aboard Destiny falls sharply after a series of losses, and Young tries to rally the crew. A breakthrough discovery offers a small chance of getting home.",
+      Seizure:
+         "Eli suffers a violent seizure that the crew cannot explain, putting his life in danger. Rush and Chloe search the ship's databases for a cause and a treatment.",
+      "The Hunt":
+         "A group of hunters chases a Destiny team through a dense jungle planet after they accidentally break a local law. Greer and Scott must keep everyone alive until they can reach the gate.",
+      "Common Descent":
+         "Rush learns more about his own origins and the Ancients who built Destiny. The discovery forces him to reconsider his place on the ship.",
+      Epilogue:
+         "The crew reflects on the cost of their journey as a quiet period on Destiny gives people time to talk. Several personal secrets come to light during the calm.",
+      Blockade:
+         "Destiny is trapped by a hostile fleet that blocks its path through the galaxy. Young must find a way through the blockade without losing the ship or the crew.",
+      Gauntlet:
+         "Destiny's crew faces its toughest fight yet as enemy forces close in and the ship's systems start to fail. Young and Rush must work together to bring the crew through the final assault.",
+   },
+   sgo: {
+      "Episode 01":
+         "In 1939, archaeologist Catherine Langford follows a trail of ancient Egyptian clues that leads her toward a mysterious device buried in the desert. Her search draws the attention of a shadowy group that wants the find for itself.",
+      "Episode 02":
+         "Catherine teams up with a local guide to decode markings found near the buried device. Their investigation exposes a rival expedition that is willing to hurt anyone who gets in its way.",
+      "Episode 03":
+         "Catherine and her companions come face to face with the rival team at an isolated dig site. A tense standoff over the artifact turns violent, and Catherine must decide whom she can trust.",
+      "Episode 04":
+         "After escaping the dig site, Catherine learns that the device is connected to a powerful alien being that once ruled over Egypt. She begins to understand that the object is far more dangerous than anyone expected.",
+      "Episode 05":
+         "Catherine tries to uncover the history of the alien ruler by searching ancient tombs and temple records. Each clue leads her deeper into a plot that threatens to reach beyond Egypt.",
+      "Episode 06":
+         "A crisis erupts when the buried device begins to activate, sending strange energy across the desert. Catherine races to shut it down before it can open a path to another world.",
+      "Episode 07":
+         "The device pulls one of Catherine's allies through to a distant planet, and she must go after him. On the other side, she finds a hostile landscape and a warrior culture that is hunting intruders.",
+      "Episode 08":
+         "Catherine and her rescuers fight to escape the alien world while the rival group closes in from behind. Old loyalties are tested as the team struggles to stay alive.",
+      "Episode 09":
+         "Back on Earth, Catherine works to seal the gateway before the alien forces can follow. She discovers that someone close to her has been secretly helping the rival group.",
+      "Episode 10":
+         "In the season finale, Catherine confronts the rival leader in a final showdown beside the gateway. She makes a choice that will shape the future of the Stargate program and sets up what comes next.",
+   },
+};

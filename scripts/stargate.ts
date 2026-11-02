@@ -27,37 +27,23 @@ const shows: Array<Show> = [
    {
       id: "sg1",
       shortName: "SG-1",
-      name: "SG-1",
+      name: "Stargate: SG-1",
       fullName: "Stargate SG-1",
       query: "Stargate SG-1",
    },
    {
       id: "sga",
       shortName: "SGA",
-      name: "Atlantis",
+      name: "Stargate: Atlantis",
       fullName: "Stargate Atlantis",
       query: "Stargate Atlantis",
    },
    {
-      id: "sgi",
-      shortName: "SGI",
-      name: "Infinity",
-      fullName: "Stargate Infinity",
-      query: "Stargate Infinity",
-   },
-   {
       id: "sgu",
       shortName: "SGU",
-      name: "Universe",
+      name: "Stargate: Universe",
       fullName: "Stargate Universe",
       query: "Stargate Universe",
-   },
-   {
-      id: "sgo",
-      shortName: "SGO",
-      name: "Origins",
-      fullName: "Stargate Origins",
-      query: "Stargate Origins",
    },
 ];
 

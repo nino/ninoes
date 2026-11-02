@@ -621,59 +621,6 @@ export const stargateSummaries: Record<string, Record<string, string>> = {
       "Enemy at the Gate":
          "A massive Wraith fleet arrives at Earth's doorstep and moves to attack Atlantis. Sheppard and the expedition must mount a desperate defense of the city as the battle reaches its peak.",
    },
-   sgi: {
-      Decision:
-         "I don't have a reliable memory of this episode's plot, so I can't write an accurate summary.",
-      "Double Duty":
-         "I don't have a reliable memory of this episode's plot, so I can't write an accurate summary.",
-      "The Best World":
-         "I don't have a reliable memory of this episode's plot, so I can't write an accurate summary.",
-      "Coming Home":
-         "I don't have a reliable memory of this episode's plot, so I can't write an accurate summary.",
-      Mentor:
-         "I don't have a reliable memory of this episode's plot, so I can't write an accurate summary.",
-      "Hot Water":
-         "I don't have a reliable memory of this episode's plot, so I can't write an accurate summary.",
-      Phobia:
-         "I don't have a reliable memory of this episode's plot, so I can't write an accurate summary.",
-      "Can I Keep It?":
-         "I don't have a reliable memory of this episode's plot, so I can't write an accurate summary.",
-      "Who Are You?":
-         "I don't have a reliable memory of this episode's plot, so I can't write an accurate summary.",
-      Greed: "I don't have a reliable memory of this episode's plot, so I can't write an accurate summary.",
-      Stones:
-         "I don't have a reliable memory of this episode's plot, so I can't write an accurate summary.",
-      Initiation:
-         "I don't have a reliable memory of this episode's plot, so I can't write an accurate summary.",
-      "The Mother of Invention":
-         "I don't have a reliable memory of this episode's plot, so I can't write an accurate summary.",
-      Reality:
-         "I don't have a reliable memory of this episode's plot, so I can't write an accurate summary.",
-      Museum:
-         "I don't have a reliable memory of this episode's plot, so I can't write an accurate summary.",
-      "Us and Them":
-         "I don't have a reliable memory of this episode's plot, so I can't write an accurate summary.",
-      "The Face of Evil":
-         "I don't have a reliable memory of this episode's plot, so I can't write an accurate summary.",
-      "The Key":
-         "I don't have a reliable memory of this episode's plot, so I can't write an accurate summary.",
-      "Chariot of the Sun":
-         "I don't have a reliable memory of this episode's plot, so I can't write an accurate summary.",
-      "The Answer":
-         "I don't have a reliable memory of this episode's plot, so I can't write an accurate summary.",
-      "The Look":
-         "I don't have a reliable memory of this episode's plot, so I can't write an accurate summary.",
-      "Feet of Clay":
-         "I don't have a reliable memory of this episode's plot, so I can't write an accurate summary.",
-      "The Natural":
-         "I don't have a reliable memory of this episode's plot, so I can't write an accurate summary.",
-      "Big Mistake":
-         "I don't have a reliable memory of this episode's plot, so I can't write an accurate summary.",
-      "The Illustrated Stacey":
-         "I don't have a reliable memory of this episode's plot, so I can't write an accurate summary.",
-      "The Long Haul":
-         "I don't have a reliable memory of this episode's plot, so I can't write an accurate summary.",
-   },
    sgu: {
       "Air: Part 1":
          "Lieutenant Matthew Scott wakes aboard the Destiny with Colonel Everett Young, Nicholas Rush, and Eli Wallace, and the crew finds the ship drifting far from Earth. A toxic gas leak begins to fill the corridors, and Young orders the crew to seal off the infected sections while they struggle to keep the air breathable.",
@@ -744,27 +691,5 @@ export const stargateSummaries: Record<string, Record<string, string>> = {
          "Destiny is trapped by a hostile fleet that blocks its path through the galaxy. Young must find a way through the blockade without losing the ship or the crew.",
       Gauntlet:
          "Destiny's crew faces its toughest fight yet as enemy forces close in and the ship's systems start to fail. Young and Rush must work together to bring the crew through the final assault.",
-   },
-   sgo: {
-      "Episode 01":
-         "In 1939, archaeologist Catherine Langford follows a trail of ancient Egyptian clues that leads her toward a mysterious device buried in the desert. Her search draws the attention of a shadowy group that wants the find for itself.",
-      "Episode 02":
-         "Catherine teams up with a local guide to decode markings found near the buried device. Their investigation exposes a rival expedition that is willing to hurt anyone who gets in its way.",
-      "Episode 03":
-         "Catherine and her companions come face to face with the rival team at an isolated dig site. A tense standoff over the artifact turns violent, and Catherine must decide whom she can trust.",
-      "Episode 04":
-         "After escaping the dig site, Catherine learns that the device is connected to a powerful alien being that once ruled over Egypt. She begins to understand that the object is far more dangerous than anyone expected.",
-      "Episode 05":
-         "Catherine tries to uncover the history of the alien ruler by searching ancient tombs and temple records. Each clue leads her deeper into a plot that threatens to reach beyond Egypt.",
-      "Episode 06":
-         "A crisis erupts when the buried device begins to activate, sending strange energy across the desert. Catherine races to shut it down before it can open a path to another world.",
-      "Episode 07":
-         "The device pulls one of Catherine's allies through to a distant planet, and she must go after him. On the other side, she finds a hostile landscape and a warrior culture that is hunting intruders.",
-      "Episode 08":
-         "Catherine and her rescuers fight to escape the alien world while the rival group closes in from behind. Old loyalties are tested as the team struggles to stay alive.",
-      "Episode 09":
-         "Back on Earth, Catherine works to seal the gateway before the alien forces can follow. She discovers that someone close to her has been secretly helping the rival group.",
-      "Episode 10":
-         "In the season finale, Catherine confronts the rival leader in a final showdown beside the gateway. She makes a choice that will shape the future of the Stargate program and sets up what comes next.",
    },
 };

@@ -28,7 +28,7 @@
       "d3": "^7.9.0",
       "date-fns": "^4.4.0",
       "isbot": "^5.2.2",
-      "posthog-js": "^1.442.0",
+      "posthog-js": "^1.444.0",
       "posthog-node": "^5.61.1",
       "react": "^19.3.1",
       "react-dom": "^19.3.1",

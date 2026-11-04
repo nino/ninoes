@@ -1,9 +1,4 @@
-import {
-   useCreateVote,
-   useCreateVoteNew,
-   useRandomNames,
-   useTeams,
-} from "~/hooks/useSupabase";
+import { useCreateVote, useHeadToHeadVote, useRandomNames } from "~/hooks/useSupabase";
 import { VoteType } from "~/model/types";
 import { requireUser } from "~/server/guards.server";
 import type { LoaderFunctionArgs } from "react-router";
@@ -26,11 +21,10 @@ export default function Vote(): ReactNode {
    const { user: _ } = useLoaderData<typeof loader>();
    const { data: names, isLoading, refetch, isFetching } = useRandomNames();
    const createVote = useCreateVote();
-   const vote = useCreateVoteNew();
-   const teamsQuery = useTeams({ page: 0, pageSize: 10 });
+   const vote = useHeadToHeadVote();
    const { showToast } = useToast();
 
-   if (isLoading || !names || teamsQuery.isPending) {
+   if (isLoading || !names) {
       return (
          <div role="status" className="flex flex-col items-center gap-8 py-8">
             <span className="sr-only">Loading</span>
@@ -49,13 +43,12 @@ export default function Vote(): ReactNode {
    }
 
    const handleVote = async (selectedNameIndex: number): Promise<void> => {
-      if (names.length !== 2 || !teamsQuery.data) return;
+      if (names.length !== 2) return;
 
       try {
          await vote.mutateAsync({
             winnerId: names[selectedNameIndex].id,
             loserId: names[1 - selectedNameIndex].id,
-            teamId: teamsQuery.data.data[0].id,
          });
 
          showToast("success", "Votes recorded successfully!");

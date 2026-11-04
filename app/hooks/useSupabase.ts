@@ -14,9 +14,10 @@ import type {
    BlogTopReferrer,
    Enum,
    Name,
+   EloLeaderboardRow,
+   EloScope,
+   EloScoreWithName,
    Team,
-   TeamElo,
-   TeamEloWithName,
    TeamMembershipWithTeam,
    User,
    VoteType,
@@ -27,9 +28,10 @@ import {
    BlogDailyViewsSchema,
    BlogTopPageSchema,
    BlogTopReferrerSchema,
+   EloLeaderboardRowSchema,
+   EloScoreWithNameSchema,
    NameGender,
    NameSchema,
-   TeamEloSchema,
    TeamMembershipWithTeamSchema,
    TeamSchema,
    UserSchema,
@@ -38,7 +40,6 @@ import {
 } from "../model/types";
 import { useSession } from "./useSession";
 import { z } from "zod";
-import { BASE_ELO, updateEloRatings } from "~/utils/elo";
 import { BLOG_TOP_ROWS, type BlogStatsRange } from "~/utils/blog-stats";
 
 export function useNames({
@@ -163,21 +164,34 @@ export function useRandomNames(): UseQueryResult<Array<Name>> {
    });
 }
 
-type CreateVoteNewParams = { winnerId: string; loserId: string; teamId?: string };
+type HeadToHeadVoteParams = { winnerId: string; loserId: string };
 
-export function useCreateVoteNew(): UseMutationResult<void, Error, CreateVoteNewParams> {
+/**
+ * Records that the user picked one name over another. The database derives
+ * every Elo rating from these votes, so this doesn't deal with teams at all.
+ */
+export function useHeadToHeadVote(): UseMutationResult<
+   void,
+   Error,
+   HeadToHeadVoteParams
+> {
+   const queryClient = useQueryClient();
    const { session, supabase: authSupabase } = useSession();
 
    return useMutation({
-      mutationFn: async ({ winnerId, loserId, teamId }) => {
+      mutationFn: async ({ winnerId, loserId }) => {
          if (!session) throw new Error("no auth");
          const { error } = await authSupabase.rpc("vote", {
             p_winner_id: winnerId,
             p_loser_id: loserId,
-            p_team_id: teamId,
          });
          if (error) throw error;
       },
+      onSuccess: () =>
+         Promise.all([
+            queryClient.invalidateQueries({ queryKey: ["votes"] }),
+            queryClient.invalidateQueries({ queryKey: ["eloLeaderboard"] }),
+         ]),
    });
 }
 
@@ -448,130 +462,78 @@ export function useDeleteVote(): UseMutationResult<void, Error, string> {
    });
 }
 
-// export function useTeamElo(
-//   teamId: string | null,
-//   nameId: string | null
-// ): UseQueryResult<TeamElo | null> {
-//   return useQuery({
-//     queryKey: ["teamElo", teamId, nameId],
-//     queryFn: () => null,
-//   });
-// }
-
-type EloFightParams = { win: string; lose: string; teamId: string };
-
-export function useEloFight(): UseMutationResult<void, Error, EloFightParams> {
-   const queryClient = useQueryClient();
+/** The Elo leaderboards the signed-in user can see. */
+export function useEloLeaderboards(): UseQueryResult<Array<EloLeaderboardRow>> {
    const { session, supabase: authSupabase } = useSession();
 
-   return useMutation({
-      mutationFn: async ({ win, lose, teamId }: EloFightParams) => {
-         if (!session) {
-            throw new Error("User not authenticated");
-         }
-
-         const { data, error: fetchError } = await authSupabase
-            .from("team_elo")
-            .select("*")
-            .eq("team_id", teamId)
-            .in("name_id", [win, lose]);
-
-         console.log({ data });
-
-         if (fetchError) {
-            throw fetchError;
-         }
-
-         const winnerElo = TeamEloSchema.parse(
-            data.find((item: TeamElo) => item.name_id === win) ?? {
-               name_id: win,
-               elo: BASE_ELO,
-               team_id: teamId,
-            },
-         );
-         const loserElo = TeamEloSchema.parse(
-            data.find((item: TeamElo) => item.name_id === win) ?? {
-               name_id: lose,
-               elo: BASE_ELO,
-               team_id: teamId,
-            },
-         );
-         console.log({ win, lose, winnerElo, loserElo });
-
-         const [winnerNewElo, loserNewElo] = updateEloRatings(
-            winnerElo.elo,
-            loserElo.elo,
-         );
-
-         console.log({ winnerNewElo, loserNewElo });
-
-         await authSupabase.from("team_elo").upsert([
-            { ...winnerElo, elo: winnerNewElo },
-            { ...loserElo, elo: loserNewElo },
-         ]);
+   return useQuery({
+      queryKey: ["eloLeaderboards", session?.user.id],
+      enabled: session != null,
+      queryFn: async () => {
+         const { data, error } = await authSupabase.rpc("my_elo_leaderboards");
+         if (error) throw error;
+         return z.array(EloLeaderboardRowSchema).parse(data);
       },
-      onSuccess: () =>
-         Promise.all([
-            queryClient.invalidateQueries({ queryKey: ["votes"] }),
-            queryClient.invalidateQueries({ queryKey: ["nameScores"] }),
-            queryClient.invalidateQueries({ queryKey: ["teamElo"] }),
-         ]),
    });
 }
 
 export function useEloLeaderboard({
-   teamId = null,
+   scope,
    page = 0,
    pageSize = 10,
    orderBy = "elo",
    orderDirection = "desc",
    genders = [],
 }: {
-   teamId?: string | null;
+   scope: EloScope | null;
    page?: number;
    pageSize?: number;
    orderBy?: string;
    orderDirection?: "asc" | "desc";
    genders?: Array<Enum<typeof NameGender>>;
-} = {}): UseQueryResult<{ data: Array<TeamEloWithName>; total: number | null } | null> {
+}): UseQueryResult<{ data: Array<EloScoreWithName>; total: number | null }> {
    const { session, supabase: authSupabase } = useSession();
 
    return useQuery({
       queryKey: [
-         "useEloLeaderboard",
-         teamId,
+         "eloLeaderboard",
+         scope,
          page,
          pageSize,
          orderBy,
          orderDirection,
          genders,
       ],
+      enabled: scope != null && session != null,
+      placeholderData: keepPreviousData,
       queryFn: async () => {
-         if (teamId == null) return null;
-         if (!session) {
-            throw new Error("User not authenticated");
-         }
+         if (scope == null) throw new Error("unreachable");
 
          // !inner join so gender filters on Names also filter the elo rows
-         let q = authSupabase
-            .from("team_elo")
-            .select("*, name:Names!inner(*)", { count: "exact" })
-            .eq("team_id", teamId);
+         let q =
+            scope.kind === "team"
+               ? authSupabase
+                    .from("team_elo")
+                    .select("*, name:Names!inner(*)", { count: "exact" })
+                    .eq("team_id", scope.teamId)
+               : authSupabase
+                    .from("user_elo")
+                    .select("*, name:Names!inner(*)", { count: "exact" })
+                    .eq("user_id", scope.userId);
 
          if (genders.length > 0) {
             q = q.in("name.gender", genders);
          }
 
-         const {
-            data,
-            error: fetchError,
-            count,
-         } = await q
-            .range(page * pageSize, (page + 1) * pageSize - 1)
-            .order(orderBy, { ascending: orderDirection === "asc" });
-         if (fetchError) throw fetchError;
-         console.log({ data, count });
-         return { data, total: count };
+         const { data, error, count } = await q
+            .order(orderBy, { ascending: orderDirection === "asc" })
+            .order("name_id")
+            .range(page * pageSize, (page + 1) * pageSize - 1);
+         if (error) throw error;
+         return {
+            data: data.map((row) => EloScoreWithNameSchema.parse(row)),
+            total: count,
+         };
       },
    });
 }

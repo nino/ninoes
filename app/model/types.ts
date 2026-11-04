@@ -76,10 +76,11 @@ export type EloScore = z.infer<typeof EloScoreSchema>;
 export const EloScoreWithNameSchema = EloScoreSchema.extend({ name: NameSchema });
 export type EloScoreWithName = z.infer<typeof EloScoreWithNameSchema>;
 
-/** Whose votes an Elo leaderboard is built from. */
+/** Whose votes an Elo leaderboard is built from: a team's, one user's, or everyone's. */
 export type EloScope =
    | { kind: "team"; teamId: string }
-   | { kind: "user"; userId: string };
+   | { kind: "user"; userId: string }
+   | { kind: "all" };
 
 // Rows from my_elo_leaderboards(): the signed-in user (team null), each of their
 // teams (user null), and each member of each team (both set).

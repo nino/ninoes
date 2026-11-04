@@ -516,10 +516,14 @@ export function useEloLeaderboard({
                     .from("team_elo")
                     .select("*, name:Names!inner(*)", { count: "exact" })
                     .eq("team_id", scope.teamId)
-               : authSupabase
-                    .from("user_elo")
-                    .select("*, name:Names!inner(*)", { count: "exact" })
-                    .eq("user_id", scope.userId);
+               : scope.kind === "user"
+                 ? authSupabase
+                      .from("user_elo")
+                      .select("*, name:Names!inner(*)", { count: "exact" })
+                      .eq("user_id", scope.userId)
+                 : authSupabase
+                      .from("global_elo")
+                      .select("*, name:Names!inner(*)", { count: "exact" });
 
          if (genders.length > 0) {
             q = q.in("name.gender", genders);

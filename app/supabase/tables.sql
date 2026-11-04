@@ -134,3 +134,14 @@ CREATE TABLE public.user_elo (
   updated_at timestamp WITH time zone NOT NULL DEFAULT NOW(),
   CONSTRAINT user_elo_pkey PRIMARY KEY (user_id, name_id)
 );
+
+-- 2026-11-04-global-elo.sql. Everyone's ratings, from all head-to-head votes.
+-- Kept in sync by the same triggers; any signed-in user can read it.
+CREATE TABLE public.global_elo (
+  name_id uuid NOT NULL REFERENCES public."Names" (id) ON UPDATE CASCADE ON DELETE CASCADE,
+  elo integer NOT NULL,
+  wins integer NOT NULL DEFAULT 0,
+  losses integer NOT NULL DEFAULT 0,
+  updated_at timestamp WITH time zone NOT NULL DEFAULT NOW(),
+  CONSTRAINT global_elo_pkey PRIMARY KEY (name_id)
+);

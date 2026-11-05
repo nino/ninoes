@@ -4,21 +4,20 @@ import { requireUser } from "~/server/guards.server";
 import type { LoaderFunctionArgs } from "react-router";
 import { useLoaderData } from "react-router";
 import type { ReactNode } from "react";
-import type { User } from "@supabase/supabase-js";
 import { Button } from "~/components/ui/Button";
 import { useToast } from "~/components/ui/Toast";
 import { Skeleton } from "~/components/ui/Skeleton";
+import { canBanNames } from "~/utils/name-bans";
 
 export const loader = async ({
    request,
-}: LoaderFunctionArgs): Promise<{ user: User }> => {
+}: LoaderFunctionArgs): Promise<{ canBan: boolean }> => {
    const { user } = await requireUser(request);
-   console.log({ user });
-   return { user };
+   return { canBan: canBanNames(user.id) };
 };
 
 export default function Vote(): ReactNode {
-   const { user: _ } = useLoaderData<typeof loader>();
+   const { canBan } = useLoaderData<typeof loader>();
    const { data: names, isLoading, refetch, isFetching } = useRandomNames();
    const createVote = useCreateVote();
    const vote = useHeadToHeadVote();
@@ -101,29 +100,31 @@ export default function Vote(): ReactNode {
                </Button>
             ))}
          </div>
-         <div className="flex gap-4 flex-wrap justify-center">
-            <Button
-               variant="danger"
-               onClick={() => handleBan([0])}
-               isLoading={createVote.isPending || isFetching}
-            >
-               Ban {names[0].name}
-            </Button>
-            <Button
-               variant="danger"
-               onClick={() => handleBan([1])}
-               isLoading={createVote.isPending || isFetching}
-            >
-               Ban {names[1].name}
-            </Button>
-            <Button
-               variant="danger"
-               onClick={() => handleBan([0, 1])}
-               isLoading={createVote.isPending || isFetching}
-            >
-               Ban both
-            </Button>
-         </div>
+         {canBan && (
+            <div className="flex gap-4 flex-wrap justify-center">
+               <Button
+                  variant="danger"
+                  onClick={() => handleBan([0])}
+                  isLoading={createVote.isPending || isFetching}
+               >
+                  Ban {names[0].name}
+               </Button>
+               <Button
+                  variant="danger"
+                  onClick={() => handleBan([1])}
+                  isLoading={createVote.isPending || isFetching}
+               >
+                  Ban {names[1].name}
+               </Button>
+               <Button
+                  variant="danger"
+                  onClick={() => handleBan([0, 1])}
+                  isLoading={createVote.isPending || isFetching}
+               >
+                  Ban both
+               </Button>
+            </div>
+         )}
       </div>
    );
 }

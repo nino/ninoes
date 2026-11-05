@@ -26,6 +26,8 @@ CREATE TABLE public."Users" (
   CONSTRAINT Users_id_fkey FOREIGN KEY (id) REFERENCES auth.users (id) ON UPDATE CASCADE ON DELETE CASCADE
 ) TABLESPACE pg_default;
 
+-- 2026-11-05-owner-only-bans.sql: only Nino and Katherine can insert or update
+-- votes with vote_type 'ban' (restrictive policies with their user IDs).
 CREATE TABLE public."Votes" (
   id uuid NOT NULL DEFAULT gen_random_uuid (),
   created_at timestamp WITH time zone NOT NULL DEFAULT NOW(),

@@ -86,8 +86,14 @@ export default function Leaderboard(): React.ReactNode {
 
    const leaderboards = useEloLeaderboards();
    const { me, teams } = groupChoices(leaderboards.data ?? []);
+   const everyone: LeaderboardChoice = {
+      key: "all",
+      label: "Everyone",
+      scope: { kind: "all" },
+   };
    const allChoices = [
       ...(me ? [me] : []),
+      everyone,
       ...teams.flatMap((team) => [team.whole, ...team.members]),
    ];
    // Until the user picks one, show their first team's board, or their own.
@@ -95,10 +101,11 @@ export default function Leaderboard(): React.ReactNode {
       allChoices.find((choice) => choice.key === chosenKey) ??
       teams.at(0)?.whole ??
       me ??
-      null;
+      everyone;
 
    const eloLeaderboard = useEloLeaderboard({
-      scope: chosen?.scope ?? null,
+      // Wait for the list, so the default board is fetched only once.
+      scope: leaderboards.isSuccess ? chosen.scope : null,
       page: pagination.pageIndex,
       pageSize: pagination.pageSize,
       orderBy: sorting[0]?.id ?? "elo",
@@ -120,8 +127,8 @@ export default function Leaderboard(): React.ReactNode {
       <button
          key={choice.key}
          type="button"
-         className={chipClass(choice.key === chosen?.key)}
-         aria-pressed={choice.key === chosen?.key}
+         className={chipClass(choice.key === chosen.key)}
+         aria-pressed={choice.key === chosen.key}
          onClick={() => choose(choice.key)}
       >
          {choice.label}
@@ -149,9 +156,10 @@ export default function Leaderboard(): React.ReactNode {
                <Skeleton className="h-8 w-64" />
             ) : (
                <>
-                  {me && (
-                     <div className="flex flex-wrap items-center gap-2">{chip(me)}</div>
-                  )}
+                  <div className="flex flex-wrap items-center gap-2">
+                     {me && chip(me)}
+                     {chip(everyone)}
+                  </div>
                   {teams.map((team) => (
                      <div
                         key={team.whole.key}

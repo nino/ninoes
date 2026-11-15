@@ -27,7 +27,7 @@
       "@tanstack/react-table": "^9.3.1",
       "d3": "^7.9.2",
       "date-fns": "^4.4.0",
-      "isbot": "^5.2.2",
+      "isbot": "^5.2.3",
       "posthog-js": "^1.446.3",
       "posthog-node": "^5.62.0",
       "react": "^19.3.1",

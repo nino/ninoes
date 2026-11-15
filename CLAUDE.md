@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What is this?
 
-Ninoes is mainly a name voting/ranking app. Users vote on names (up/down and ELO-style head-to-head), view leaderboards, and organize into teams. It also hosts a few unrelated pages: a wedding gift wishlist (`/wishlist`), bus times (`/bus`), Star Trek and calendar ICS feeds, `/control`, and page-view stats for ninoan.com (`/blog-stats`, reading `analytics.page_views`, which the blog's log shipper fills). Built with React Router v8 (SSR) + Supabase + TypeScript.
+Ninoes is mainly a name voting/ranking app. Users vote on names (up/down and ELO-style head-to-head), view leaderboards, and organize into teams. It also hosts a few unrelated pages: a wedding gift wishlist (`/wishlist`), bus times (`/bus`), Star Trek and calendar ICS feeds, `/control`, page-view stats for ninoan.com (`/blog-stats`, reading `analytics.page_views`, which the blog's log shipper fills), and `/blog-images`, which turns a dropped photo into responsive AVIF/WebP/JPEG files on Backblaze B2 plus a `<picture>` snippet for a blog post. `/blog-images` is for Nino's account only (`NINO_USER_ID` in `app/utils/users.ts`): the browser encodes in Web Workers with the Squoosh WebAssembly codecs (`app/utils/blog-image-*.ts`) and uploads straight to B2 through presigned S3 PUT URLs the server signs (`app/server/blog-images.server.ts`). The bucket needs a CORS rule that allows S3 PUT, with the `Content-Type` and `Cache-Control` headers, from the site's origin (`http://localhost:5199` too, to upload to B2 from dev). Built with React Router v8 (SSR) + Supabase + TypeScript.
 
 ## Commands
 
@@ -22,6 +22,7 @@ CI runs `bun run typecheck`, `bun run lint`, `bun run test` and `bun run build`,
 ## Environment
 
 - `.env` (gitignored) must set `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`; `app/env.ts` fails at startup without them. See `.env.example`.
+- `/blog-images` reads `B2_APPLICATION_KEY_ID`, `B2_APPLICATION_KEY`, `BUCKET_NAME` and `BUCKET_URL` from the environment: Fly secrets in production, `.env` locally (server-side only, no `VITE_` prefix), falling back to `~/.config/image-uploader/.env`. The key must not be B2's master key, which the S3 API rejects. Under `bun run dev`, "Keep files locally" stores uploads in the system temp folder instead.
 - The wishlist translation endpoint calls the Claude API. Locally it uses the credentials from `ant auth login`; on Fly it uses workload identity federation (`app/server/anthropic.server.ts`), so there is no API key to set.
 
 ## Architecture

@@ -8,6 +8,8 @@ export default [
       route("/leaderboard", "routes/leaderboard.tsx"),
       route("/banned", "routes/banned.tsx"),
       route("/blog-stats", "routes/blog-stats.tsx"),
+      // Nino only. Encodes in the browser and uploads straight to B2.
+      route("/blog-images", "routes/blog-images.tsx"),
       route("/elo", "routes/elo.tsx"),
       route("/teams", "routes/teams.tsx"),
       route("/data", "routes/data.tsx"),
@@ -25,6 +27,8 @@ export default [
    // Its own header and favicon, outside the app layout.
    route("/wishlist", "routes/wishlist.tsx"),
    route("/wishlist/translate", "routes/wishlist-translate.ts"),
+   route("/blog-images/sign", "routes/blog-images-sign.ts"),
+   route("/blog-images/local/*", "routes/blog-images-local.ts"),
    // PostHog's endpoints, for this site and Nino's other apps.
    route("/relay/*", "routes/relay.ts"),
 ] satisfies RouteConfig;

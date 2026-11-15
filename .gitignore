@@ -12,3 +12,4 @@
 
 # Local environment (Supabase keys)
 .env
+.env.sentry-build-plugin

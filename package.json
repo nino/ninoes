@@ -17,7 +17,7 @@
    "dependencies": {
       "@anthropic-ai/sdk": "^1.8.0",
       "@headlessui/react": "^2.2.10",
-      "@hookform/resolvers": "^7.0.6",
+      "@hookform/resolvers": "^7.0.7",
       "@js-temporal/polyfill": "^0.5.1",
       "@jsquash/avif": "2.1.1",
       "@jsquash/jpeg": "1.6.0",

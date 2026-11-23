@@ -82,12 +82,7 @@ export default function Vote(): ReactNode {
 
    return (
       <div className="flex flex-col items-center gap-8 py-8">
-         <div className="flex flex-col items-center gap-2 text-center">
-            <h1 className="font-title text-3xl">Choose a name</h1>
-            <p className="text-sm text-muted-fg">
-               (it should be much more difficult now)
-            </p>
-         </div>
+         <h1 className="font-title text-3xl text-center">Choose a name</h1>
          <div className="flex w-full flex-wrap justify-center gap-4">
             {names.map((name, index) => (
                <Button
